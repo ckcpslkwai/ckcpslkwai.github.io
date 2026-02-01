@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>每日排行榜 🏆 P.1 ~ P.6</title>
+  <style>
+    :root {
+      --primary: #4a90e2;
+      --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --card-bg: rgba(255,255,255,0.12);
+      --card-border: rgba(255,255,255,0.18);
+      --text-light: #f0f4ff;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body {
+      font-family:'Segoe UI',system-ui,sans-serif;
+      background:var(--bg-gradient);
+      color:var(--text-light);
+      min-height:100vh;
+      padding:15px 10px;
+      font-size: 115%;
+    }
+    .container{max-width:1920px;margin:0 auto}
+    header{text-align:center;padding:20px 0 25px;backdrop-filter:blur(10px)}
+    h1{font-size:clamp(1.9rem,4.5vw,2.6rem);margin-bottom:4px;text-shadow:0 3px 10px rgba(0,0,0,0.3)}
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(6,1fr);
+      gap:16px;
+      margin-bottom:40px
+    }
+    .panel{
+      background:var(--card-bg);
+      border-radius:14px;
+      border:1px solid var(--card-border);
+      backdrop-filter:blur(12px);
+      box-shadow:0 6px 24px rgba(0,0,0,0.25);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:450px;
+      max-height:620px
+    }
+    .panel-header{
+      background:linear-gradient(to right,rgba(74,144,226,0.9),rgba(74,144,226,0.7));
+      padding:10px;
+      text-align:center;
+      font-size:2.2rem;
+      font-weight:600;
+      color:#fff;
+      border-bottom:1px solid rgba(255,255,255,0.2)
+    }
+    table{width:100%;border-collapse:collapse;flex-grow:1}
+    th,td{
+      padding:7px 8px;
+      text-align:center;
+      font-size:.86rem;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis
+    }
+    th{background:rgba(0,0,0,0.25);color:#fff;font-weight:500}
+    tr:nth-child(even){background:rgba(255,255,255,0.05)}
+.rank-1,
+.rank-2,
+.rank-3 {
+  height: 30px; /* 固定行高，可依需求調整 50px～80px */
+  line-height: 30px; /* 文字垂直置中 */
+  font-size: 1.1rem; /* 文字稍微放大一點（可選） */
+}
+/* 確保 td 內的內容也跟著撐高 */
+.rank-1 td,
+.rank-2 td,
+.rank-3 td {
+  padding: 12px 8px; /* 上下 padding 加大 */
+  vertical-align: middle; /* 文字垂直置中 */
+}
+    .rank-1{background:linear-gradient(45deg,#ffd700,#ffea80);color:#1e293b;font-weight:bold}
+    .rank-2{background:linear-gradient(45deg,#b0b7c3,#fff,#e0e0e0)!important;color:#1e293b!important;font-weight:bold}
+    .rank-3{background:linear-gradient(45deg,#cd7f32,#e0a679);color:#1e293b;font-weight:bold}
+    .rank-col{min-width:30px;max-width:50px}
+    .class-col{min-width:40px;max-width:70px}
+    .name-col{min-width:90px;max-width:140px}
+    .score-col{min-width:70px;max-width:100px}
+    .empty{
+      padding:60px 20px;
+      text-align:center;
+      color:#cbd5e1;
+      font-size:1rem;
+      font-style:italic;
+      flex-grow:1;
+      display:flex;
+      align-items:center;
+      justify-content:center
+    }
+    #lastUpdate{text-align:center;color:rgba(255,255,255,0.7);margin:20px 0;font-size:.9rem}
+    @media (max-width:1400px){.grid{grid-template-columns:repeat(3,1fr)}}
+    @media (max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:600px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+<font size="8">🏆 Leaderboard-English 🏆</font></br></br>
+    </header>
+    <div class="grid" id="gridPanels"></div>
+    <div id="lastUpdate">資料載入中...</div>
+  </div>
+  <script>
+    const SPREADSHEET_ID = '111qBSbRYUCqd5gxLrZFst08fTKHYyTHa';
+    const CORS_PROXY = 'https://corsproxy.io/?';
+    const SHEET_CONFIG = [
+      { name: 'P.1', gid: '1172396131' },
+      { name: 'P.2', gid: '593557676' },
+      { name: 'P.3', gid: '116819444' },
+      { name: 'P.4', gid: '264511570' },
+      { name: 'P.5', gid: '261203595' },
+      { name: 'P.6', gid: '190158040' }
+    ];
+    const gridPanels = document.getElementById('gridPanels');
+    let intervals = [];
+    function createPanels() {
+      gridPanels.innerHTML = '';
+      SHEET_CONFIG.forEach(sheet => {
+        const panel = document.createElement('div');
+        panel.className = 'panel';
+        panel.dataset.sheet = sheet.name;
+        const header = document.createElement('div');
+        header.className = 'panel-header';
+        header.textContent = sheet.name;
+        panel.appendChild(header);
+        const content = document.createElement('div');
+        content.className = 'empty';
+        content.textContent = '載入中...';
+        panel.appendChild(content);
+        gridPanels.appendChild(panel);
+      });
+    }
+    async function fetchSheetData(gid, retries = 3) {
+      const targetUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${gid}`;
+      const proxyUrl = CORS_PROXY + encodeURIComponent(targetUrl);
+      for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+          const response = await fetch(proxyUrl);
+          if (response.ok) {
+            console.log(`成功載入 gid=${gid} (嘗試 ${attempt})`);
+            return await response.text();
+          }
+          console.warn(`嘗試 ${attempt}/${retries} 失敗，狀態: ${response.status} for gid=${gid}`);
+          if (attempt < retries) {
+            await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
+          }
+        } catch (err) {
+          console.error(`嘗試 ${attempt}/${retries} 錯誤 for gid=${gid}:`, err);
+          if (attempt < retries) {
+            await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
+          }
+        }
+      }
+      console.error(`載入失敗，已重試 ${retries} 次: gid=${gid}`);
+      return null;
+    }
+    function parseCSV(csvText) {
+      if (!csvText || csvText.trim() === '') return [];
+      const lines = csvText.trim().split('\n').filter(line => line.trim() !== '');
+      if (lines.length < 1) return [];
+      let headerIndex = 0;
+      let headers = [];
+      for (let i = 0; i < Math.min(10, lines.length); i++) {
+        const cols = lines[i].split(',').map(c => c.trim().replace(/^"|"$/g, ''));
+        if (cols.filter(c => c !== '').length >= 3) {
+          headers = cols;
+          headerIndex = i;
+          break;
+        }
+      }
+      if (headers.length === 0) {
+        console.warn('無法找到有效標題列，使用預設標題');
+        headers = ['Class', 'Name', 'Score', 'Date'];
+      }
+      const data = [];
+      for (let i = headerIndex + 1; i < lines.length; i++) {
+        let row = [];
+        let current = '';
+        let inQuote = false;
+        const line = lines[i] + ',';
+        for (let char of line) {
+          if (char === '"') {
+            inQuote = !inQuote;
+            continue;
+          }
+          if (char === ',' && !inQuote) {
+            row.push(current.trim().replace(/^"|"$/g, ''));
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+        if (row.length >= headers.length) {
+          let obj = {};
+          headers.forEach((h, idx) => {
+            obj[h] = row[idx] || '';
+          });
+          data.push(obj);
+        }
+      }
+      return data;
+    }
+    function processAndRender(panel, rows, sheetName) {
+      const contentDiv = panel.lastElementChild;
+      const today = new Date().toISOString().split('T')[0];
+      let filtered = rows.filter(row => {
+        let dStr = '';
+        const dateVal = row.Date || '';
+        if (dateVal) {
+          if (!isNaN(dateVal)) {
+            const days = Math.floor(parseFloat(dateVal) - 25569);
+            dStr = new Date(days * 86400 * 1000).toISOString().split('T')[0];
+          } else {
+            dStr = dateVal.trim();
+          }
+        }
+        return !dateVal || dStr === today;
+      });
+      if (filtered.length === 0) filtered = rows;
+      filtered.sort((a, b) => (parseFloat(b.Score) || 0) - (parseFloat(a.Score) || 0));
+      filtered.forEach(row => {
+        row.displayName = (row.Name && row.Name.length > 8)
+          ? row.Name.substring(0, 8) + '.'
+          : (row.Name || '—');
+      });
+      const top3 = filtered.slice(0, 3);
+      const rest = filtered.slice(3);
+      const slideGroups = [];
+      for (let i = 0; i < Math.min(rest.length, 47); i += 9) {
+        slideGroups.push(rest.slice(i, i + 9));
+      }
+      let currentSlide = 0;
+      function renderSlide() {
+        let html = '<table><thead><tr><th class="rank-col">#</th><th class="class-col">班別</th><th class="name-col">姓名</th><th class="score-col">pt</th></tr></thead><tbody>';
+        top3.forEach((row, i) => {
+          const rank = i + 1;
+          const cls = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : '';
+          html += `<tr class="${cls}">
+            <td class="rank-col">${rank}</td>
+            <td class="class-col">${row.Class || '—'}</td>
+            <td class="name-col">${row.displayName}</td>
+            <td class="score-col">${row.Score || '—'}</td>
+          </tr>`;
+        });
+        if (slideGroups.length > 0) {
+          const group = slideGroups[currentSlide];
+          group.forEach((row, idx) => {
+            const rank = 4 + currentSlide * 9 + idx;
+            html += `<tr>
+              <td class="rank-col">${rank}</td>
+              <td class="class-col">${row.Class || '—'}</td>
+              <td class="name-col">${row.displayName}</td>
+              <td class="score-col">${row.Score || '—'}</td>
+            </tr>`;
+          });
+        }
+        html += '</tbody></table>';
+        contentDiv.className = '';
+        contentDiv.innerHTML = html;
+      }
+      renderSlide();
+      if (slideGroups.length > 1) {
+        const id = setInterval(() => {
+          currentSlide = (currentSlide + 1) % slideGroups.length;
+          renderSlide();
+        }, 10000);
+        intervals.push(id);
+      }
+      if (filtered.length === 0) {
+        contentDiv.className = 'empty';
+        contentDiv.textContent = '無今日資料';
+      }
+    }
+    async function loadAllData() {
+      intervals.forEach(clearInterval);
+      intervals = [];
+      createPanels();
+      const panels = gridPanels.querySelectorAll('.panel');
+      for (let i = 0; i < SHEET_CONFIG.length; i++) {
+        const sheet = SHEET_CONFIG[i];
+        const panel = panels[i];
+        const csv = await fetchSheetData(sheet.gid);
+        if (!csv) {
+          panel.lastElementChild.className = 'empty';
+          panel.lastElementChild.textContent = '載入失敗，請檢查 Console';
+          continue;
+        }
+        const rows = parseCSV(csv);
+        processAndRender(panel, rows, sheet.name);
+      }
+      document.getElementById('lastUpdate').textContent =
+        `最後更新：${new Date().toLocaleString('zh-TW')}（每30分鐘自動更新中）`;
+    }
+    window.addEventListener('load', () => {
+      loadAllData();
+      // 每 60 秒自動重新載入一次（包含所有分頁、前三名、輪播等）
+      setInterval(() => {
+        loadAllData();
+        console.log('自動更新排行榜完成：' + new Date().toLocaleTimeString('zh-TW'));
+      }, 900000);
+    });
+  </script>
+</body>
+</html>
