@@ -249,8 +249,8 @@
 
       // 處理姓名過長顯示
       filtered.forEach(row => {
-        row.displayName = (row.Name && row.Name.length > 8)
-          ? row.Name.substring(0, 8) + '.'
+        row.displayName = (row.Name && row.Name.length > 10)
+          ? row.Name.substring(0, 10) + '.'
           : (row.Name || '—');
       });
 
@@ -386,3 +386,4 @@
   </script>
 </body>
 </html>
+
