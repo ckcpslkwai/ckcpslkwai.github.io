@@ -62,20 +62,19 @@
     }
     th{background:rgba(0,0,0,0.25);color:#fff;font-weight:500}
     tr:nth-child(even){background:rgba(255,255,255,0.05)}
-.rank-1,
-.rank-2,
-.rank-3 {
-  height: 30px; /* 固定行高，可依需求調整 50px～80px */
-  line-height: 30px; /* 文字垂直置中 */
-  font-size: 1.1rem; /* 文字稍微放大一點（可選） */
-}
-/* 確保 td 內的內容也跟著撐高 */
-.rank-1 td,
-.rank-2 td,
-.rank-3 td {
-  padding: 12px 8px; /* 上下 padding 加大 */
-  vertical-align: middle; /* 文字垂直置中 */
-}
+    .rank-1,
+    .rank-2,
+    .rank-3 {
+      height: 30px;
+      line-height: 30px;
+      font-size: 1.1rem;
+    }
+    .rank-1 td,
+    .rank-2 td,
+    .rank-3 td {
+      padding: 12px 8px;
+      vertical-align: middle;
+    }
     .rank-1{background:linear-gradient(45deg,#ffd700,#ffea80);color:#1e293b;font-weight:bold}
     .rank-2{background:linear-gradient(45deg,#b0b7c3,#fff,#e0e0e0)!important;color:#1e293b!important;font-weight:bold}
     .rank-3{background:linear-gradient(45deg,#cd7f32,#e0a679);color:#1e293b;font-weight:bold}
@@ -91,8 +90,27 @@
       font-style:italic;
       flex-grow:1;
       display:flex;
+      flex-direction:column;
       align-items:center;
-      justify-content:center
+      justify-content:center;
+      gap:16px;
+    }
+    .retry-btn {
+      padding:10px 24px;
+      background:#4a90e2;
+      color:white;
+      border:none;
+      border-radius:8px;
+      font-size:1rem;
+      cursor:pointer;
+      transition: all 0.2s;
+    }
+    .retry-btn:hover {
+      background:#357abd;
+      transform: translateY(-1px);
+    }
+    .retry-btn:active {
+      transform: translateY(0);
     }
     #lastUpdate{text-align:center;color:rgba(255,255,255,0.7);margin:20px 0;font-size:.9rem}
     @media (max-width:1400px){.grid{grid-template-columns:repeat(3,1fr)}}
@@ -103,11 +121,12 @@
 <body>
   <div class="container">
     <header>
-<font size="8">🏆 Leaderboard-English 🏆</font></br></br>
+      <font size="8">🏆 Leaderboard-English 🏆</font><br><br>
     </header>
     <div class="grid" id="gridPanels"></div>
     <div id="lastUpdate">資料載入中...</div>
   </div>
+
   <script>
     const SPREADSHEET_ID = '111qBSbRYUCqd5gxLrZFst08fTKHYyTHa';
     const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
@@ -119,28 +138,35 @@
       { name: 'P.5', gid: '261203595' },
       { name: 'P.6', gid: '190158040' }
     ];
+
     const gridPanels = document.getElementById('gridPanels');
     let intervals = [];
+
     function createPanels() {
       gridPanels.innerHTML = '';
       SHEET_CONFIG.forEach(sheet => {
         const panel = document.createElement('div');
         panel.className = 'panel';
         panel.dataset.sheet = sheet.name;
+
         const header = document.createElement('div');
         header.className = 'panel-header';
         header.textContent = sheet.name;
         panel.appendChild(header);
+
         const content = document.createElement('div');
         content.className = 'empty';
         content.textContent = '載入中...';
         panel.appendChild(content);
+
         gridPanels.appendChild(panel);
       });
     }
+
     async function fetchSheetData(gid, retries = 3) {
       const targetUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${gid}`;
       const proxyUrl = CORS_PROXY + encodeURIComponent(targetUrl);
+
       for (let attempt = 1; attempt <= retries; attempt++) {
         try {
           const response = await fetch(proxyUrl);
@@ -162,10 +188,12 @@
       console.error(`載入失敗，已重試 ${retries} 次: gid=${gid}`);
       return null;
     }
+
     function parseCSV(csvText) {
       if (!csvText || csvText.trim() === '') return [];
       const lines = csvText.trim().split('\n').filter(line => line.trim() !== '');
       if (lines.length < 1) return [];
+
       let headerIndex = 0;
       let headers = [];
       for (let i = 0; i < Math.min(10, lines.length); i++) {
@@ -180,6 +208,7 @@
         console.warn('無法找到有效標題列，使用預設標題');
         headers = ['Class', 'Name', 'Score', 'Date'];
       }
+
       const data = [];
       for (let i = headerIndex + 1; i < lines.length; i++) {
         let row = [];
@@ -208,9 +237,11 @@
       }
       return data;
     }
+
     function processAndRender(panel, rows, sheetName) {
       const contentDiv = panel.lastElementChild;
       const today = new Date().toISOString().split('T')[0];
+
       let filtered = rows.filter(row => {
         let dStr = '';
         const dateVal = row.Date || '';
@@ -224,20 +255,26 @@
         }
         return !dateVal || dStr === today;
       });
+
       if (filtered.length === 0) filtered = rows;
+
       filtered.sort((a, b) => (parseFloat(b.Score) || 0) - (parseFloat(a.Score) || 0));
+
       filtered.forEach(row => {
         row.displayName = (row.Name && row.Name.length > 8)
           ? row.Name.substring(0, 8) + '.'
           : (row.Name || '—');
       });
+
       const top3 = filtered.slice(0, 3);
       const rest = filtered.slice(3);
       const slideGroups = [];
       for (let i = 0; i < Math.min(rest.length, 47); i += 9) {
         slideGroups.push(rest.slice(i, i + 9));
       }
+
       let currentSlide = 0;
+
       function renderSlide() {
         let html = '<table><thead><tr><th class="rank-col">#</th><th class="class-col">班別</th><th class="name-col">姓名</th><th class="score-col">pt</th></tr></thead><tbody>';
         top3.forEach((row, i) => {
@@ -250,6 +287,7 @@
             <td class="score-col">${row.Score || '—'}</td>
           </tr>`;
         });
+
         if (slideGroups.length > 0) {
           const group = slideGroups[currentSlide];
           group.forEach((row, idx) => {
@@ -262,11 +300,14 @@
             </tr>`;
           });
         }
+
         html += '</tbody></table>';
         contentDiv.className = '';
         contentDiv.innerHTML = html;
       }
+
       renderSlide();
+
       if (slideGroups.length > 1) {
         const id = setInterval(() => {
           currentSlide = (currentSlide + 1) % slideGroups.length;
@@ -274,40 +315,81 @@
         }, 10000);
         intervals.push(id);
       }
+
       if (filtered.length === 0) {
         contentDiv.className = 'empty';
-        contentDiv.textContent = '無今日資料';
+        contentDiv.innerHTML = '無今日資料';
       }
     }
+
+    // 手動重試單一 panel 的函式
+    window.retryPanel = async function(sheetName) {
+      const sheet = SHEET_CONFIG.find(s => s.name === sheetName);
+      if (!sheet) return;
+
+      const panel = Array.from(gridPanels.querySelectorAll('.panel'))
+                        .find(p => p.dataset.sheet === sheetName);
+      if (!panel) return;
+
+      const contentDiv = panel.lastElementChild;
+      contentDiv.className = 'empty';
+      contentDiv.innerHTML = '載入中...';
+
+      const csv = await fetchSheetData(sheet.gid);
+      if (csv) {
+        const rows = parseCSV(csv);
+        processAndRender(panel, rows, sheet.name);
+      } else {
+        contentDiv.innerHTML = `
+          <div>載入失敗</div>
+          <button class="retry-btn" onclick="retryPanel('${sheetName}')">
+            重新載入
+          </button>
+        `;
+      }
+    };
+
     async function loadAllData() {
       intervals.forEach(clearInterval);
       intervals = [];
       createPanels();
+
       const panels = gridPanels.querySelectorAll('.panel');
+
       for (let i = 0; i < SHEET_CONFIG.length; i++) {
         const sheet = SHEET_CONFIG[i];
         const panel = panels[i];
+        const contentDiv = panel.lastElementChild;
+
         const csv = await fetchSheetData(sheet.gid);
-        if (!csv) {
-          panel.lastElementChild.className = 'empty';
-          panel.lastElementChild.textContent = '載入失敗，請檢查 Console';
-          continue;
+
+        if (csv) {
+          const rows = parseCSV(csv);
+          processAndRender(panel, rows, sheet.name);
+        } else {
+          contentDiv.className = 'empty';
+          contentDiv.innerHTML = `
+            <div>載入失敗</div>
+            <button class="retry-btn" onclick="retryPanel('${sheet.name}')">
+              重新載入
+            </button>
+          `;
         }
-        const rows = parseCSV(csv);
-        processAndRender(panel, rows, sheet.name);
       }
+
       document.getElementById('lastUpdate').textContent =
-        `最後更新：${new Date().toLocaleString('zh-TW')}（每30分鐘自動更新中）`;
+        `最後更新：${new Date().toLocaleString('zh-TW')}（每15分鐘自動更新中）`;
     }
+
     window.addEventListener('load', () => {
       loadAllData();
-      // 每 60 秒自動重新載入一次（包含所有分頁、前三名、輪播等）
+
+      // 每15分鐘自動重新載入全部
       setInterval(() => {
         loadAllData();
         console.log('自動更新排行榜完成：' + new Date().toLocaleTimeString('zh-TW'));
-      }, 900000);
+      }, 15 * 60 * 1000);  // 900000 ms = 15分鐘
     });
   </script>
 </body>
 </html>
-
