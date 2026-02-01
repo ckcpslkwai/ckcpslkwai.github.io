@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>每日排行榜 🏆 P.1 ~ P.6</title>
+  <title>排行榜 🏆 P.1 ~ P.6</title>
   <style>
     :root {
       --primary: #4a90e2;
@@ -240,26 +240,14 @@
 
     function processAndRender(panel, rows, sheetName) {
       const contentDiv = panel.lastElementChild;
-      const today = new Date().toISOString().split('T')[0];
 
-      let filtered = rows.filter(row => {
-        let dStr = '';
-        const dateVal = row.Date || '';
-        if (dateVal) {
-          if (!isNaN(dateVal)) {
-            const days = Math.floor(parseFloat(dateVal) - 25569);
-            dStr = new Date(days * 86400 * 1000).toISOString().split('T')[0];
-          } else {
-            dStr = dateVal.trim();
-          }
-        }
-        return !dateVal || dStr === today;
-      });
+      // 直接使用所有資料，不過濾日期
+      let filtered = rows;
 
-  
-
+      // 依分數排序（由高到低）
       filtered.sort((a, b) => (parseFloat(b.Score) || 0) - (parseFloat(a.Score) || 0));
 
+      // 處理姓名過長顯示
       filtered.forEach(row => {
         row.displayName = (row.Name && row.Name.length > 8)
           ? row.Name.substring(0, 8) + '.'
@@ -277,6 +265,8 @@
 
       function renderSlide() {
         let html = '<table><thead><tr><th class="rank-col">#</th><th class="class-col">班別</th><th class="name-col">姓名</th><th class="score-col">pt</th></tr></thead><tbody>';
+
+        // 前三名
         top3.forEach((row, i) => {
           const rank = i + 1;
           const cls = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : '';
@@ -288,6 +278,7 @@
           </tr>`;
         });
 
+        // 其餘名次（分頁輪播）
         if (slideGroups.length > 0) {
           const group = slideGroups[currentSlide];
           group.forEach((row, idx) => {
@@ -306,23 +297,25 @@
         contentDiv.innerHTML = html;
       }
 
-      renderSlide();
-
-      if (slideGroups.length > 1) {
-        const id = setInterval(() => {
-          currentSlide = (currentSlide + 1) % slideGroups.length;
-          renderSlide();
-        }, 10000);
-        intervals.push(id);
-      }
-
+      // 如果完全沒有資料
       if (filtered.length === 0) {
         contentDiv.className = 'empty';
-        contentDiv.innerHTML = '無今日資料';
+        contentDiv.innerHTML = '尚無任何資料';
+      } else {
+        renderSlide();
+
+        // 啟動輪播（如果有超過一頁）
+        if (slideGroups.length > 1) {
+          const id = setInterval(() => {
+            currentSlide = (currentSlide + 1) % slideGroups.length;
+            renderSlide();
+          }, 10000);
+          intervals.push(id);
+        }
       }
     }
 
-    // 手動重試單一 panel 的函式
+    // 手動重試單一 panel
     window.retryPanel = async function(sheetName) {
       const sheet = SHEET_CONFIG.find(s => s.name === sheetName);
       if (!sheet) return;
@@ -388,10 +381,8 @@
       setInterval(() => {
         loadAllData();
         console.log('自動更新排行榜完成：' + new Date().toLocaleTimeString('zh-TW'));
-      }, 15 * 60 * 1000);  // 900000 ms = 15分鐘
+      }, 15 * 60 * 1000);
     });
   </script>
 </body>
 </html>
-
-
