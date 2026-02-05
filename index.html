@@ -22,8 +22,56 @@
       font-size: 115%;
     }
     .container{max-width:1920px;margin:0 auto}
-    header{text-align:center;padding:20px 0 25px;backdrop-filter:blur(10px)}
-    h1{font-size:clamp(1.9rem,4.5vw,2.6rem);margin-bottom:4px;text-shadow:0 3px 10px rgba(0,0,0,0.3)}
+    
+    header {
+      text-align:center;
+      padding:20px 0 25px;
+      backdrop-filter:blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .title-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    h1 {
+      font-size: clamp(1.9rem, 4.5vw, 2.6rem);
+      margin: 0;
+      text-shadow: 0 3px 10px rgba(0,0,0,0.3);
+    }
+
+    .join-btn {
+      padding: 10px 24px;
+      background: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .join-btn:hover {
+      background: #43a047;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+
+    .join-btn:active {
+      transform: translateY(0);
+    }
+
     .grid{
       display:grid;
       grid-template-columns:repeat(6,1fr);
@@ -62,16 +110,12 @@
     }
     th{background:rgba(0,0,0,0.25);color:#fff;font-weight:500}
     tr:nth-child(even){background:rgba(255,255,255,0.05)}
-    .rank-1,
-    .rank-2,
-    .rank-3 {
+    .rank-1,.rank-2,.rank-3 {
       height: 30px;
       line-height: 30px;
       font-size: 1.1rem;
     }
-    .rank-1 td,
-    .rank-2 td,
-    .rank-3 td {
+    .rank-1 td,.rank-2 td,.rank-3 td {
       padding: 12px 8px;
       vertical-align: middle;
     }
@@ -121,8 +165,18 @@
 <body>
   <div class="container">
     <header>
-      <font size="8">🏆 Leaderboard-English 🏆</font><br><br>
+      <div class="title-wrapper">
+        <h1><font size="8">🏆 Leaderboard-English 🏆</font></h1>
+        <a 
+          href="https://your-domain.com/path/to/how-to-join.pdf" 
+          target="_blank" 
+          class="join-btn"
+        >
+          How to join
+        </a>
+      </div>
     </header>
+
     <div class="grid" id="gridPanels"></div>
     <div id="lastUpdate">資料載入中...</div>
   </div>
@@ -148,17 +202,14 @@
         const panel = document.createElement('div');
         panel.className = 'panel';
         panel.dataset.sheet = sheet.name;
-
         const header = document.createElement('div');
         header.className = 'panel-header';
         header.textContent = sheet.name;
         panel.appendChild(header);
-
         const content = document.createElement('div');
         content.className = 'empty';
         content.textContent = '載入中...';
         panel.appendChild(content);
-
         gridPanels.appendChild(panel);
       });
     }
@@ -166,7 +217,6 @@
     async function fetchSheetData(gid, retries = 3) {
       const targetUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${gid}`;
       const proxyUrl = CORS_PROXY + encodeURIComponent(targetUrl);
-
       for (let attempt = 1; attempt <= retries; attempt++) {
         try {
           const response = await fetch(proxyUrl);
@@ -193,7 +243,6 @@
       if (!csvText || csvText.trim() === '') return [];
       const lines = csvText.trim().split('\n').filter(line => line.trim() !== '');
       if (lines.length < 1) return [];
-
       let headerIndex = 0;
       let headers = [];
       for (let i = 0; i < Math.min(10, lines.length); i++) {
@@ -208,7 +257,6 @@
         console.warn('無法找到有效標題列，使用預設標題');
         headers = ['Class', 'Name', 'Score', 'Date'];
       }
-
       const data = [];
       for (let i = headerIndex + 1; i < lines.length; i++) {
         let row = [];
@@ -241,16 +289,13 @@
     function processAndRender(panel, rows, sheetName) {
       const contentDiv = panel.lastElementChild;
 
-      // 直接使用所有資料，不過濾日期
       let filtered = rows;
 
-      // 依分數排序（由高到低）
       filtered.sort((a, b) => (parseFloat(b.Score) || 0) - (parseFloat(a.Score) || 0));
 
-      // 處理姓名過長顯示
       filtered.forEach(row => {
-        row.displayName = (row.Name && row.Name.length > 10)
-          ? row.Name.substring(0, 10) + '.'
+        row.displayName = (row.Name && row.Name.length > 8)
+          ? row.Name.substring(0, 8) + '.'
           : (row.Name || '—');
       });
 
@@ -265,8 +310,6 @@
 
       function renderSlide() {
         let html = '<table><thead><tr><th class="rank-col">#</th><th class="class-col">班別</th><th class="name-col">姓名</th><th class="score-col">pt</th></tr></thead><tbody>';
-
-        // 前三名
         top3.forEach((row, i) => {
           const rank = i + 1;
           const cls = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : '';
@@ -277,8 +320,6 @@
             <td class="score-col">${row.Score || '—'}</td>
           </tr>`;
         });
-
-        // 其餘名次（分頁輪播）
         if (slideGroups.length > 0) {
           const group = slideGroups[currentSlide];
           group.forEach((row, idx) => {
@@ -291,20 +332,16 @@
             </tr>`;
           });
         }
-
         html += '</tbody></table>';
         contentDiv.className = '';
         contentDiv.innerHTML = html;
       }
 
-      // 如果完全沒有資料
       if (filtered.length === 0) {
         contentDiv.className = 'empty';
         contentDiv.innerHTML = '尚無任何資料';
       } else {
         renderSlide();
-
-        // 啟動輪播（如果有超過一頁）
         if (slideGroups.length > 1) {
           const id = setInterval(() => {
             currentSlide = (currentSlide + 1) % slideGroups.length;
@@ -315,19 +352,15 @@
       }
     }
 
-    // 手動重試單一 panel
     window.retryPanel = async function(sheetName) {
       const sheet = SHEET_CONFIG.find(s => s.name === sheetName);
       if (!sheet) return;
-
       const panel = Array.from(gridPanels.querySelectorAll('.panel'))
                         .find(p => p.dataset.sheet === sheetName);
       if (!panel) return;
-
       const contentDiv = panel.lastElementChild;
       contentDiv.className = 'empty';
       contentDiv.innerHTML = '載入中...';
-
       const csv = await fetchSheetData(sheet.gid);
       if (csv) {
         const rows = parseCSV(csv);
@@ -346,16 +379,12 @@
       intervals.forEach(clearInterval);
       intervals = [];
       createPanels();
-
       const panels = gridPanels.querySelectorAll('.panel');
-
       for (let i = 0; i < SHEET_CONFIG.length; i++) {
         const sheet = SHEET_CONFIG[i];
         const panel = panels[i];
         const contentDiv = panel.lastElementChild;
-
         const csv = await fetchSheetData(sheet.gid);
-
         if (csv) {
           const rows = parseCSV(csv);
           processAndRender(panel, rows, sheet.name);
@@ -369,15 +398,12 @@
           `;
         }
       }
-
       document.getElementById('lastUpdate').textContent =
         `最後更新：${new Date().toLocaleString('zh-TW')}（每15分鐘自動更新中）`;
     }
 
     window.addEventListener('load', () => {
       loadAllData();
-
-      // 每15分鐘自動重新載入全部
       setInterval(() => {
         loadAllData();
         console.log('自動更新排行榜完成：' + new Date().toLocaleTimeString('zh-TW'));
@@ -386,4 +412,3 @@
   </script>
 </body>
 </html>
-
