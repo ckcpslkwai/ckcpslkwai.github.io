@@ -30,7 +30,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 20px;
+      gap: 24px;
       flex-wrap: wrap;
     }
 
@@ -38,6 +38,8 @@
       display: flex;
       align-items: center;
       gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     h1 {
@@ -46,29 +48,40 @@
       text-shadow: 0 3px 10px rgba(0,0,0,0.3);
     }
 
-    .join-btn {
+    .action-btn {
       padding: 10px 24px;
-      background: #4caf50;
       color: white;
       border: none;
       border-radius: 8px;
       font-size: 1.1rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.22s;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
       gap: 8px;
     }
 
-    .join-btn:hover {
+    .btn-exercises {
+      background: #e67e22;
+    }
+    .btn-exercises:hover {
+      background: #d35400;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+
+    .btn-join {
+      background: #4caf50;
+    }
+    .btn-join:hover {
       background: #43a047;
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     }
 
-    .join-btn:active {
+    .action-btn:active {
       transform: translateY(0);
     }
 
@@ -166,11 +179,20 @@
   <div class="container">
     <header>
       <div class="title-wrapper">
-        <h1><font size="8">🏆 Leaderboard-English 🏆</font></h1>
         <a 
-          href="how-to-join.pdf" 
+          href="exercises.pdf" 
           target="_blank" 
-          class="join-btn"
+          class="action-btn btn-exercises"
+        >
+          Exercises
+        </a>
+
+        <h1><font size="8">🏆 Leaderboard-English 🏆</font></h1>
+
+        <a 
+          href="https://your-domain.com/path/to/how-to-join.pdf" 
+          target="_blank" 
+          class="action-btn btn-join"
         >
           How to join
         </a>
@@ -412,4 +434,3 @@
   </script>
 </body>
 </html>
-
