@@ -23,20 +23,20 @@
         
         header {
             background: #0a0a1f;
-            padding: 18px;
-            border-bottom: 4px solid var(--primary);
+            padding: 12px;
+            border-bottom: 3px solid var(--primary);
         }
         
         h1 {
             margin: 0;
-            font-size: clamp(24px, 5.5vw, 34px);
-            text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary);
+            font-size: clamp(22px, 5vw, 30px);
+            text-shadow: 0 0 10px var(--primary);
         }
         
         .container { 
-            max-width: 1600px; 
+            max-width: 1100px; 
             margin: 0 auto; 
-            padding: 25px 20px; 
+            padding: 15px 15px; 
         }
         
         .screen { display: none; }
@@ -44,114 +44,125 @@
         
         button {
             font-family: 'Press Start 2P', system-ui;
-            padding: 16px 32px; margin: 12px;
+            padding: 14px 28px; margin: 8px;
             background: #12122e;
             color: #fff;
-            border: 4px solid var(--primary);
+            border: 3px solid var(--primary);
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 0 15px rgba(0, 249, 255, 0.4);
+            box-shadow: 0 0 12px rgba(0, 249, 255, 0.4);
+            font-size: 15px;
         }
         button:hover { 
             background: var(--primary); 
             color: #000; 
-            transform: scale(1.05);
+            transform: scale(1.03);
         }
         
         .section {
             background: #12122e;
-            padding: 22px;
-            margin: 18px 0;
-            border-radius: 12px;
-            border: 3px solid var(--primary);
+            padding: 14px 18px;
+            margin: 12px 0;
+            border-radius: 10px;
+            border: 2px solid var(--primary);
         }
         
         select, input[type="number"] {
             font-family: 'Press Start 2P', system-ui;
-            padding: 12px;
+            padding: 8px 10px;
             background: #0a0a1f;
             color: #fff;
-            border: 3px solid var(--accent);
-            margin: 8px 0;
+            border: 2px solid var(--accent);
+            margin: 4px 0;
             width: 100%;
-            font-size: 15px;
+            font-size: 14px;
+        }
+        
+        label {
+            font-size: 13px;
+            display: block;
+            margin-bottom: 4px;
         }
         
         .score {
-            font-size: 36px;
+            font-size: 32px;
             color: var(--accent);
-            text-shadow: 0 0 10px var(--accent);
+            text-shadow: 0 0 8px var(--accent);
         }
         
         .question {
             background: #0a0a1f;
-            padding: 28px;
-            border-radius: 12px;
-            margin: 18px 0;
-            min-height: 150px;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 12px 0;
+            min-height: 120px;
             display: flex;
             align-items: center;
-            font-size: clamp(16px, 2.6vw, 20px);
+            font-size: clamp(15px, 2.4vw, 18px);
             text-align: left;
             border: 2px solid var(--primary);
         }
         
         .option-btn {
-            padding: 16px 20px;
-            font-size: clamp(15px, 2.3vw, 18px);
-            border: 3px solid #334155;
+            padding: 12px 16px;
+            font-size: clamp(14px, 2.2vw, 16px);
+            border: 2px solid #334155;
             background: #12122e;
             text-align: left;
         }
-        .option-btn.correct { background: #39ff14; color: #000; border-color: #39ff14; }
-        .option-btn.wrong { background: #ff00aa; border-color: #ff00aa; }
         
         .leaderboard {
             background: #12122e;
-            padding: 22px;
-            border-radius: 12px;
-            border: 3px solid var(--secondary);
+            padding: 16px;
+            border-radius: 10px;
+            border: 2px solid var(--secondary);
         }
 
         .team-grid {
             display: flex;
             flex-wrap: nowrap;
-            gap: 18px;
+            gap: 14px;
             overflow-x: auto;
-            padding-bottom: 12px;
+            padding-bottom: 10px;
             width: 100%;
         }
         
         .team-card {
             background: #12122e;
-            border: 5px solid #334155;
-            border-radius: 12px;
-            padding: 18px;
-            min-height: 400px;
-            flex: 1 1 240px;
-            min-width: 240px;
-            max-width: 380px;
+            border: 4px solid #334155;
+            border-radius: 10px;
+            padding: 14px;
+            min-height: 360px;
+            flex: 1 1 220px;
+            min-width: 220px;
         }
 
         .progress-bar {
             background: linear-gradient(90deg, var(--accent), var(--primary));
+        }
+
+        /* 更緊湊的佈局 */
+        .compact-grid {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
         }
     </style>
 </head>
 <body>
     <header>
         <h1>🏴‍☠️ PRIMARY TUG OF POINTS 🏴‍☠️</h1>
-        <p style="margin:6px 0 0 0; font-size:14px; color:#00f9ff;">CYBERPUNK NEON EDITION • P.1–P.6</p>
+        <p style="margin:4px 0 0 0; font-size:12px; color:#00f9ff;">CYBERPUNK NEON EDITION • P.1–P.6</p>
     </header>
 
     <div class="container">
         <!-- MENU SCREEN -->
         <div id="menu-screen" class="screen active">
 
-            <div style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-                
+            <!-- Number of Teams + Subject + Level -->
+            <div class="compact-grid">
                 <div class="section">
-                    <label style="color:#00f9ff;">NUMBER OF TEAMS</label><br>
+                    <label style="color:#00f9ff;">NUMBER OF TEAMS</label>
                     <select id="num-teams">
                         <option value="2">2 Teams</option>
                         <option value="3">3 Teams</option>
@@ -160,7 +171,7 @@
                 </div>
 
                 <div class="section">
-                    <label style="color:#00f9ff;">SUBJECT</label><br>
+                    <label style="color:#00f9ff;">SUBJECT</label>
                     <select id="subject">
                         <option value="Chinese">中文</option>
                         <option value="English">English</option>
@@ -171,7 +182,7 @@
                 </div>
 
                 <div class="section">
-                    <label style="color:#00f9ff;">LEVEL</label><br>
+                    <label style="color:#00f9ff;">LEVEL</label>
                     <select id="level">
                         <option value="P1">P.1</option>
                         <option value="P2">P.2</option>
@@ -183,62 +194,68 @@
                 </div>
             </div>
 
-            <div class="section" style="max-width: 620px; margin: 25px auto;">
-                <label style="color:#ff00aa;">GAME END CONDITION</label><br>
-                <select id="end-mode" onchange="toggleEndOptions()" style="max-width:280px;">
-                    <option value="score">First to Score</option>
-                    <option value="time">Timed Game</option>
-                </select><br><br>
+            <!-- Game End Condition + Question Source -->
+            <div class="compact-grid">
 
-                <div id="score-options">
-                    <label style="color:#ff00aa;">TARGET SCORE</label><br>
-                    <input type="number" id="target-score" value="100" min="10" step="10" style="max-width:200px;">
+                <!-- Game End Condition -->
+                <div class="section">
+                    <label style="color:#ff00aa;">GAME END CONDITION</label>
+                    <select id="end-mode" onchange="toggleEndOptions()">
+                        <option value="score">First to Score</option>
+                        <option value="time">Timed Game</option>
+                    </select><br><br>
+
+                    <div id="score-options">
+                        <label style="color:#ff00aa;">TARGET SCORE</label>
+                        <input type="number" id="target-score" value="100" min="10" step="10">
+                    </div>
+
+                    <div id="time-options" style="display:none;">
+                        <label style="color:#ff00aa;">DURATION (minutes)</label>
+                        <input type="number" id="game-time" value="10" min="1" max="60">
+                    </div>
                 </div>
 
-                <div id="time-options" style="display:none;">
-                    <label style="color:#ff00aa;">GAME DURATION (minutes)</label><br>
-                    <input type="number" id="game-time" value="10" min="1" max="60" style="max-width:200px;">
+                <!-- Question Source -->
+                <div class="section">
+                    <label style="color:#39ff14; font-size:13px;">QUESTION SOURCE</label>
+                    <button onclick="document.getElementById('csv-upload').click()" 
+                            style="width:100%; padding:12px 20px; border-color:#39ff14; font-size:14px;">
+                        📁 UPLOAD CSV
+                    </button>
+                    <input type="file" id="csv-upload" accept=".csv" style="display:none;">
+                    <p style="margin:10px 0 0 0; font-size:11px; color:#94a3b8;">
+                        No CSV = Use built-in questions
+                    </p>
                 </div>
             </div>
 
-            <div class="section" style="max-width: 620px; margin: 25px auto;">
-                <h3 style="margin:8px 0 18px 0; color:#39ff14;">📂 QUESTION SOURCE</h3>
-                <button onclick="document.getElementById('csv-upload').click()" 
-                        style="width:100%; max-width:380px; border-color:#39ff14;">
-                    📁 UPLOAD CSV FILE
-                </button>
-                <input type="file" id="csv-upload" accept=".csv" style="display:none;">
-                <p style="margin-top:18px; color:#94a3b8; font-size:13px;">
-                    No CSV = Use built-in questions from questions.js
-                </p>
-            </div>
-
+            <!-- START BATTLE BUTTON -->
             <button onclick="startGame()" 
-                    style="font-size:24px; padding:24px 60px; margin-top:20px; border-color:#39ff14; box-shadow: 0 0 30px #39ff14;">
+                    style="font-size:22px; padding:20px 50px; margin-top:15px; border-color:#39ff14; box-shadow: 0 0 25px #39ff14;">
                 🚀 START BATTLE!
             </button>
         </div>
 
         <!-- GAME SCREEN -->
         <div id="game-screen" class="screen">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;">
-                <strong id="game-info" style="color:#00f9ff;"></strong>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                <strong id="game-info" style="color:#00f9ff; font-size:14px;"></strong>
                 <div>
-                    <span id="timer-display" style="font-size:17px; background:#12122e; padding:8px 14px; border-radius:6px; border:2px solid #ff00aa; display:none;"></span>
-                    <button onclick="endGame()">END GAME</button>
+                    <span id="timer-display" style="font-size:15px; background:#12122e; padding:6px 12px; border-radius:6px; border:2px solid #ff00aa; display:none;"></span>
+                    <button onclick="endGame()" style="padding:10px 20px; font-size:13px;">END GAME</button>
                 </div>
             </div>
 
             <div id="team-grid" class="team-grid"></div>
 
             <div class="leaderboard">
-                <h3 style="color:#ff00aa;">🏆 LEADERBOARD 🏆</h3>
+                <h3 style="color:#ff00aa; font-size:15px;">🏆 LEADERBOARD 🏆</h3>
                 <div id="leaderboard" style="text-align:left; max-width:700px; margin:0 auto;"></div>
             </div>
         </div>
     </div>
 
-    <!-- 引入題目庫 -->
     <script src="questions.js"></script>
 
     <script>
@@ -275,7 +292,6 @@
                 };
                 reader.readAsText(fileInput.files[0]);
             } else {
-                // 沒有上傳 CSV → 使用 questions.js 的內建題目
                 customQuestions = [];
                 initTeams(numTeams);
             }
@@ -344,19 +360,14 @@
                        (questionsDB[currentSubject] && questionsDB[currentSubject][currentLevel]) || [];
             
             if (pool.length === 0) {
-                // 備援：從所有該程度的題目中隨機選
                 const allPools = [];
                 Object.keys(questionsDB).forEach(sub => {
-                    if (questionsDB[sub][currentLevel]) {
-                        allPools.push(...questionsDB[sub][currentLevel]);
-                    }
+                    if (questionsDB[sub][currentLevel]) allPools.push(...questionsDB[sub][currentLevel]);
                 });
                 pool = allPools;
             }
             
-            if (pool.length === 0) {
-                return {q: "目前這個科目/程度沒有題目", options: ["A","B","C","D"], ans: 0};
-            }
+            if (pool.length === 0) return {q: "No questions available", options: ["A","B","C","D"], ans: 0};
 
             const original = pool[Math.floor(Math.random() * pool.length)];
             const shuffled = [...original.options];
@@ -458,7 +469,7 @@
             const sorted = [...teams].sort((a,b) => b.score - a.score);
             let html = '';
             sorted.forEach((t, i) => {
-                html += `<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #334155;">
+                html += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #334155;">
                     <span><strong>#${i+1}</strong> ${t.name}</span>
                     <span style="color:#39ff14;font-weight:bold;">${t.score} pts</span>
                 </div>`;
