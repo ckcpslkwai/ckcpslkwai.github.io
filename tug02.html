@@ -148,48 +148,69 @@
         <!-- MENU SCREEN -->
         <div id="menu-screen" class="screen active">
 
-            <div class="section" style="max-width:420px; margin:0 auto 20px;">
-                <label style="color:#00f9ff;">NUMBER OF TEAMS</label><br>
-                <select id="num-teams" style="max-width:300px;">
-                    <option value="2">2 Teams</option>
-                    <option value="3">3 Teams</option>
-                    <option value="4" selected>4 Teams</option>
-                </select>
+            <div style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                
+                <div class="section">
+                    <label style="color:#00f9ff;">NUMBER OF TEAMS</label><br>
+                    <select id="num-teams">
+                        <option value="2">2 Teams</option>
+                        <option value="3">3 Teams</option>
+                        <option value="4" selected>4 Teams</option>
+                    </select>
+                </div>
+
+                <div class="section">
+                    <label style="color:#00f9ff;">SUBJECT</label><br>
+                    <select id="subject">
+                        <option value="Chinese">中文</option>
+                        <option value="English">English</option>
+                        <option value="Maths">數學</option>
+                        <option value="Science">科學</option>
+                        <option value="Humanities">人文</option>
+                    </select>
+                </div>
+
+                <div class="section">
+                    <label style="color:#00f9ff;">LEVEL</label><br>
+                    <select id="level">
+                        <option value="P1">P.1</option>
+                        <option value="P2">P.2</option>
+                        <option value="P3">P.3</option>
+                        <option value="P4">P.4</option>
+                        <option value="P5">P.5</option>
+                        <option value="P6" selected>P.6</option>
+                    </select>
+                </div>
             </div>
 
-            <div style="display: grid; gap: 20px; grid-template-columns: 1fr 1fr;">
+            <div class="section" style="max-width: 620px; margin: 25px auto;">
+                <label style="color:#ff00aa;">GAME END CONDITION</label><br>
+                <select id="end-mode" onchange="toggleEndOptions()" style="max-width:280px;">
+                    <option value="score">First to Score</option>
+                    <option value="time">Timed Game</option>
+                </select><br><br>
 
-                <!-- Game End Condition -->
-                <div class="section">
-                    <label style="color:#ff00aa;">GAME END CONDITION</label><br>
-                    <select id="end-mode" onchange="toggleEndOptions()" style="max-width:280px;">
-                        <option value="score">First to Score</option>
-                        <option value="time">Timed Game</option>
-                    </select><br><br>
-
-                    <div id="score-options">
-                        <label style="color:#ff00aa;">TARGET SCORE</label><br>
-                        <input type="number" id="target-score" value="100" min="10" step="10" style="max-width:200px;">
-                    </div>
-
-                    <div id="time-options" style="display:none;">
-                        <label style="color:#ff00aa;">GAME DURATION (minutes)</label><br>
-                        <input type="number" id="game-time" value="10" min="1" max="60" style="max-width:200px;">
-                    </div>
+                <div id="score-options">
+                    <label style="color:#ff00aa;">TARGET SCORE</label><br>
+                    <input type="number" id="target-score" value="100" min="10" step="10" style="max-width:200px;">
                 </div>
 
-                <!-- Question Source -->
-                <div class="section">
-                    <h3 style="margin:8px 0 18px 0; color:#39ff14;">📂 QUESTION SOURCE</h3>
-                    <button onclick="document.getElementById('csv-upload').click()" 
-                            style="width:100%; max-width:380px; border-color:#39ff14;">
-                        📁 UPLOAD CSV FILE
-                    </button>
-                    <input type="file" id="csv-upload" accept=".csv" style="display:none;">
-                    <p style="margin-top:18px; color:#94a3b8; font-size:13px;">
-                        No CSV = Use Built-in P.3 Questions
-                    </p>
+                <div id="time-options" style="display:none;">
+                    <label style="color:#ff00aa;">GAME DURATION (minutes)</label><br>
+                    <input type="number" id="game-time" value="10" min="1" max="60" style="max-width:200px;">
                 </div>
+            </div>
+
+            <div class="section" style="max-width: 620px; margin: 25px auto;">
+                <h3 style="margin:8px 0 18px 0; color:#39ff14;">📂 QUESTION SOURCE</h3>
+                <button onclick="document.getElementById('csv-upload').click()" 
+                        style="width:100%; max-width:380px; border-color:#39ff14;">
+                    📁 UPLOAD CSV FILE
+                </button>
+                <input type="file" id="csv-upload" accept=".csv" style="display:none;">
+                <p style="margin-top:18px; color:#94a3b8; font-size:13px;">
+                    No CSV = Use built-in questions from questions.js
+                </p>
             </div>
 
             <button onclick="startGame()" 
@@ -217,71 +238,11 @@
         </div>
     </div>
 
-    <script>
-        // ==================== BUILT-IN P.3 QUESTIONS (Hong Kong) ====================
-        let questionsDB = {
-            English: {
-                P3: [
-                    {q: "What is the plural of 'child'?", options: ["childs", "children", "childes", "childrens"], ans: 1},
-                    {q: "She ___ to school every day.", options: ["go", "goes", "going", "went"], ans: 1},
-                    {q: "What is the opposite of 'happy'?", options: ["big", "sad", "fast", "cold"], ans: 1},
-                    {q: "Which word is a proper noun?", options: ["school", "Hong Kong", "teacher", "book"], ans: 1},
-                    {q: "I have ___ apple.", options: ["a", "an", "the", "some"], ans: 1},
-                    {q: "The cat is ___ the table.", options: ["in", "on", "under", "between"], ans: 2},
-                    {q: "What is the past tense of 'eat'?", options: ["eated", "ate", "eaten", "eating"], ans: 1},
-                    {q: "Which sentence is correct?", options: ["I has a dog.", "I have a dog.", "I having a dog.", "I haves a dog."], ans: 1}
-                ]
-            },
-            Maths: {
-                P3: [
-                    {q: "What is 45 + 38?", options: ["73", "83", "82", "93"], ans: 1},
-                    {q: "72 ÷ 8 = ?", options: ["8", "9", "7", "6"], ans: 1},
-                    {q: "What is the area of a square with side 6 cm?", options: ["12 cm²", "24 cm²", "36 cm²", "18 cm²"], ans: 2},
-                    {q: "Which is heavier?", options: ["1 kg", "800 g", "They are equal", "Cannot tell"], ans: 0},
-                    {q: "What time is quarter past 3?", options: ["3:15", "3:30", "2:45", "3:45"], ans: 0},
-                    {q: "What is 9 × 7?", options: ["56", "63", "72", "54"], ans: 1},
-                    {q: "A rectangle has length 8 cm and width 5 cm. What is the perimeter?", options: ["13 cm", "26 cm", "40 cm", "21 cm"], ans: 1},
-                    {q: "How many sides does a hexagon have?", options: ["5", "6", "7", "8"], ans: 1}
-                ]
-            },
-            Chinese: {
-                P3: [
-                    {q: "以下哪個詞語的意思是「努力做事」？", options: ["懶惰", "勤奮", "粗心", "貪玩"], ans: 1},
-                    {q: "「快樂」的反義詞是？", options: ["開心", "悲傷", "興奮", "滿足"], ans: 1},
-                    {q: "以下哪句是正確的？", options: ["我昨天去公園。", "我昨天去公園了。", "我昨天去了公園。", "我昨天去過公園。"], ans: 2},
-                    {q: "「蘋果」是什麼詞類？", options: ["動詞", "形容詞", "名詞", "副詞"], ans: 2},
-                    {q: "以下哪個成語形容「非常努力」？", options: ["手忙腳亂", "廢寢忘食", "馬馬虎虎", "無憂無慮"], ans: 1},
-                    {q: "「美麗」的近義詞是？", options: ["醜陋", "漂亮", "高大", "快樂"], ans: 1},
-                    {q: "以下哪句話有錯別字？", options: ["今天天氣很好。", "我喜歡吃蘋果。", "他是一個好學生。", "我們一起去遊樂場。"], ans: 3},
-                    {q: "「書本」是什麼詞？", options: ["單音詞", "雙音詞", "多音詞", "外來詞"], ans: 1}
-                ]
-            },
-            Science: {
-                P3: [
-                    {q: "植物需要什麼來製造食物？", options: ["只有水", "陽光、水和空氣", "只有泥土", "只有肥料"], ans: 1},
-                    {q: "以下哪個是哺乳類動物？", options: ["雞", "魚", "狗", "青蛙"], ans: 2},
-                    {q: "水加熱後會變成什麼？", options: ["冰", "水蒸氣", "雪", "雨"], ans: 1},
-                    {q: "以下哪個不是植物的生長需要？", options: ["陽光", "水", "空氣", "玩具"], ans: 3},
-                    {q: "聲音是怎樣傳播的？", options: ["通過空氣", "通過光", "通過電", "通過火"], ans: 0},
-                    {q: "以下哪個是可再生能源？", options: ["煤", "石油", "太陽能", "天然氣"], ans: 2},
-                    {q: "動物需要什麼來生存？", options: ["只有食物", "食物、水和空氣", "只有水", "只有空氣"], ans: 1},
-                    {q: "月球有沒有空氣？", options: ["有", "沒有", "有時有", "不知道"], ans: 1}
-                ]
-            },
-            Humanities: {
-                P3: [
-                    {q: "香港是哪個國家的特別行政區？", options: ["英國", "美國", "中國", "日本"], ans: 2},
-                    {q: "以下哪個是香港的傳統節日？", options: ["聖誕節", "農曆新年", "萬聖節", "復活節"], ans: 1},
-                    {q: "我們應該怎樣對待長者？", options: ["不理他們", "尊重和幫助他們", "取笑他們", "避開他們"], ans: 1},
-                    {q: "香港的主要語言是什麼？", options: ["英語", "普通話", "粵語", "日語"], ans: 2},
-                    {q: "保護環境最簡單的方法是？", options: ["浪費紙張", "隨地扔垃圾", "減少使用塑膠", "多開冷氣"], ans: 2},
-                    {q: "以下哪個是香港的著名地標？", options: ["東京鐵塔", "維多利亞港", "巴黎鐵塔", "自由神像"], ans: 1},
-                    {q: "我們為什麼要遵守交通燈？", options: ["因為好玩", "為了安全", "因為老師說的", "因為朋友這樣做"], ans: 1},
-                    {q: "香港的貨幣單位是什麼？", options: ["人民幣", "美元", "港幣", "日元"], ans: 2}
-                ]
-            }
-        };
+    <!-- 引入題目庫 -->
+    <script src="questions.js"></script>
 
+    <script>
+        // ==================== 遊戲主程式 ====================
         let customQuestions = [];
         let currentSubject = '', currentLevel = '', teams = [], currentQuestions = [];
         let gameInterval = null, endMode = 'score', targetScore = 100, gameEndTime = null;
@@ -292,8 +253,10 @@
             document.getElementById('time-options').style.display = mode === 'time' ? 'block' : 'none';
         }
 
-        async function startGame() {
+        function startGame() {
             const numTeams = parseInt(document.getElementById('num-teams').value);
+            currentSubject = document.getElementById('subject').value;
+            currentLevel = document.getElementById('level').value;
             endMode = document.getElementById('end-mode').value;
 
             if (endMode === 'score') {
@@ -306,12 +269,13 @@
 
             if (fileInput.files.length > 0) {
                 const reader = new FileReader();
-                reader.onload = e => {
+                reader.onload = function(e) {
                     customQuestions = parseCSV(e.target.result);
                     initTeams(numTeams);
                 };
                 reader.readAsText(fileInput.files[0]);
             } else {
+                // 沒有上傳 CSV → 使用 questions.js 的內建題目
                 customQuestions = [];
                 initTeams(numTeams);
             }
@@ -379,14 +343,20 @@
             let pool = customQuestions.length > 0 ? customQuestions : 
                        (questionsDB[currentSubject] && questionsDB[currentSubject][currentLevel]) || [];
             
-            // If no subject selected or no pool, pick randomly from all subjects
             if (pool.length === 0) {
-                const allSubjects = Object.keys(questionsDB);
-                const randomSubject = allSubjects[Math.floor(Math.random() * allSubjects.length)];
-                pool = questionsDB[randomSubject].P3 || [];
+                // 備援：從所有該程度的題目中隨機選
+                const allPools = [];
+                Object.keys(questionsDB).forEach(sub => {
+                    if (questionsDB[sub][currentLevel]) {
+                        allPools.push(...questionsDB[sub][currentLevel]);
+                    }
+                });
+                pool = allPools;
             }
             
-            if (pool.length === 0) return {q: "No questions available", options: ["A","B","C","D"], ans: 0};
+            if (pool.length === 0) {
+                return {q: "目前這個科目/程度沒有題目", options: ["A","B","C","D"], ans: 0};
+            }
 
             const original = pool[Math.floor(Math.random() * pool.length)];
             const shuffled = [...original.options];
