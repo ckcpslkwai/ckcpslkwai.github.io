@@ -194,27 +194,24 @@
                 </div>
             </div>
 
-            <!-- Game End Condition + Question Source -->
-            <div class="compact-grid">
+            <!-- Game End Condition -->
+<div class="section">
+    <label style="color:#ff00aa;">GAME END CONDITION</label><br>
+    <select id="end-mode" onchange="toggleEndOptions()">
+        <option value="score">First to Score</option>
+        <option value="time">Timed Game</option>
+    </select><br><br>
 
-                <!-- Game End Condition -->
-                <div class="section">
-                    <label style="color:#ff00aa;">GAME END CONDITION</label>
-                    <select id="end-mode" onchange="toggleEndOptions()">
-                        <option value="score">First to Score</option>
-                        <option value="time">Timed Game</option>
-                    </select><br><br>
+    <div id="score-options">
+        <label style="color:#ff00aa;">TARGET SCORE</label><br>
+        <input type="number" id="target-score" value="100" min="10" step="10" class="short-input">
+    </div>
 
-                    <div id="score-options">
-                        <label style="color:#ff00aa;">TARGET SCORE</label>
-                        <input type="number" id="target-score" value="100" min="10" step="10">
-                    </div>
-
-                    <div id="time-options" style="display:none;">
-                        <label style="color:#ff00aa;">DURATION (minutes)</label>
-                        <input type="number" id="game-time" value="10" min="1" max="60">
-                    </div>
-                </div>
+    <div id="time-options" style="display:none;">
+        <label style="color:#ff00aa;">DURATION (minutes)</label><br>
+        <input type="number" id="game-time" value="10" min="1" max="60" class="short-input">
+    </div>
+</div>
 
                 <!-- Question Source -->
                 <div class="section">
