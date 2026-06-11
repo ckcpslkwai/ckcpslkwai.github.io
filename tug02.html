@@ -3,319 +3,285 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRIMARY TUG OF POINTS - CYBERPUNK EDITION</title>
+    <title>CKCPS WARS - CYBERPUNK EDITION</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
+        
         :root {
             --primary: #00f9ff;
             --secondary: #ff00aa;
             --accent: #39ff14;
-            --dark: #0a0a1f;
-            --panel: #12122e;
         }
-
+        
         body {
             margin: 0; padding: 0;
             font-family: 'Press Start 2P', system-ui;
             background: linear-gradient(180deg, #0a0a1f 0%, #05050f 100%);
             color: #fff;
             text-align: center;
-            overflow-x: hidden;
         }
-
+        
         header {
             background: #0a0a1f;
-            padding: 20px;
+            padding: 18px;
             border-bottom: 4px solid var(--primary);
-            box-shadow: 0 0 20px rgba(0, 249, 255, 0.3);
         }
-
+        
         h1 {
             margin: 0;
-            font-size: clamp(26px, 6vw, 36px);
-            text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary), 0 0 40px var(--secondary);
+            font-size: clamp(24px, 5.5vw, 34px);
+            text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary);
         }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 30px 20px;
+        
+        .container { 
+            max-width: 1600px; 
+            margin: 0 auto; 
+            padding: 25px 20px; 
         }
-
+        
         .screen { display: none; }
         .screen.active { display: block; }
-
+        
         button {
             font-family: 'Press Start 2P', system-ui;
-            padding: 14px 28px; margin: 12px;
+            padding: 16px 32px; margin: 12px;
             background: #12122e;
             color: #fff;
             border: 4px solid var(--primary);
             cursor: pointer;
             transition: all 0.2s;
-            text-shadow: 0 0 8px var(--primary);
             box-shadow: 0 0 15px rgba(0, 249, 255, 0.4);
         }
-        button:hover {
-            background: var(--primary);
-            color: #000;
+        button:hover { 
+            background: var(--primary); 
+            color: #000; 
             transform: scale(1.05);
-            box-shadow: 0 0 25px var(--primary);
         }
-
+        
         .section {
             background: #12122e;
-            padding: 25px;
-            margin: 25px 0;
+            padding: 22px;
+            margin: 18px 0;
             border-radius: 12px;
             border: 3px solid var(--primary);
-            box-shadow: 0 0 20px rgba(0, 249, 255, 0.2);
         }
-
-        .top-settings {
-            display: grid;
-            gap: 25px;
-        }
-
-        @media (min-width: 900px) {
-            .top-settings {
-                grid-template-columns: 1fr 1fr 1fr;
-            }
-        }
-
-        .game-settings {
-            border-color: var(--secondary);
-            box-shadow: 0 0 20px rgba(255, 0, 170, 0.2);
-        }
-
-        select, input[type="text"] {
+        
+        select, input[type="number"] {
             font-family: 'Press Start 2P', system-ui;
-            padding: 14px;
+            padding: 12px;
             background: #0a0a1f;
             color: #fff;
             border: 3px solid var(--accent);
-            margin: 10px 0;
+            margin: 8px 0;
             width: 100%;
-            box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+            font-size: 15px;
         }
-
+        
         .score {
-            font-size: 38px;
+            font-size: 36px;
             color: var(--accent);
-            text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent);
+            text-shadow: 0 0 10px var(--accent);
         }
-
+        
         .question {
             background: #0a0a1f;
-            padding: 30px;
+            padding: 28px;
             border-radius: 12px;
-            margin: 20px 0;
-            min-height: 160px;
+            margin: 18px 0;
+            min-height: 150px;
             display: flex;
             align-items: center;
-            font-size: clamp(17px, 2.8vw, 21px);
-            line-height: 1.55;
+            font-size: clamp(16px, 2.6vw, 20px);
             text-align: left;
             border: 2px solid var(--primary);
-            box-shadow: 0 0 25px rgba(0, 249, 255, 0.3);
         }
-
+        
         .option-btn {
-            padding: 18px 22px;
-            font-size: clamp(16px, 2.5vw, 19px);
+            padding: 16px 20px;
+            font-size: clamp(15px, 2.3vw, 18px);
             border: 3px solid #334155;
             background: #12122e;
             text-align: left;
-            white-space: normal;
-            transition: all 0.2s;
         }
-        .option-btn:hover {
-            border-color: var(--primary);
-            box-shadow: 0 0 15px var(--primary);
-            transform: translateY(-2px);
-        }
-        .option-btn.correct {
-            background: #39ff14;
-            color: #000;
-            border-color: #39ff14;
-            box-shadow: 0 0 20px #39ff14;
-        }
-        .option-btn.wrong {
-            background: #ff00aa;
-            border-color: #ff00aa;
-            box-shadow: 0 0 20px #ff00aa;
-        }
-
+        .option-btn.correct { background: #39ff14; color: #000; border-color: #39ff14; }
+        .option-btn.wrong { background: #ff00aa; border-color: #ff00aa; }
+        
         .leaderboard {
             background: #12122e;
-            padding: 25px;
+            padding: 22px;
             border-radius: 12px;
             border: 3px solid var(--secondary);
-            box-shadow: 0 0 20px rgba(255, 0, 170, 0.3);
         }
 
-        /* ========== TEAM GRID - ALWAYS HORIZONTAL ========== */
         .team-grid {
             display: flex;
-            flex-wrap: nowrap;           /* Never wrap to next line */
-            gap: 20px;
-            overflow-x: auto;            /* Allow horizontal scroll on very narrow screens */
-            padding-bottom: 15px;
-            -webkit-overflow-scrolling: touch;
+            flex-wrap: nowrap;
+            gap: 18px;
+            overflow-x: auto;
+            padding-bottom: 12px;
+            width: 100%;
         }
-
+        
         .team-card {
             background: #12122e;
             border: 5px solid #334155;
             border-radius: 12px;
-            padding: 20px;
-            position: relative;
-            min-height: 420px;
-            box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
-            flex: 1 1 280px;             /* Equal width, minimum 280px */
-            min-width: 280px;
-        }
-
-        .team-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 8px;
+            padding: 18px;
+            min-height: 400px;
+            flex: 1 1 240px;
+            min-width: 240px;
+            max-width: 380px;
         }
 
         .progress-bar {
             background: linear-gradient(90deg, var(--accent), var(--primary));
-            box-shadow: 0 0 15px var(--accent);
-        }
-
-        .status {
-            font-size: 15px;
-            min-height: 30px;
         }
     </style>
 </head>
 <body>
     <header>
         <h1>🏴‍☠️ PRIMARY TUG OF POINTS 🏴‍☠️</h1>
-        <p style="margin:8px 0 0 0; font-size:15px; color:#00f9ff; text-shadow: 0 0 10px #00f9ff;">
-            CYBERPUNK NEON EDITION • P.1–P.6
-        </p>
+        <p style="margin:6px 0 0 0; font-size:14px; color:#00f9ff;">CYBERPUNK NEON EDITION • P.1–P.6</p>
     </header>
 
     <div class="container">
         <!-- MENU SCREEN -->
         <div id="menu-screen" class="screen active">
-            <h2 style="margin: 20px 0 30px 0; color:#00f9ff; text-shadow: 0 0 15px #00f9ff;">NEW GAME</h2>
 
-            <div class="top-settings">
+            <div class="section" style="max-width:420px; margin:0 auto 20px;">
+                <label style="color:#00f9ff;">NUMBER OF TEAMS</label><br>
+                <select id="num-teams" style="max-width:300px;">
+                    <option value="2">2 Teams</option>
+                    <option value="3">3 Teams</option>
+                    <option value="4" selected>4 Teams</option>
+                </select>
+            </div>
+
+            <div style="display: grid; gap: 20px; grid-template-columns: 1fr 1fr;">
+
+                <!-- Game End Condition -->
                 <div class="section">
-                    <label style="color:#00f9ff;">NUMBER OF TEAMS</label><br>
-                    <select id="num-teams">
-                        <option value="2">2 Teams</option>
-                        <option value="3">3 Teams</option>
-                        <option value="4" selected>4 Teams</option>
-                    </select>
+                    <label style="color:#ff00aa;">GAME END CONDITION</label><br>
+                    <select id="end-mode" onchange="toggleEndOptions()" style="max-width:280px;">
+                        <option value="score">First to Score</option>
+                        <option value="time">Timed Game</option>
+                    </select><br><br>
+
+                    <div id="score-options">
+                        <label style="color:#ff00aa;">TARGET SCORE</label><br>
+                        <input type="number" id="target-score" value="100" min="10" step="10" style="max-width:200px;">
+                    </div>
+
+                    <div id="time-options" style="display:none;">
+                        <label style="color:#ff00aa;">GAME DURATION (minutes)</label><br>
+                        <input type="number" id="game-time" value="10" min="1" max="60" style="max-width:200px;">
+                    </div>
                 </div>
 
+                <!-- Question Source -->
                 <div class="section">
-                    <label style="color:#00f9ff;">SUBJECT</label><br>
-                    <select id="subject">
-                        <option value="Maths">Mathematics</option>
-                        <option value="English">English</option>
-                        <option value="Science">Science</option>
-                    </select>
-                </div>
-
-                <div class="section">
-                    <label style="color:#00f9ff;">LEVEL</label><br>
-                    <select id="level">
-                        <option value="P1">P.1</option>
-                        <option value="P2">P.2</option>
-                        <option value="P3">P.3</option>
-                        <option value="P4">P.4</option>
-                        <option value="P5">P.5</option>
-                        <option value="P6" selected>P.6</option>
-                    </select>
+                    <h3 style="margin:8px 0 18px 0; color:#39ff14;">📂 QUESTION SOURCE</h3>
+                    <button onclick="document.getElementById('csv-upload').click()" 
+                            style="width:100%; max-width:380px; border-color:#39ff14;">
+                        📁 UPLOAD CSV FILE
+                    </button>
+                    <input type="file" id="csv-upload" accept=".csv" style="display:none;">
+                    <p style="margin-top:18px; color:#94a3b8; font-size:13px;">
+                        No CSV = Use Built-in P.3 Questions
+                    </p>
                 </div>
             </div>
 
-            <div class="section game-settings">
-                <label style="color:#ff00aa;">GAME END CONDITION</label><br>
-                <select id="end-mode" onchange="toggleEndOptions()">
-                    <option value="score">First to Score</option>
-                    <option value="time">Timed Game</option>
-                </select><br><br>
-
-                <div id="score-options">
-                    <label style="color:#ff00aa;">TARGET SCORE TO WIN</label><br>
-                    <select id="target-score">
-                        <option value="50">50 points</option>
-                        <option value="80">80 points</option>
-                        <option value="100" selected>100 points</option>
-                        <option value="150">150 points</option>
-                        <option value="200">200 points</option>
-                    </select>
-                </div>
-
-                <div id="time-options" style="display:none;">
-                    <label style="color:#ff00aa;">GAME DURATION</label><br>
-                    <select id="game-time">
-                        <option value="5">5 minutes</option>
-                        <option value="8">8 minutes</option>
-                        <option value="10" selected>10 minutes</option>
-                        <option value="15">15 minutes</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="section">
-                <h3 style="margin:10px 0 20px 0; color:#39ff14; text-shadow: 0 0 15px #39ff14;">📂 QUESTION SOURCE</h3>
-
-                <button onclick="document.getElementById('csv-upload').click()" style="width:100%; max-width:420px; border-color:#39ff14; box-shadow: 0 0 20px #39ff14;">
-                    📁 UPLOAD LOCAL CSV
-                </button>
-                <input type="file" id="csv-upload" accept=".csv" style="display:none;">
-
-                <div style="margin:25px 0; color:#ff00aa;">— OR —</div>
-
-                <label style="color:#39ff14;">GOOGLE DRIVE PUBLIC LINK</label><br>
-                <input type="text" id="gdrive-link" placeholder="https://drive.google.com/file/d/XXXX/view">
-                <button onclick="loadFromGoogleDrive()" style="width:100%; max-width:420px; background:#ff00aa; border-color:#ff00aa; box-shadow: 0 0 20px #ff00aa;">
-                    🔗 LOAD FROM GOOGLE DRIVE
-                </button>
-            </div>
-
-            <button onclick="startGame()" style="font-size:26px; padding:26px 60px; margin-top:30px; border-color:#39ff14; box-shadow: 0 0 30px #39ff14;">
+            <button onclick="startGame()" 
+                    style="font-size:24px; padding:24px 60px; margin-top:20px; border-color:#39ff14; box-shadow: 0 0 30px #39ff14;">
                 🚀 START BATTLE!
             </button>
         </div>
 
         <!-- GAME SCREEN -->
         <div id="game-screen" class="screen">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;">
                 <strong id="game-info" style="color:#00f9ff;"></strong>
                 <div>
-                    <span id="timer-display" style="font-size:18px; background:#12122e; padding:10px 18px; border-radius:8px; border:2px solid #ff00aa; display:none;"></span>
+                    <span id="timer-display" style="font-size:17px; background:#12122e; padding:8px 14px; border-radius:6px; border:2px solid #ff00aa; display:none;"></span>
                     <button onclick="endGame()">END GAME</button>
                 </div>
             </div>
 
-            <!-- Teams always stay in one horizontal row -->
             <div id="team-grid" class="team-grid"></div>
 
             <div class="leaderboard">
-                <h3 style="color:#ff00aa; text-shadow: 0 0 15px #ff00aa;">🏆 LEADERBOARD 🏆</h3>
+                <h3 style="color:#ff00aa;">🏆 LEADERBOARD 🏆</h3>
                 <div id="leaderboard" style="text-align:left; max-width:700px; margin:0 auto;"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // ==================== FULL GAME SCRIPT ====================
-        let questionsDB = { /* Add your full default questions here */ };
+        // ==================== BUILT-IN P.3 QUESTIONS (Hong Kong) ====================
+        let questionsDB = {
+            English: {
+                P3: [
+                    {q: "What is the plural of 'child'?", options: ["childs", "children", "childes", "childrens"], ans: 1},
+                    {q: "She ___ to school every day.", options: ["go", "goes", "going", "went"], ans: 1},
+                    {q: "What is the opposite of 'happy'?", options: ["big", "sad", "fast", "cold"], ans: 1},
+                    {q: "Which word is a proper noun?", options: ["school", "Hong Kong", "teacher", "book"], ans: 1},
+                    {q: "I have ___ apple.", options: ["a", "an", "the", "some"], ans: 1},
+                    {q: "The cat is ___ the table.", options: ["in", "on", "under", "between"], ans: 2},
+                    {q: "What is the past tense of 'eat'?", options: ["eated", "ate", "eaten", "eating"], ans: 1},
+                    {q: "Which sentence is correct?", options: ["I has a dog.", "I have a dog.", "I having a dog.", "I haves a dog."], ans: 1}
+                ]
+            },
+            Maths: {
+                P3: [
+                    {q: "What is 45 + 38?", options: ["73", "83", "82", "93"], ans: 1},
+                    {q: "72 ÷ 8 = ?", options: ["8", "9", "7", "6"], ans: 1},
+                    {q: "What is the area of a square with side 6 cm?", options: ["12 cm²", "24 cm²", "36 cm²", "18 cm²"], ans: 2},
+                    {q: "Which is heavier?", options: ["1 kg", "800 g", "They are equal", "Cannot tell"], ans: 0},
+                    {q: "What time is quarter past 3?", options: ["3:15", "3:30", "2:45", "3:45"], ans: 0},
+                    {q: "What is 9 × 7?", options: ["56", "63", "72", "54"], ans: 1},
+                    {q: "A rectangle has length 8 cm and width 5 cm. What is the perimeter?", options: ["13 cm", "26 cm", "40 cm", "21 cm"], ans: 1},
+                    {q: "How many sides does a hexagon have?", options: ["5", "6", "7", "8"], ans: 1}
+                ]
+            },
+            Chinese: {
+                P3: [
+                    {q: "以下哪個詞語的意思是「努力做事」？", options: ["懶惰", "勤奮", "粗心", "貪玩"], ans: 1},
+                    {q: "「快樂」的反義詞是？", options: ["開心", "悲傷", "興奮", "滿足"], ans: 1},
+                    {q: "以下哪句是正確的？", options: ["我昨天去公園。", "我昨天去公園了。", "我昨天去了公園。", "我昨天去過公園。"], ans: 2},
+                    {q: "「蘋果」是什麼詞類？", options: ["動詞", "形容詞", "名詞", "副詞"], ans: 2},
+                    {q: "以下哪個成語形容「非常努力」？", options: ["手忙腳亂", "廢寢忘食", "馬馬虎虎", "無憂無慮"], ans: 1},
+                    {q: "「美麗」的近義詞是？", options: ["醜陋", "漂亮", "高大", "快樂"], ans: 1},
+                    {q: "以下哪句話有錯別字？", options: ["今天天氣很好。", "我喜歡吃蘋果。", "他是一個好學生。", "我們一起去遊樂場。"], ans: 3},
+                    {q: "「書本」是什麼詞？", options: ["單音詞", "雙音詞", "多音詞", "外來詞"], ans: 1}
+                ]
+            },
+            Science: {
+                P3: [
+                    {q: "植物需要什麼來製造食物？", options: ["只有水", "陽光、水和空氣", "只有泥土", "只有肥料"], ans: 1},
+                    {q: "以下哪個是哺乳類動物？", options: ["雞", "魚", "狗", "青蛙"], ans: 2},
+                    {q: "水加熱後會變成什麼？", options: ["冰", "水蒸氣", "雪", "雨"], ans: 1},
+                    {q: "以下哪個不是植物的生長需要？", options: ["陽光", "水", "空氣", "玩具"], ans: 3},
+                    {q: "聲音是怎樣傳播的？", options: ["通過空氣", "通過光", "通過電", "通過火"], ans: 0},
+                    {q: "以下哪個是可再生能源？", options: ["煤", "石油", "太陽能", "天然氣"], ans: 2},
+                    {q: "動物需要什麼來生存？", options: ["只有食物", "食物、水和空氣", "只有水", "只有空氣"], ans: 1},
+                    {q: "月球有沒有空氣？", options: ["有", "沒有", "有時有", "不知道"], ans: 1}
+                ]
+            },
+            Humanities: {
+                P3: [
+                    {q: "香港是哪個國家的特別行政區？", options: ["英國", "美國", "中國", "日本"], ans: 2},
+                    {q: "以下哪個是香港的傳統節日？", options: ["聖誕節", "農曆新年", "萬聖節", "復活節"], ans: 1},
+                    {q: "我們應該怎樣對待長者？", options: ["不理他們", "尊重和幫助他們", "取笑他們", "避開他們"], ans: 1},
+                    {q: "香港的主要語言是什麼？", options: ["英語", "普通話", "粵語", "日語"], ans: 2},
+                    {q: "保護環境最簡單的方法是？", options: ["浪費紙張", "隨地扔垃圾", "減少使用塑膠", "多開冷氣"], ans: 2},
+                    {q: "以下哪個是香港的著名地標？", options: ["東京鐵塔", "維多利亞港", "巴黎鐵塔", "自由神像"], ans: 1},
+                    {q: "我們為什麼要遵守交通燈？", options: ["因為好玩", "為了安全", "因為老師說的", "因為朋友這樣做"], ans: 1},
+                    {q: "香港的貨幣單位是什麼？", options: ["人民幣", "美元", "港幣", "日元"], ans: 2}
+                ]
+            }
+        };
+
         let customQuestions = [];
         let currentSubject = '', currentLevel = '', teams = [], currentQuestions = [];
         let gameInterval = null, endMode = 'score', targetScore = 100, gameEndTime = null;
@@ -326,33 +292,15 @@
             document.getElementById('time-options').style.display = mode === 'time' ? 'block' : 'none';
         }
 
-        async function loadFromGoogleDrive() {
-            const link = document.getElementById('gdrive-link').value.trim();
-            if (!link) return alert("Please paste a Google Drive link");
-
-            let fileId = '';
-            if (link.includes('/file/d/')) fileId = link.split('/file/d/')[1].split('/')[0];
-            else if (link.includes('id=')) fileId = link.split('id=')[1].split('&')[0];
-
-            if (!fileId) return alert("Invalid Google Drive link");
-
-            const directUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-            try {
-                const res = await fetch(directUrl);
-                const csvText = await res.text();
-                customQuestions = parseCSV(csvText);
-                alert(customQuestions.length > 0 ? `✅ Loaded ${customQuestions.length} questions from Google Drive!` : "No valid questions found");
-            } catch (e) {
-                alert("❌ Cannot load from Google Drive. Make sure it's shared publicly.");
-            }
-        }
-
         async function startGame() {
             const numTeams = parseInt(document.getElementById('num-teams').value);
-            currentSubject = document.getElementById('subject').value;
-            currentLevel = document.getElementById('level').value;
             endMode = document.getElementById('end-mode').value;
-            targetScore = parseInt(document.getElementById('target-score').value);
+
+            if (endMode === 'score') {
+                targetScore = parseInt(document.getElementById('target-score').value) || 100;
+            } else {
+                window.gameMinutes = parseInt(document.getElementById('game-time').value) || 10;
+            }
 
             const fileInput = document.getElementById('csv-upload');
 
@@ -363,8 +311,6 @@
                     initTeams(numTeams);
                 };
                 reader.readAsText(fileInput.files[0]);
-            } else if (customQuestions.length > 0) {
-                initTeams(numTeams);
             } else {
                 customQuestions = [];
                 initTeams(numTeams);
@@ -391,7 +337,7 @@
             updateLeaderboard();
 
             if (endMode === 'time') {
-                const minutes = parseInt(document.getElementById('game-time').value);
+                const minutes = window.gameMinutes || 10;
                 gameEndTime = Date.now() + minutes * 60 * 1000;
                 document.getElementById('timer-display').style.display = 'inline';
                 startTimer();
@@ -430,14 +376,22 @@
         }
 
         function getRandomQuestion() {
-            let pool = customQuestions.length > 0 ? customQuestions :
+            let pool = customQuestions.length > 0 ? customQuestions : 
                        (questionsDB[currentSubject] && questionsDB[currentSubject][currentLevel]) || [];
+            
+            // If no subject selected or no pool, pick randomly from all subjects
+            if (pool.length === 0) {
+                const allSubjects = Object.keys(questionsDB);
+                const randomSubject = allSubjects[Math.floor(Math.random() * allSubjects.length)];
+                pool = questionsDB[randomSubject].P3 || [];
+            }
+            
             if (pool.length === 0) return {q: "No questions available", options: ["A","B","C","D"], ans: 0};
 
             const original = pool[Math.floor(Math.random() * pool.length)];
             const shuffled = [...original.options];
             const correctText = shuffled[original.ans];
-
+            
             for (let i = shuffled.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
