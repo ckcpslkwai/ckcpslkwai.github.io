@@ -22,7 +22,7 @@
       font-size: 115%;
     }
     .container{max-width:1920px;margin:0 auto}
-    
+   
     header {
       text-align:center;
       padding:20px 0 25px;
@@ -33,7 +33,6 @@
       gap: 24px;
       flex-wrap: wrap;
     }
-
     .title-wrapper {
       display: flex;
       align-items: center;
@@ -41,13 +40,11 @@
       flex-wrap: wrap;
       justify-content: center;
     }
-
     h1 {
       font-size: clamp(1.9rem, 4.5vw, 2.6rem);
       margin: 0;
       text-shadow: 0 3px 10px rgba(0,0,0,0.3);
     }
-
     .action-btn {
       padding: 10px 24px;
       color: white;
@@ -62,7 +59,14 @@
       align-items: center;
       gap: 8px;
     }
-
+    .btn-multiplayer {
+      background: #8e44ad;
+    }
+    .btn-multiplayer:hover {
+      background: #732d91;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
     .btn-exercises {
       background: #e67e22;
     }
@@ -71,7 +75,6 @@
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     }
-
     .btn-join {
       background: #4caf50;
     }
@@ -80,11 +83,9 @@
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     }
-
     .action-btn:active {
       transform: translateY(0);
     }
-
     .grid{
       display:grid;
       grid-template-columns:repeat(6,1fr);
@@ -179,31 +180,37 @@
   <div class="container">
     <header>
       <div class="title-wrapper">
-        <a 
-          href="exercises.pdf" 
-          target="_blank" 
+        <!-- 新增的 Multiplayer 按鈕（放在 Exercise 左邊） -->
+        <a
+          href="tug02.html"
+          class="action-btn btn-multiplayer"
+        >
+          Multiplayer
+        </a>
+        
+        <a
+          href="exercises.pdf"
+          target="_blank"
           class="action-btn btn-exercises"
         >
           Exercises
         </a>
-
         <h1><font size="8">🏆 Leaderboard-English 🏆</font></h1>
-
-        <a 
-          href="how-to-join.pdf" 
-          target="_blank" 
+        <a
+          href="how-to-join.pdf"
+          target="_blank"
           class="action-btn btn-join"
         >
           How to join
         </a>
       </div>
     </header>
-
     <div class="grid" id="gridPanels"></div>
     <div id="lastUpdate">資料載入中...</div>
   </div>
 
   <script>
+    // ...（後面的 JavaScript 完全不變，保持原樣）
     const SPREADSHEET_ID = '111qBSbRYUCqd5gxLrZFst08fTKHYyTHa';
     const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
     const SHEET_CONFIG = [
@@ -214,10 +221,8 @@
       { name: 'P.5', gid: '261203595' },
       { name: 'P.6', gid: '190158040' }
     ];
-
     const gridPanels = document.getElementById('gridPanels');
     let intervals = [];
-
     function createPanels() {
       gridPanels.innerHTML = '';
       SHEET_CONFIG.forEach(sheet => {
@@ -235,7 +240,6 @@
         gridPanels.appendChild(panel);
       });
     }
-
     async function fetchSheetData(gid, retries = 3) {
       const targetUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${gid}`;
       const proxyUrl = CORS_PROXY + encodeURIComponent(targetUrl);
@@ -260,7 +264,6 @@
       console.error(`載入失敗，已重試 ${retries} 次: gid=${gid}`);
       return null;
     }
-
     function parseCSV(csvText) {
       if (!csvText || csvText.trim() === '') return [];
       const lines = csvText.trim().split('\n').filter(line => line.trim() !== '');
@@ -307,29 +310,22 @@
       }
       return data;
     }
-
     function processAndRender(panel, rows, sheetName) {
       const contentDiv = panel.lastElementChild;
-
       let filtered = rows;
-
       filtered.sort((a, b) => (parseFloat(b.Score) || 0) - (parseFloat(a.Score) || 0));
-
       filtered.forEach(row => {
         row.displayName = (row.Name && row.Name.length > 8)
           ? row.Name.substring(0, 8) + '.'
           : (row.Name || '—');
       });
-
       const top3 = filtered.slice(0, 3);
       const rest = filtered.slice(3);
       const slideGroups = [];
       for (let i = 0; i < Math.min(rest.length, 47); i += 9) {
         slideGroups.push(rest.slice(i, i + 9));
       }
-
       let currentSlide = 0;
-
       function renderSlide() {
         let html = '<table><thead><tr><th class="rank-col">#</th><th class="class-col">班別</th><th class="name-col">姓名</th><th class="score-col">pt</th></tr></thead><tbody>';
         top3.forEach((row, i) => {
@@ -358,7 +354,6 @@
         contentDiv.className = '';
         contentDiv.innerHTML = html;
       }
-
       if (filtered.length === 0) {
         contentDiv.className = 'empty';
         contentDiv.innerHTML = '尚無任何資料';
@@ -373,7 +368,6 @@
         }
       }
     }
-
     window.retryPanel = async function(sheetName) {
       const sheet = SHEET_CONFIG.find(s => s.name === sheetName);
       if (!sheet) return;
@@ -396,7 +390,6 @@
         `;
       }
     };
-
     async function loadAllData() {
       intervals.forEach(clearInterval);
       intervals = [];
@@ -423,7 +416,6 @@
       document.getElementById('lastUpdate').textContent =
         `最後更新：${new Date().toLocaleString('zh-TW')}（每15分鐘自動更新中）`;
     }
-
     window.addEventListener('load', () => {
       loadAllData();
       setInterval(() => {
@@ -434,9 +426,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
