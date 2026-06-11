@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRIMARY TUG OF POINTS - CYBERPUNK EDITION</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        :root {
+            --primary: #00f9ff;
+            --secondary: #ff00aa;
+            --accent: #39ff14;
+            --dark: #0a0a1f;
+            --panel: #12122e;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Press Start 2P', system-ui;
+            background: linear-gradient(180deg, #0a0a1f 0%, #05050f 100%);
+            color: #fff;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: #0a0a1f;
+            padding: 20px;
+            border-bottom: 4px solid var(--primary);
+            box-shadow: 0 0 20px rgba(0, 249, 255, 0.3);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(26px, 6vw, 36px);
+            text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary), 0 0 40px var(--secondary);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        button {
+            font-family: 'Press Start 2P', system-ui;
+            padding: 14px 28px; margin: 12px;
+            background: #12122e;
+            color: #fff;
+            border: 4px solid var(--primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-shadow: 0 0 8px var(--primary);
+            box-shadow: 0 0 15px rgba(0, 249, 255, 0.4);
+        }
+        button:hover {
+            background: var(--primary);
+            color: #000;
+            transform: scale(1.05);
+            box-shadow: 0 0 25px var(--primary);
+        }
+
+        .section {
+            background: #12122e;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 12px;
+            border: 3px solid var(--primary);
+            box-shadow: 0 0 20px rgba(0, 249, 255, 0.2);
+        }
+
+        .top-settings {
+            display: grid;
+            gap: 25px;
+        }
+
+        @media (min-width: 900px) {
+            .top-settings {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+
+        .game-settings {
+            border-color: var(--secondary);
+            box-shadow: 0 0 20px rgba(255, 0, 170, 0.2);
+        }
+
+        select, input[type="text"] {
+            font-family: 'Press Start 2P', system-ui;
+            padding: 14px;
+            background: #0a0a1f;
+            color: #fff;
+            border: 3px solid var(--accent);
+            margin: 10px 0;
+            width: 100%;
+            box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+        }
+
+        .score {
+            font-size: 38px;
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent);
+        }
+
+        .question {
+            background: #0a0a1f;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 20px 0;
+            min-height: 160px;
+            display: flex;
+            align-items: center;
+            font-size: clamp(17px, 2.8vw, 21px);
+            line-height: 1.55;
+            text-align: left;
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 25px rgba(0, 249, 255, 0.3);
+        }
+
+        .option-btn {
+            padding: 18px 22px;
+            font-size: clamp(16px, 2.5vw, 19px);
+            border: 3px solid #334155;
+            background: #12122e;
+            text-align: left;
+            white-space: normal;
+            transition: all 0.2s;
+        }
+        .option-btn:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary);
+            transform: translateY(-2px);
+        }
+        .option-btn.correct {
+            background: #39ff14;
+            color: #000;
+            border-color: #39ff14;
+            box-shadow: 0 0 20px #39ff14;
+        }
+        .option-btn.wrong {
+            background: #ff00aa;
+            border-color: #ff00aa;
+            box-shadow: 0 0 20px #ff00aa;
+        }
+
+        .leaderboard {
+            background: #12122e;
+            padding: 25px;
+            border-radius: 12px;
+            border: 3px solid var(--secondary);
+            box-shadow: 0 0 20px rgba(255, 0, 170, 0.3);
+        }
+
+        /* ========== TEAM GRID - ALWAYS HORIZONTAL ========== */
+        .team-grid {
+            display: flex;
+            flex-wrap: nowrap;           /* Never wrap to next line */
+            gap: 20px;
+            overflow-x: auto;            /* Allow horizontal scroll on very narrow screens */
+            padding-bottom: 15px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .team-card {
+            background: #12122e;
+            border: 5px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            min-height: 420px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+            flex: 1 1 280px;             /* Equal width, minimum 280px */
+            min-width: 280px;
+        }
+
+        .team-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        .status {
+            font-size: 15px;
+            min-height: 30px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🏴‍☠️ PRIMARY TUG OF POINTS 🏴‍☠️</h1>
+        <p style="margin:8px 0 0 0; font-size:15px; color:#00f9ff; text-shadow: 0 0 10px #00f9ff;">
+            CYBERPUNK NEON EDITION • P.1–P.6
+        </p>
+    </header>
+
+    <div class="container">
+        <!-- MENU SCREEN -->
+        <div id="menu-screen" class="screen active">
+            <h2 style="margin: 20px 0 30px 0; color:#00f9ff; text-shadow: 0 0 15px #00f9ff;">NEW GAME</h2>
+
+            <div class="top-settings">
+                <div class="section">
+                    <label style="color:#00f9ff;">NUMBER OF TEAMS</label><br>
+                    <select id="num-teams">
+                        <option value="2">2 Teams</option>
+                        <option value="3">3 Teams</option>
+                        <option value="4" selected>4 Teams</option>
+                    </select>
+                </div>
+
+                <div class="section">
+                    <label style="color:#00f9ff;">SUBJECT</label><br>
+                    <select id="subject">
+                        <option value="Maths">Mathematics</option>
+                        <option value="English">English</option>
+                        <option value="Science">Science</option>
+                    </select>
+                </div>
+
+                <div class="section">
+                    <label style="color:#00f9ff;">LEVEL</label><br>
+                    <select id="level">
+                        <option value="P1">P.1</option>
+                        <option value="P2">P.2</option>
+                        <option value="P3">P.3</option>
+                        <option value="P4">P.4</option>
+                        <option value="P5">P.5</option>
+                        <option value="P6" selected>P.6</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="section game-settings">
+                <label style="color:#ff00aa;">GAME END CONDITION</label><br>
+                <select id="end-mode" onchange="toggleEndOptions()">
+                    <option value="score">First to Score</option>
+                    <option value="time">Timed Game</option>
+                </select><br><br>
+
+                <div id="score-options">
+                    <label style="color:#ff00aa;">TARGET SCORE TO WIN</label><br>
+                    <select id="target-score">
+                        <option value="50">50 points</option>
+                        <option value="80">80 points</option>
+                        <option value="100" selected>100 points</option>
+                        <option value="150">150 points</option>
+                        <option value="200">200 points</option>
+                    </select>
+                </div>
+
+                <div id="time-options" style="display:none;">
+                    <label style="color:#ff00aa;">GAME DURATION</label><br>
+                    <select id="game-time">
+                        <option value="5">5 minutes</option>
+                        <option value="8">8 minutes</option>
+                        <option value="10" selected>10 minutes</option>
+                        <option value="15">15 minutes</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 style="margin:10px 0 20px 0; color:#39ff14; text-shadow: 0 0 15px #39ff14;">📂 QUESTION SOURCE</h3>
+
+                <button onclick="document.getElementById('csv-upload').click()" style="width:100%; max-width:420px; border-color:#39ff14; box-shadow: 0 0 20px #39ff14;">
+                    📁 UPLOAD LOCAL CSV
+                </button>
+                <input type="file" id="csv-upload" accept=".csv" style="display:none;">
+
+                <div style="margin:25px 0; color:#ff00aa;">— OR —</div>
+
+                <label style="color:#39ff14;">GOOGLE DRIVE PUBLIC LINK</label><br>
+                <input type="text" id="gdrive-link" placeholder="https://drive.google.com/file/d/XXXX/view">
+                <button onclick="loadFromGoogleDrive()" style="width:100%; max-width:420px; background:#ff00aa; border-color:#ff00aa; box-shadow: 0 0 20px #ff00aa;">
+                    🔗 LOAD FROM GOOGLE DRIVE
+                </button>
+            </div>
+
+            <button onclick="startGame()" style="font-size:26px; padding:26px 60px; margin-top:30px; border-color:#39ff14; box-shadow: 0 0 30px #39ff14;">
+                🚀 START BATTLE!
+            </button>
+        </div>
+
+        <!-- GAME SCREEN -->
+        <div id="game-screen" class="screen">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+                <strong id="game-info" style="color:#00f9ff;"></strong>
+                <div>
+                    <span id="timer-display" style="font-size:18px; background:#12122e; padding:10px 18px; border-radius:8px; border:2px solid #ff00aa; display:none;"></span>
+                    <button onclick="endGame()">END GAME</button>
+                </div>
+            </div>
+
+            <!-- Teams always stay in one horizontal row -->
+            <div id="team-grid" class="team-grid"></div>
+
+            <div class="leaderboard">
+                <h3 style="color:#ff00aa; text-shadow: 0 0 15px #ff00aa;">🏆 LEADERBOARD 🏆</h3>
+                <div id="leaderboard" style="text-align:left; max-width:700px; margin:0 auto;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== FULL GAME SCRIPT ====================
+        let questionsDB = { /* Add your full default questions here */ };
+        let customQuestions = [];
+        let currentSubject = '', currentLevel = '', teams = [], currentQuestions = [];
+        let gameInterval = null, endMode = 'score', targetScore = 100, gameEndTime = null;
+
+        function toggleEndOptions() {
+            const mode = document.getElementById('end-mode').value;
+            document.getElementById('score-options').style.display = mode === 'score' ? 'block' : 'none';
+            document.getElementById('time-options').style.display = mode === 'time' ? 'block' : 'none';
+        }
+
+        async function loadFromGoogleDrive() {
+            const link = document.getElementById('gdrive-link').value.trim();
+            if (!link) return alert("Please paste a Google Drive link");
+
+            let fileId = '';
+            if (link.includes('/file/d/')) fileId = link.split('/file/d/')[1].split('/')[0];
+            else if (link.includes('id=')) fileId = link.split('id=')[1].split('&')[0];
+
+            if (!fileId) return alert("Invalid Google Drive link");
+
+            const directUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+            try {
+                const res = await fetch(directUrl);
+                const csvText = await res.text();
+                customQuestions = parseCSV(csvText);
+                alert(customQuestions.length > 0 ? `✅ Loaded ${customQuestions.length} questions from Google Drive!` : "No valid questions found");
+            } catch (e) {
+                alert("❌ Cannot load from Google Drive. Make sure it's shared publicly.");
+            }
+        }
+
+        async function startGame() {
+            const numTeams = parseInt(document.getElementById('num-teams').value);
+            currentSubject = document.getElementById('subject').value;
+            currentLevel = document.getElementById('level').value;
+            endMode = document.getElementById('end-mode').value;
+            targetScore = parseInt(document.getElementById('target-score').value);
+
+            const fileInput = document.getElementById('csv-upload');
+
+            if (fileInput.files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    customQuestions = parseCSV(e.target.result);
+                    initTeams(numTeams);
+                };
+                reader.readAsText(fileInput.files[0]);
+            } else if (customQuestions.length > 0) {
+                initTeams(numTeams);
+            } else {
+                customQuestions = [];
+                initTeams(numTeams);
+            }
+        }
+
+        function initTeams(numTeams) {
+            teams = [];
+            currentQuestions = [];
+            for (let i = 0; i < numTeams; i++) {
+                teams.push({
+                    id: i + 1,
+                    name: `Team ${String.fromCharCode(65 + i)}`,
+                    score: 0,
+                    color: ['#f87171', '#60a5fa', '#facc15', '#a78bfa'][i]
+                });
+                currentQuestions.push(getRandomQuestion());
+            }
+
+            document.getElementById('menu-screen').classList.remove('active');
+            document.getElementById('game-screen').classList.add('active');
+
+            renderAllTeams();
+            updateLeaderboard();
+
+            if (endMode === 'time') {
+                const minutes = parseInt(document.getElementById('game-time').value);
+                gameEndTime = Date.now() + minutes * 60 * 1000;
+                document.getElementById('timer-display').style.display = 'inline';
+                startTimer();
+            }
+        }
+
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            const questions = [];
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                const row = parseCSVLine(lines[i]);
+                if (row.length < 3) continue;
+                const qText = row[1];
+                const opts = [];
+                for (let j = 2; j <= 5; j++) if (row[j] && row[j].trim()) opts.push(row[j].trim());
+                const correctIdx = parseInt(row[row.length - 1]) - 1;
+                if (opts.length >= 2 && !isNaN(correctIdx) && correctIdx < opts.length) {
+                    questions.push({ q: qText, options: opts, ans: correctIdx });
+                }
+            }
+            return questions;
+        }
+
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '', inQuotes = false;
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') inQuotes = !inQuotes;
+                else if (char === ',' && !inQuotes) { result.push(current.trim()); current = ''; }
+                else current += char;
+            }
+            result.push(current.trim());
+            return result;
+        }
+
+        function getRandomQuestion() {
+            let pool = customQuestions.length > 0 ? customQuestions :
+                       (questionsDB[currentSubject] && questionsDB[currentSubject][currentLevel]) || [];
+            if (pool.length === 0) return {q: "No questions available", options: ["A","B","C","D"], ans: 0};
+
+            const original = pool[Math.floor(Math.random() * pool.length)];
+            const shuffled = [...original.options];
+            const correctText = shuffled[original.ans];
+
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return { q: original.q, options: shuffled, ans: shuffled.indexOf(correctText) };
+        }
+
+        function renderAllTeams() {
+            const grid = document.getElementById('team-grid');
+            grid.innerHTML = '';
+            teams.forEach((team, index) => {
+                const card = document.createElement('div');
+                card.className = `team-card team-${team.id}`;
+                card.id = `team-card-${team.id}`;
+                card.innerHTML = `
+                    <div class="team-header">
+                        <div class="team-name" style="color:${team.color}">${team.name}</div>
+                        <div class="score" id="score-${team.id}">${team.score}</div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progress-${team.id}" style="width:0%"></div>
+                    </div>
+                    <div class="question" id="qtext-${team.id}">${currentQuestions[index].q}</div>
+                    <div class="options" id="options-${team.id}"></div>
+                    <div class="status" id="status-${team.id}"></div>
+                `;
+                grid.appendChild(card);
+
+                const optsDiv = document.getElementById(`options-${team.id}`);
+                currentQuestions[index].options.forEach((opt, i) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.textContent = `${String.fromCharCode(65+i)}. ${opt}`;
+                    btn.onclick = () => handleAnswer(team.id, i, index);
+                    optsDiv.appendChild(btn);
+                });
+            });
+        }
+
+        function handleAnswer(teamId, selectedIndex, teamIndex) {
+            const q = currentQuestions[teamIndex];
+            const isCorrect = selectedIndex === q.ans;
+            const statusEl = document.getElementById(`status-${teamId}`);
+            const buttons = document.querySelectorAll(`#options-${teamId} .option-btn`);
+
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === q.ans) btn.classList.add('correct');
+                if (idx === selectedIndex && !isCorrect) btn.classList.add('wrong');
+            });
+
+            if (isCorrect) {
+                teams[teamIndex].score += 10;
+                statusEl.innerHTML = `<span style="color:#39ff14">✅ CORRECT! +10</span>`;
+            } else {
+                statusEl.innerHTML = `<span style="color:#ff00aa">❌ Wrong. Answer: ${String.fromCharCode(65 + q.ans)}</span>`;
+            }
+
+            document.getElementById(`score-${teamId}`).textContent = teams[teamIndex].score;
+            const progress = Math.min((teams[teamIndex].score / 300) * 100, 100);
+            document.getElementById(`progress-${teamId}`).style.width = `${progress}%`;
+
+            updateLeaderboard();
+
+            if (endMode === 'score' && teams[teamIndex].score >= targetScore) {
+                setTimeout(() => {
+                    alert(`🎉 ${teams[teamIndex].name} WINS!`);
+                    endGame();
+                }, 800);
+                return;
+            }
+
+            setTimeout(() => {
+                currentQuestions[teamIndex] = getRandomQuestion();
+                const qEl = document.getElementById(`qtext-${teamId}`);
+                const optsDiv = document.getElementById(`options-${teamId}`);
+                const statusEl2 = document.getElementById(`status-${teamId}`);
+
+                qEl.textContent = currentQuestions[teamIndex].q;
+                statusEl2.innerHTML = '';
+                optsDiv.innerHTML = '';
+
+                currentQuestions[teamIndex].options.forEach((opt, i) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.textContent = `${String.fromCharCode(65+i)}. ${opt}`;
+                    btn.onclick = () => handleAnswer(teamId, i, teamIndex);
+                    optsDiv.appendChild(btn);
+                });
+            }, 1600);
+        }
+
+        function updateLeaderboard() {
+            const sorted = [...teams].sort((a,b) => b.score - a.score);
+            let html = '';
+            sorted.forEach((t, i) => {
+                html += `<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #334155;">
+                    <span><strong>#${i+1}</strong> ${t.name}</span>
+                    <span style="color:#39ff14;font-weight:bold;">${t.score} pts</span>
+                </div>`;
+            });
+            document.getElementById('leaderboard').innerHTML = html;
+        }
+
+        function endGame() {
+            if (!confirm("End game and return to menu?")) return;
+            if (gameInterval) clearInterval(gameInterval);
+            document.getElementById('game-screen').classList.remove('active');
+            document.getElementById('menu-screen').classList.add('active');
+            document.getElementById('csv-upload').value = '';
+            document.getElementById('timer-display').style.display = 'none';
+        }
+
+        function startTimer() {
+            if (gameInterval) clearInterval(gameInterval);
+            gameInterval = setInterval(() => {
+                const remaining = Math.ceil((gameEndTime - Date.now()) / 1000);
+                if (remaining <= 0) {
+                    clearInterval(gameInterval);
+                    endGame(true);
+                    return;
+                }
+                const min = Math.floor(remaining / 60);
+                const sec = remaining % 60;
+                document.getElementById('timer-display').textContent = `TIME: ${min}:${sec < 10 ? '0'+sec : sec}`;
+            }, 1000);
+        }
+
+        document.addEventListener('keydown', e => {
+            if (!document.getElementById('game-screen').classList.contains('active')) return;
+            const key = e.key.toUpperCase();
+            if (!['A','B','C','D'].includes(key)) return;
+            const idx = key.charCodeAt(0) - 65;
+            teams.forEach(team => {
+                const opts = document.getElementById(`options-${team.id}`);
+                if (opts && !opts.querySelector('button[disabled]')) {
+                    const btns = opts.querySelectorAll('.option-btn');
+                    if (btns[idx]) btns[idx].click();
+                }
+            });
+        });
+
+        window.onload = () => toggleEndOptions();
+    </script>
+</body>
+</html>
