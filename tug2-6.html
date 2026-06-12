@@ -61,7 +61,7 @@
       
         .section {
             background: #12122e;
-            padding: 14px 18px;
+            padding: 20px 18px;     /* 加大垂直空間 */
             margin: 12px 0;
             border-radius: 10px;
             border: 2px solid var(--primary);
@@ -69,19 +69,21 @@
       
         select, input[type="number"] {
             font-family: 'Press Start 2P', system-ui;
-            padding: 8px 10px;
+            padding: 12px 12px;     /* 加大內距，讓框更高 */
             background: #0a0a1f;
             color: #fff;
             border: 2px solid var(--accent);
-            margin: 4px 0;
-            width: 100%;
+            margin: 6px 0;          /* 增加上下間距 */
             font-size: 14px;
+            width: 95%;             /* 加寬 */
+            max-width: 320px;
+            box-sizing: border-box;
         }
       
         label {
             font-size: 13px;
             display: block;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
       
         .score {
@@ -165,7 +167,6 @@
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
         }
 
-        /* 新增按鈕排版 */
         .csv-buttons {
             display: flex;
             gap: 10px;
@@ -173,6 +174,17 @@
         }
         .csv-buttons button {
             flex: 1;
+        }
+
+        .end-condition {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        .end-left, .end-right {
+            flex: 1;
+            min-width: 220px;
         }
     </style>
 </head>
@@ -216,28 +228,37 @@
                     </select>
                 </div>
             </div>
+
+            <!-- GAME END CONDITION 左右並排 -->
             <div class="section">
-                <label style="color:#ff00aa;">GAME END CONDITION</label><br>
-                <select id="end-mode" onchange="toggleEndOptions()">
-                    <option value="score">First to Score</option>
-                    <option value="time">Timed Game</option>
-                </select><br><br>
-                <div id="score-options">
-                    <label style="color:#ff00aa;">TARGET SCORE</label><br>
-                    <input type="number" id="target-score" value="100" min="10" step="10">
-                </div>
-                <div id="time-options" style="display:none;">
-                    <label style="color:#ff00aa;">DURATION (minutes)</label><br>
-                    <input type="number" id="game-time" value="10" min="1" max="60">
+                <div class="end-condition">
+                    <div class="end-left">
+                        <label style="color:#ff00aa;">GAME END CONDITION</label>
+                        <select id="end-mode" onchange="toggleEndOptions()" style="width:100%;">
+                            <option value="score">First to Score</option>
+                            <option value="time">Timed Game</option>
+                        </select>
+                    </div>
+                    <div class="end-right">
+                        <div id="score-options">
+                            <label style="color:#ff00aa;">TARGET SCORE</label>
+                            <input type="number" id="target-score" value="100" min="10" step="10" style="width:100%;">
+                        </div>
+                        <div id="time-options" style="display:none;">
+                            <label style="color:#ff00aa;">DURATION (minutes)</label>
+                            <input type="number" id="game-time" value="10" min="1" max="60" style="width:100%;">
+                        </div>
+                    </div>
                 </div>
             </div>
+
             <div class="section">
                 <label style="color:#39ff14;">QUESTION SOURCE</label>
                 <div class="csv-buttons">
-                    <button onclick="document.getElementById('csv-upload').click()" style="flex:1;">
+                    <button onclick="document.getElementById('csv-upload').click()">
                         📁 UPLOAD CSV
                     </button>
-                    <button onclick="loadDefaultCSV()" style="flex:1; border-color:#39ff14;">
+                    <button onclick="loadDefaultCSV()" style="border-color:#39ff14;">
                         📋 Default Set
                     </button>
                 </div>
@@ -288,7 +309,6 @@
             document.getElementById('time-options').style.display = mode === 'time' ? 'block' : 'none';
         }
 
-        // 載入 default.csv
         async function loadDefaultCSV() {
             try {
                 const response = await fetch('./default.csv');
@@ -297,11 +317,10 @@
                 customQuestions = parseCSV(csvText);
                 alert('✅ Default Set loaded successfully!');
             } catch (err) {
-                alert('❌ Cannot load default.csv\nPlease make sure default.csv is in the same folder as this HTML file.');
+                alert('❌ Cannot load default.csv\nPlease make sure default.csv is in the same folder.');
             }
         }
 
-        // 上傳 CSV
         function handleCSVUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -341,7 +360,6 @@
             }
         }
 
-        // 其餘函數保持不變（parseCSV, getRandomQuestion, renderAllTeams, handleAnswer 等）
         function parseCSV(csvText) {
             const lines = csvText.trim().split('\n');
             const questions = [];
