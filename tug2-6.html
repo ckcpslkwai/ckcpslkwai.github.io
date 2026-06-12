@@ -536,7 +536,49 @@
             });
         });
 
-        window.onload = () => toggleEndOptions();
+window.onload = () => {
+  toggleEndOptions();
+  loadDefaultCSV();   // ← 新增這行，自動嘗試載入 default.csv
+};
+
+let defaultQuestions = [];
+
+async function loadDefaultCSV() {
+  try {
+    const res = await fetch('default.csv');
+    if (res.ok) {
+      const text = await res.text();
+      defaultQuestions = parseCSV(text);
+      console.log('%c[Auto] default.csv 已自動載入', 'color: #39ff14');
+      // 可選：在畫面顯示提示（如果想讓使用者知道）
+      // const sourceEl = document.querySelector('.question-source');
+      // if (sourceEl) sourceEl.style.borderColor = '#39ff14';
+    }
+  } catch (err) {
+    console.log('%c[Auto] 沒有找到 default.csv 或載入失敗，使用內建題目', 'color: #ffaa00');
+  }
+}
+
+const fileInput = document.getElementById('csv-upload');
+
+if (fileInput.files.length > 0) {
+  // 有手動上傳 CSV
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    customQuestions = parseCSV(e.target.result);
+    initTeams(numTeams);
+  };
+  reader.readAsText(fileInput.files[0]);
+} else if (defaultQuestions.length > 0) {
+  // 沒有手動上傳，但有自動載入的 default.csv
+  customQuestions = defaultQuestions;
+  initTeams(numTeams);
+} else {
+  // 都沒有，使用內建題目
+  customQuestions = [];
+  initTeams(numTeams);
+}
+
     </script>
 </body>
 </html>
