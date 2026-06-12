@@ -95,12 +95,13 @@
             padding: 16px;
             border-radius: 8px;
             margin: 10px 0;
-            min-height: 80px;
+            min-height: 85px;
             display: flex;
             align-items: center;
-            font-size: clamp(15px, 2.2vw, 17px);
+            font-size: clamp(15px, 2.1vw, 17px);
             text-align: left;
             border: 2px solid var(--primary);
+            box-sizing: border-box;
         }
        
         .option-btn {
@@ -119,15 +120,15 @@
             padding: 16px;
             border-radius: 10px;
             border: 2px solid var(--secondary);
+            margin-bottom: 16px;
         }
+        
         .team-grid {
-            display: flex;
-            flex-wrap: nowrap;
-            gap: 12px;
-            overflow-x: auto;
-            padding-bottom: 12px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+            gap: 14px;
             width: 100%;
-            justify-content: stretch;
+            padding-bottom: 12px;
         }
        
         .team-card {
@@ -135,12 +136,10 @@
             border: 4px solid #334155;
             border-radius: 10px;
             padding: 14px;
-            flex: 1 1 auto;
-            min-width: 240px;
-            max-width: 320px;
             min-height: 420px;
             display: flex;
             flex-direction: column;
+            box-sizing: border-box;
         }
         
         .team-header {
@@ -247,11 +246,14 @@
                     <button onclick="endGame()" style="padding:10px 20px; font-size:13px;">END GAME</button>
                 </div>
             </div>
-            <div id="team-grid" class="team-grid"></div>
+
+            <!-- 領先榜移到這裡（作答區上方） -->
             <div class="leaderboard">
-                <h3 style="color:#ff00aa;">🏆 LEADERBOARD 🏆</h3>
+                <h3 style="color:#ff00aa; margin:0 0 12px 0;">🏆 LEADERBOARD 🏆</h3>
                 <div id="leaderboard" style="text-align:left;"></div>
             </div>
+
+            <div id="team-grid" class="team-grid"></div>
         </div>
     </div>
 
@@ -314,8 +316,7 @@
             }
         }
 
-        // 其他函數（parseCSV, getRandomQuestion, renderAllTeams, handleAnswer 等）保持不變
-        function parseCSV(csvText) { /* ... 同之前 ... */ 
+        function parseCSV(csvText) {
             const lines = csvText.trim().split('\n');
             const questions = [];
             for (let i = 1; i < lines.length; i++) {
@@ -415,7 +416,7 @@
 
             document.getElementById(`score-${teamId}`).textContent = teams[teamIndex].score;
             const progress = Math.min((teams[teamIndex].score / 300) * 100, 100);
-            document.getElementById(`progress-${teamId}`).style.width = `${progress}%`;
+            document.getElementById(`progress-${team.id}`).style.width = `${progress}%`;
 
             updateLeaderboard();
 
