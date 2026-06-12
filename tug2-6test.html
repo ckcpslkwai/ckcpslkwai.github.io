@@ -3,35 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS - PASTEL EDITION</title>
+    <title>CKCPS WARS - CYBERPUNK EDITION</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
       
         :root {
-            --primary: #7bc8ff;     /* 粉藍 */
-            --secondary: #ff9eb3;   /* 粉紅 */
-            --accent: #9ee8b2;      /* 薄荷綠 */
+            --primary: #00f9ff;
+            --secondary: #ff00aa;
+            --accent: #39ff14;
         }
       
         body {
             margin: 0; padding: 0;
             font-family: 'Press Start 2P', system-ui;
-            background: linear-gradient(180deg, #f0f8ff 0%, #fff0f8 100%);
-            color: #333;
+            background: linear-gradient(180deg, #0a0a1f 0%, #05050f 100%);
+            color: #fff;
             text-align: center;
         }
       
         header {
-            background: #fff0f8;
-            padding: 16px;
-            border-bottom: 4px solid var(--primary);
+            background: #0a0a1f;
+            padding: 12px;
+            border-bottom: 3px solid var(--primary);
         }
       
         h1 {
             margin: 0;
             font-size: clamp(22px, 5vw, 30px);
-            text-shadow: 0 0 8px var(--primary);
-            color: #555;
+            text-shadow: 0 0 10px var(--primary);
         }
       
         .container {
@@ -46,41 +45,38 @@
         button {
             font-family: 'Press Start 2P', system-ui;
             padding: 14px 28px; margin: 8px;
-            background: #fff;
-            color: #555;
+            background: #12122e;
+            color: #fff;
             border: 3px solid var(--primary);
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 4px 12px rgba(123, 200, 255, 0.3);
+            box-shadow: 0 0 12px rgba(0, 249, 255, 0.4);
             font-size: 15px;
-            border-radius: 8px;
         }
         button:hover {
             background: var(--primary);
-            color: #fff;
-            transform: scale(1.05);
+            color: #000;
+            transform: scale(1.03);
         }
       
         .section {
-            background: #fff;
-            padding: 20px 18px;
+            background: #12122e;
+            padding: 20px 18px;     /* 加大垂直空間 */
             margin: 12px 0;
-            border-radius: 16px;
-            border: 3px solid var(--primary);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border-radius: 10px;
+            border: 2px solid var(--primary);
         }
       
         select, input[type="number"] {
             font-family: 'Press Start 2P', system-ui;
-            padding: 12px 12px;
-            background: #fff;
-            color: #333;
-            border: 3px solid var(--accent);
-            margin: 6px 0;
+            padding: 12px 12px;     /* 加大內距，讓框更高 */
+            background: #0a0a1f;
+            color: #fff;
+            border: 2px solid var(--accent);
+            margin: 6px 0;          /* 增加上下間距 */
             font-size: 14px;
-            width: 95%;
+            width: 95%;             /* 加寬 */
             max-width: 320px;
-            border-radius: 8px;
             box-sizing: border-box;
         }
       
@@ -88,53 +84,45 @@
             font-size: 13px;
             display: block;
             margin-bottom: 6px;
-            color: #555;
         }
       
         .score {
             font-size: 32px;
             color: var(--accent);
-            text-shadow: 0 0 6px var(--accent);
+            text-shadow: 0 0 8px var(--accent);
         }
       
         .question {
-            background: #fff;
+            background: #0a0a1f;
             padding: 16px;
-            border-radius: 12px;
+            border-radius: 8px;
             margin: 10px 0;
             min-height: 85px;
             display: flex;
             align-items: center;
             font-size: clamp(15px, 2.1vw, 17px);
             text-align: left;
-            border: 3px solid var(--primary);
+            border: 2px solid var(--primary);
             box-sizing: border-box;
-            color: #333;
         }
       
         .option-btn {
             padding: 12px 14px;
             font-size: clamp(13px, 2vw, 15px);
-            border: 3px solid #ddd;
-            background: #fff;
+            border: 2px solid #334155;
+            background: #12122e;
             text-align: left;
             margin: 5px 0;
             width: 100%;
-            border-radius: 8px;
             box-sizing: border-box;
-            color: #333;
-        }
-        .option-btn:hover {
-            border-color: var(--accent);
         }
       
         .leaderboard {
-            background: #fff;
+            background: #12122e;
             padding: 16px;
-            border-radius: 16px;
-            border: 3px solid var(--secondary);
+            border-radius: 10px;
+            border: 2px solid var(--secondary);
             margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         }
        
         .team-grid {
@@ -146,15 +134,14 @@
         }
       
         .team-card {
-            background: #fff;
-            border: 4px solid var(--primary);
-            border-radius: 16px;
+            background: #12122e;
+            border: 4px solid #334155;
+            border-radius: 10px;
             padding: 14px;
             min-height: 420px;
             display: flex;
             flex-direction: column;
             box-sizing: border-box;
-            box-shadow: 0 6px 16px rgba(123, 200, 255, 0.2);
         }
        
         .team-header {
@@ -162,10 +149,10 @@
         }
        
         .progress-bar {
-            height: 10px;
+            height: 8px;
             background: linear-gradient(90deg, var(--accent), var(--primary));
             margin: 8px 0;
-            border-radius: 6px;
+            border-radius: 4px;
         }
        
         .options {
@@ -203,15 +190,15 @@
 </head>
 <body>
     <header>
-        <h1>🌸 CKCPS WARS 🌸</h1>
-        <p style="margin:4px 0 0 0; font-size:12px; color:#7bc8ff;">PASTEL CUTE EDITION • P.1–P.6</p>
+        <h1>🏴‍☠️ CKCPS WARS 🏴‍☠️</h1>
+        <p style="margin:4px 0 0 0; font-size:12px; color:#00f9ff;">CYBERPUNK NEON EDITION • P.1–P.6</p>
     </header>
     <div class="container">
         <!-- MENU SCREEN -->
         <div id="menu-screen" class="screen active">
             <div class="compact-grid">
                 <div class="section">
-                    <label style="color:#7bc8ff;">NUMBER OF TEAMS</label>
+                    <label style="color:#00f9ff;">NUMBER OF TEAMS</label>
                     <select id="num-teams">
                         <option value="2">2 Teams</option>
                         <option value="3">3 Teams</option>
@@ -221,7 +208,7 @@
                     </select>
                 </div>
                 <div class="section">
-                    <label style="color:#7bc8ff;">SUBJECT</label>
+                    <label style="color:#00f9ff;">SUBJECT</label>
                     <select id="subject">
                         <option value="English">English</option>
                         <option value="Maths">數學</option>
@@ -230,7 +217,7 @@
                     </select>
                 </div>
                 <div class="section">
-                    <label style="color:#7bc8ff;">LEVEL</label>
+                    <label style="color:#00f9ff;">LEVEL</label>
                     <select id="level">
                         <option value="P1">P.1</option>
                         <option value="P2">P.2</option>
@@ -242,10 +229,11 @@
                 </div>
             </div>
 
+            <!-- GAME END CONDITION 左右並排 -->
             <div class="section">
                 <div class="end-condition">
                     <div class="end-left">
-                        <label style="color:#ff9eb3;">GAME END CONDITION</label>
+                        <label style="color:#ff00aa;">GAME END CONDITION</label>
                         <select id="end-mode" onchange="toggleEndOptions()" style="width:100%;">
                             <option value="score">First to Score</option>
                             <option value="time">Timed Game</option>
@@ -253,11 +241,11 @@
                     </div>
                     <div class="end-right">
                         <div id="score-options">
-                            <label style="color:#ff9eb3;">TARGET SCORE</label>
+                            <label style="color:#ff00aa;">TARGET SCORE</label>
                             <input type="number" id="target-score" value="100" min="10" step="10" style="width:100%;">
                         </div>
                         <div id="time-options" style="display:none;">
-                            <label style="color:#ff9eb3;">DURATION (minutes)</label>
+                            <label style="color:#ff00aa;">DURATION (minutes)</label>
                             <input type="number" id="game-time" value="10" min="1" max="60" style="width:100%;">
                         </div>
                     </div>
@@ -265,20 +253,20 @@
             </div>
 
             <div class="section">
-                <label style="color:#9ee8b2;">QUESTION SOURCE</label>
+                <label style="color:#39ff14;">QUESTION SOURCE</label>
                 <div class="csv-buttons">
                     <button onclick="document.getElementById('csv-upload').click()">
                         📁 UPLOAD CSV
                     </button>
-                    <button onclick="loadDefaultCSV()" style="border-color:#9ee8b2;">
+                    <button onclick="loadDefaultCSV()" style="border-color:#39ff14;">
                         📋 Default Set
                     </button>
                 </div>
-                <p style="margin:8px 0; font-size:11px; color:#888;">No file = Use built-in sample questions</p>
+                <p style="margin:8px 0; font-size:11px; color:#94a3b8;">No file = Use built-in sample questions</p>
                 <input type="file" id="csv-upload" accept=".csv" style="display:none;" onchange="handleCSVUpload(event)">
             </div>
            
-            <button onclick="startGame()" style="font-size:22px; padding:20px 60px; margin-top:20px; border-color:#9ee8b2; box-shadow: 0 0 20px #9ee8b2;">
+            <button onclick="startGame()" style="font-size:22px; padding:20px 60px; margin-top:20px; border-color:#39ff14; box-shadow: 0 0 25px #39ff14;">
                 🚀 START BATTLE!
             </button>
         </div>
@@ -286,15 +274,15 @@
         <!-- GAME SCREEN -->
         <div id="game-screen" class="screen">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap;">
-                <strong id="game-info" style="color:#7bc8ff;"></strong>
+                <strong id="game-info" style="color:#00f9ff;"></strong>
                 <div>
-                    <span id="timer-display" style="font-size:15px; background:#fff; padding:6px 12px; border-radius:8px; border:3px solid #ff9eb3; display:none;"></span>
+                    <span id="timer-display" style="font-size:15px; background:#12122e; padding:6px 12px; border-radius:6px; border:2px solid #ff00aa; display:none;"></span>
                     <button onclick="endGame()" style="padding:10px 20px; font-size:13px;">END GAME</button>
                 </div>
             </div>
             
             <div class="leaderboard">
-                <h3 style="color:#ff9eb3;">🏆 LEADERBOARD 🏆</h3>
+                <h3 style="color:#ff00aa;">🏆 LEADERBOARD 🏆</h3>
                 <div id="leaderboard" style="text-align:left;"></div>
             </div>
             
@@ -358,7 +346,7 @@
 
         function initTeams(numTeams) {
             teams = []; currentQuestions = [];
-            const colors = ['#ff9eb3', '#7bc8ff', '#9ee8b2', '#d8b4ff', '#ffd4a3', '#a8e6cf'];
+            const colors = ['#f87171', '#60a5fa', '#facc15', '#a78bfa', '#f472b6', '#34d399'];
             for (let i = 0; i < numTeams; i++) {
                 teams.push({ id: i+1, name: `Team ${String.fromCharCode(65+i)}`, score: 0, color: colors[i % colors.length] });
                 currentQuestions.push(getRandomQuestion());
@@ -463,14 +451,14 @@
            
             buttons.forEach((btn, idx) => {
                 btn.disabled = true;
-                if (idx === q.ans) btn.style.borderColor = '#9ee8b2';
-                if (idx === selectedIndex && !isCorrect) btn.style.borderColor = '#ff9eb3';
+                if (idx === q.ans) btn.style.borderColor = '#39ff14';
+                if (idx === selectedIndex && !isCorrect) btn.style.borderColor = '#ff00aa';
             });
             if (isCorrect) {
                 teams[teamIndex].score += 10;
-                statusEl.innerHTML = `<span style="color:#9ee8b2">✅ CORRECT! +10</span>`;
+                statusEl.innerHTML = `<span style="color:#39ff14">✅ CORRECT! +10</span>`;
             } else {
-                statusEl.innerHTML = `<span style="color:#ff9eb3">❌ Wrong. Answer: ${String.fromCharCode(65 + q.ans)}</span>`;
+                statusEl.innerHTML = `<span style="color:#ff00aa">❌ Wrong. Answer: ${String.fromCharCode(65 + q.ans)}</span>`;
             }
             document.getElementById(`score-${teamId}`).textContent = teams[teamIndex].score;
             const progress = Math.min((teams[teamIndex].score / 300) * 100, 100);
@@ -500,9 +488,9 @@
             const sorted = [...teams].sort((a,b) => b.score - a.score);
             let html = '';
             sorted.forEach((t, i) => {
-                html += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #ddd;">
+                html += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #334155;">
                     <span><strong>#${i+1}</strong> ${t.name}</span>
-                    <span style="color:#9ee8b2;font-weight:bold;">${t.score} pts</span>
+                    <span style="color:#39ff14;font-weight:bold;">${t.score} pts</span>
                 </div>`;
             });
             document.getElementById('leaderboard').innerHTML = html;
