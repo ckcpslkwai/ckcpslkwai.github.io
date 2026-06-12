@@ -164,18 +164,6 @@
             gap: 12px;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
         }
-
-        .default-btn {
-            background: #12122e;
-            border-color: #39ff14;
-            color: #39ff14;
-            width: 100%;
-            margin-top: 8px;
-        }
-        .default-btn:hover {
-            background: #39ff14;
-            color: #000;
-        }
     </style>
 </head>
 <body>
@@ -240,9 +228,6 @@
                 <button onclick="document.getElementById('csv-upload').click()" style="width:100%; padding:12px 20px; border-color:#39ff14;">
                     📁 UPLOAD CSV
                 </button>
-                <button onclick="loadDefaultCSV()" class="default-btn">
-                    🔄 LOAD DEFAULT (default.csv)
-                </button>
                 <p style="margin:8px 0; font-size:11px; color:#94a3b8;">No CSV = Use built-in sample questions</p>
                 <input type="file" id="csv-upload" accept=".csv" style="display:none;">
             </div>
@@ -262,6 +247,7 @@
                 </div>
             </div>
 
+            <!-- 領先榜移到這裡（作答區上方） -->
             <div class="leaderboard">
                 <h3 style="color:#ff00aa; margin:0 0 12px 0;">🏆 LEADERBOARD 🏆</h3>
                 <div id="leaderboard" style="text-align:left;"></div>
@@ -290,19 +276,6 @@
             document.getElementById('time-options').style.display = mode === 'time' ? 'block' : 'none';
         }
 
-        async function loadDefaultCSV() {
-            try {
-                const response = await fetch('default.csv');
-                if (!response.ok) throw new Error('File not found');
-                const csvText = await response.text();
-                customQuestions = parseCSV(csvText);
-                alert(`✅ Loaded ${customQuestions.length} questions from default.csv`);
-            } catch (e) {
-                alert('⚠️ default.csv not found or failed to load.\nWill use built-in sample questions.');
-                customQuestions = [];
-            }
-        }
-
         function startGame() {
             const numTeams = parseInt(document.getElementById('num-teams').value);
             currentSubject = document.getElementById('subject').value;
@@ -315,10 +288,7 @@
             const fileInput = document.getElementById('csv-upload');
             if (fileInput.files.length > 0) {
                 const reader = new FileReader();
-                reader.onload = e => { 
-                    customQuestions = parseCSV(e.target.result); 
-                    initTeams(numTeams); 
-                };
+                reader.onload = e => { customQuestions = parseCSV(e.target.result); initTeams(numTeams); };
                 reader.readAsText(fileInput.files[0]);
             } else {
                 initTeams(numTeams);
@@ -326,17 +296,11 @@
         }
 
         function initTeams(numTeams) {
-            teams = []; 
-            currentQuestions = [];
+            teams = []; currentQuestions = [];
             const colors = ['#f87171', '#60a5fa', '#facc15', '#a78bfa', '#f472b6', '#34d399'];
 
             for (let i = 0; i < numTeams; i++) {
-                teams.push({ 
-                    id: i+1, 
-                    name: `Team ${String.fromCharCode(65+i)}`, 
-                    score: 0, 
-                    color: colors[i % colors.length] 
-                });
+                teams.push({ id: i+1, name: `Team ${String.fromCharCode(65+i)}`, score: 0, color: colors[i % colors.length] });
                 currentQuestions.push(getRandomQuestion());
             }
 
@@ -361,9 +325,7 @@
                 if (row.length < 3) continue;
                 const qText = row[1];
                 const opts = [];
-                for (let j = 2; j <= 5; j++) {
-                    if (row[j] && row[j].trim()) opts.push(row[j].trim());
-                }
+                for (let j = 2; j <= 5; j++) if (row[j] && row[j].trim()) opts.push(row[j].trim());
                 const correctIdx = parseInt(row[row.length - 1]) - 1;
                 if (opts.length >= 2 && !isNaN(correctIdx) && correctIdx < opts.length) {
                     questions.push({ q: qText, options: opts, ans: correctIdx });
@@ -378,10 +340,7 @@
             for (let i = 0; i < line.length; i++) {
                 const char = line[i];
                 if (char === '"') inQuotes = !inQuotes;
-                else if (char === ',' && !inQuotes) { 
-                    result.push(current.trim()); 
-                    current = ''; 
-                }
+                else if (char === ',' && !inQuotes) { result.push(current.trim()); current = ''; }
                 else current += char;
             }
             result.push(current.trim());
@@ -391,30 +350,19 @@
         function getRandomQuestion() {
             let pool = customQuestions.length > 0 ? customQuestions : 
                        (questionsDB[currentSubject] && questionsDB[currentSubject][currentLevel]) || [];
-            
             if (pool.length === 0) {
                 const all = [];
-                Object.keys(questionsDB).forEach(s => {
-                    if (questionsDB[s] && questionsDB[s][currentLevel]) all.push(...questionsDB[s][currentLevel]);
-                });
+                Object.keys(questionsDB).forEach(s => { if (questionsDB[s][currentLevel]) all.push(...questionsDB[s][currentLevel]); });
                 pool = all.length ? all : questionsDB.English.P6;
             }
-
             const original = pool[Math.floor(Math.random() * pool.length)];
             let shuffled = [...original.options];
             const correctText = shuffled[original.ans];
-            
-            // Shuffle options
             for (let i = shuffled.length-1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i+1));
                 [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
             }
-            
-            return { 
-                q: original.q, 
-                options: shuffled, 
-                ans: shuffled.indexOf(correctText) 
-            };
+            return { q: original.q, options: shuffled, ans: shuffled.indexOf(correctText) };
         }
 
         function renderAllTeams() {
@@ -467,31 +415,22 @@
             }
 
             document.getElementById(`score-${teamId}`).textContent = teams[teamIndex].score;
-            
-            // FIXED: Use teamId instead of undefined 'team'
             const progress = Math.min((teams[teamIndex].score / 300) * 100, 100);
-            const progressBar = document.getElementById(`progress-${teamId}`);
-            if (progressBar) progressBar.style.width = `${progress}%`;
+            document.getElementById(`progress-${team.id}`).style.width = `${progress}%`;
 
             updateLeaderboard();
 
             if (endMode === 'score' && teams[teamIndex].score >= targetScore) {
-                setTimeout(() => { 
-                    alert(`🎉 ${teams[teamIndex].name} WINS!`); 
-                    endGame(); 
-                }, 800);
+                setTimeout(() => { alert(`🎉 ${teams[teamIndex].name} WINS!`); endGame(); }, 800);
                 return;
             }
 
-            // Load next question
             setTimeout(() => {
                 currentQuestions[teamIndex] = getRandomQuestion();
                 document.getElementById(`qtext-${teamId}`).textContent = currentQuestions[teamIndex].q;
                 document.getElementById(`status-${teamId}`).innerHTML = '';
-                
                 const optsDiv = document.getElementById(`options-${teamId}`);
                 optsDiv.innerHTML = '';
-                
                 currentQuestions[teamIndex].options.forEach((opt, i) => {
                     const btn = document.createElement('button');
                     btn.className = 'option-btn';
@@ -528,12 +467,7 @@
             if (gameInterval) clearInterval(gameInterval);
             gameInterval = setInterval(() => {
                 const remaining = Math.ceil((gameEndTime - Date.now()) / 1000);
-                if (remaining <= 0) { 
-                    clearInterval(gameInterval); 
-                    alert("⏰ Time's Up!"); 
-                    endGame(); 
-                    return; 
-                }
+                if (remaining <= 0) { clearInterval(gameInterval); alert("⏰ Time's Up!"); endGame(); return; }
                 const min = Math.floor(remaining / 60);
                 const sec = remaining % 60;
                 document.getElementById('timer-display').textContent = `TIME: ${min}:${sec < 10 ? '0'+sec : sec}`;
@@ -545,7 +479,7 @@
             const key = e.key.toUpperCase();
             if (!['A','B','C','D'].includes(key)) return;
             const idx = key.charCodeAt(0) - 65;
-            teams.forEach((team, index) => {
+            teams.forEach(team => {
                 const opts = document.getElementById(`options-${team.id}`);
                 if (opts && !opts.querySelector('button[disabled]')) {
                     const btns = opts.querySelectorAll('.option-btn');
