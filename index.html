@@ -22,7 +22,7 @@
       font-size: 115%;
     }
     .container{max-width:1920px;margin:0 auto}
-   
+  
     header {
       text-align:center;
       padding:20px 0 25px;
@@ -80,6 +80,15 @@
     }
     .btn-join:hover {
       background: #43a047;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+    .btn-light {
+      background: #f1c40f;
+      color: #2c3e50;
+    }
+    .btn-light:hover {
+      background: #f39c12;
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     }
@@ -180,37 +189,36 @@
   <div class="container">
     <header>
       <div class="title-wrapper">
-        <!-- 新增的 Multiplayer 按鈕（放在 Exercise 左邊） -->
-        <a
-          href="tug02.html"
-          class="action-btn btn-multiplayer"
-        >
-          Multiplayer
+        <!-- Dark Mode -->
+        <a href="tug02.html" class="action-btn btn-multiplayer">
+          Dark mode
         </a>
         
-        <a
-          href="exercises.pdf"
-          target="_blank"
-          class="action-btn btn-exercises"
-        >
-          Exercises
+        <!-- Light Mode -->
+        <a href="tug2-6testP.html" class="action-btn btn-light">
+          Light mode
         </a>
+
         <h1><font size="8">🏆 Leaderboard-English 🏆</font></h1>
-        <a
-          href="how-to-join.pdf"
-          target="_blank"
-          class="action-btn btn-join"
-        >
+        
+        <!-- How to join -->
+        <a href="how-to-join.pdf" target="_blank" class="action-btn btn-join">
           How to join
+        </a>
+        
+        <!-- Exercises 移到 How to join 右邊 -->
+        <a href="exercises.pdf" target="_blank" class="action-btn btn-exercises">
+          Exercises
         </a>
       </div>
     </header>
+    
     <div class="grid" id="gridPanels"></div>
     <div id="lastUpdate">資料載入中...</div>
   </div>
 
   <script>
-    // ...（後面的 JavaScript 完全不變，保持原樣）
+    // JavaScript 部分完全不變
     const SPREADSHEET_ID = '111qBSbRYUCqd5gxLrZFst08fTKHYyTHa';
     const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
     const SHEET_CONFIG = [
@@ -221,8 +229,10 @@
       { name: 'P.5', gid: '261203595' },
       { name: 'P.6', gid: '190158040' }
     ];
+
     const gridPanels = document.getElementById('gridPanels');
     let intervals = [];
+
     function createPanels() {
       gridPanels.innerHTML = '';
       SHEET_CONFIG.forEach(sheet => {
@@ -240,6 +250,7 @@
         gridPanels.appendChild(panel);
       });
     }
+
     async function fetchSheetData(gid, retries = 3) {
       const targetUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${gid}`;
       const proxyUrl = CORS_PROXY + encodeURIComponent(targetUrl);
@@ -264,6 +275,7 @@
       console.error(`載入失敗，已重試 ${retries} 次: gid=${gid}`);
       return null;
     }
+
     function parseCSV(csvText) {
       if (!csvText || csvText.trim() === '') return [];
       const lines = csvText.trim().split('\n').filter(line => line.trim() !== '');
@@ -310,6 +322,7 @@
       }
       return data;
     }
+
     function processAndRender(panel, rows, sheetName) {
       const contentDiv = panel.lastElementChild;
       let filtered = rows;
@@ -368,6 +381,7 @@
         }
       }
     }
+
     window.retryPanel = async function(sheetName) {
       const sheet = SHEET_CONFIG.find(s => s.name === sheetName);
       if (!sheet) return;
@@ -390,6 +404,7 @@
         `;
       }
     };
+
     async function loadAllData() {
       intervals.forEach(clearInterval);
       intervals = [];
@@ -416,6 +431,7 @@
       document.getElementById('lastUpdate').textContent =
         `最後更新：${new Date().toLocaleString('zh-TW')}（每15分鐘自動更新中）`;
     }
+
     window.addEventListener('load', () => {
       loadAllData();
       setInterval(() => {
