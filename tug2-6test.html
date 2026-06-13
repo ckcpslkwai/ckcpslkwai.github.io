@@ -447,6 +447,14 @@ function renderAllTeams() {
         currentQuestions[index].options.forEach((opt, i) => {
             const btn = document.createElement('button');
             btn.className = 'option-btn';
+// 新增：答案 ≤ 3 個字元時放大到 70pt
+            const isShortAnswer = opt.length <= 3;
+            if (isShortAnswer) {
+                btn.style.fontSize = '70px';
+                btn.style.lineHeight = '1.1';
+                btn.style.padding = '18px 20px';   // 稍微增加間距讓大字更舒服
+            }
+            
             btn.textContent = `${String.fromCharCode(65+i)}. ${opt}`;
             btn.onclick = () => handleAnswer(team.id, i, index);
             optsDiv.appendChild(btn);
