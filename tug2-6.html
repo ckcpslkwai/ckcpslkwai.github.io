@@ -357,6 +357,45 @@
                 gameEndTime = Date.now() + (window.gameMinutes || 10) * 60 * 1000;
                 document.getElementById('timer-display').style.display = 'inline';
                 startTimer();
+            function renderAllTeams() {
+    const grid = document.getElementById('team-grid');
+    grid.innerHTML = '';
+    teams.forEach((team, index) => {
+        const card = document.createElement('div');
+        card.className = `team-card team-${team.id}`;
+        card.id = `team-card-${team.id}`;
+        
+        const qText = currentQuestions[index].q;
+        const isShort = qText.length <= 10;
+        
+        card.innerHTML = `
+            <div class="team-header">
+                <div class="team-name" style="color:${team.color}">${team.name}</div>
+                <div class="score" id="score-${team.id}">${team.score}</div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-${team.id}" style="width:0%"></div>
+            </div>
+            <div class="question" id="qtext-${team.id}" 
+                 style="font-size: ${isShort ? '32px' : 'clamp(15px, 2.4vw, 18px)'}; 
+                        line-height: ${isShort ? '1.2' : '1.55'}">
+                ${qText}
+            </div>
+            <div class="options" id="options-${team.id}"></div>
+            <div class="status" id="status-${team.id}"></div>
+        `;
+        grid.appendChild(card);
+
+        const optsDiv = document.getElementById(`options-${team.id}`);
+        currentQuestions[index].options.forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.textContent = `${String.fromCharCode(65+i)}. ${opt}`;
+            btn.onclick = () => handleAnswer(team.id, i, index);
+            optsDiv.appendChild(btn);
+        });
+    });
+}
             }
         }
 
