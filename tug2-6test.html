@@ -433,11 +433,6 @@ function renderAllTeams() {
             <div class="progress-container">
                 <div class="progress-bar" id="progress-${team.id}" style="width:0%"></div>
             </div>
-            <div class="question" id="qtext-${team.id}" 
-                 style="font-size: ${isShort ? '70px' : 'clamp(15px, 2.4vw, 18px)'}; 
-                        line-height: ${isShort ? '1.2' : '1.55'}">
-                ${qText}
-            </div>
             <div class="options" id="options-${team.id}"></div>
             <div class="status" id="status-${team.id}"></div>
         `;
