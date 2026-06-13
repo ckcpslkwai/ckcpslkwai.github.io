@@ -423,7 +423,7 @@ function renderAllTeams() {
         card.id = `team-card-${team.id}`;
         
         const qText = currentQuestions[index].q;
-        const isShort = qText.length <= 10;
+        const isShort = qText.length <= 3;
         
         card.innerHTML = `
             <div class="team-header">
