@@ -435,7 +435,7 @@ function renderAllTeams() {
         card.id = `team-card-${team.id}`;
         
         const qText = currentQuestions[index].q;
-        const isShort = qText.length = 2;
+        const isShort = qText.length <= 2;
         
         card.innerHTML = `
             <div class="team-header">
@@ -460,7 +460,7 @@ function renderAllTeams() {
             const btn = document.createElement('button');
             btn.className = 'option-btn';
 // 新增：答案 ≤ 3 個字元時放大到 70pt
-            const isShortAnswer = opt.length = 2;
+            const isShortAnswer = opt.length <= 2;
             if (isShortAnswer) {
                 btn.style.fontSize = '70px';
                 btn.style.lineHeight = '1.1';
