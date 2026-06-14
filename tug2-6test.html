@@ -208,7 +208,7 @@
                     </select>
                 </div>
                 <div class="section">
-                    <label style="color:#00f9ff;">SUBJECT(inactive未啟用)</label>
+                    <label style="color:#00f9ff;">SUBJECT FILTER</label>
                     <select id="subject">
                         <option value="English">English</option>
                         <option value="Maths">數學</option>
@@ -217,7 +217,7 @@
                     </select>
                 </div>
                 <div class="section">
-                    <label style="color:#00f9ff;">LEVEL(inactive未啟用)</label>
+                    <label style="color:#00f9ff;">LEVEL FILTER</label>
                     <select id="level">
                         <option value="P1">P.1</option>
                         <option value="P2">P.2</option>
@@ -291,13 +291,8 @@
     </div>
 
     <script>
-        // ==================== 內建題庫 ====================
-        const questionsDB = {
-            English: { P6: [{q: "What is the past tense of 'go'?", options: ["goed", "went", "gone", "go"], ans: 1}] },
-            Maths: { P6: [{q: "What is 15% of 200?", options: ["20", "25", "30", "35"], ans: 2}] },
-            Science: { P6: [{q: "What organ pumps blood?", options: ["Lung", "Brain", "Heart", "Kidney"], ans: 2}] },
-            Chinese: { P6: [{q: "「明月幾時有」的下一句是？", options: ["把酒問青天", "不知天上宮闕", "我欲乘風歸去", "千里共嬋娟"], ans: 0}] }
-        };
+        // Built-in question bank (內建題庫) has been removed.
+        // Game now uses CSV only. SUBJECT / LEVEL filters work if your CSV has those columns.
 
         let customQuestions = [];
         let currentSubject = '', currentLevel = '', teams = [], currentQuestions = [];
@@ -339,6 +334,15 @@
             if (endMode === 'score') targetScore = parseInt(document.getElementById('target-score').value) || 100;
             else window.gameMinutes = parseInt(document.getElementById('game-time').value) || 10;
 
+            if (customQuestions.length === 0) {
+                alert('⚠️ No questions loaded!\n\nPlease upload a CSV question bank first, or click the "📋 Sample Set (樣辦題庫)" button.\n\nThe built-in question bank has been cleared.');
+                return;
+            }
+
+            // Show active filter on game screen
+            const infoEl = document.getElementById('game-info');
+            infoEl.innerHTML = `SUBJECT: <span style="color:#39ff14">${currentSubject}</span> &nbsp;|&nbsp; LEVEL: <span style="color:#39ff14">${currentLevel}</span>`;
+
             document.getElementById('menu-screen').classList.remove('active');
             document.getElementById('game-screen').classList.add('active');
             initTeams(numTeams);
@@ -362,17 +366,82 @@
 
         function parseCSV(csvText) {
             const lines = csvText.trim().split('\n');
+            if (lines.length < 2) return [];
+
+            const header = parseCSVLine(lines[0]).map(h => h.toLowerCase().trim());
+
+            // Detect named columns (supports English + Chinese headers)
+            const colIdx = {
+                subject: header.findIndex(h => ['subject', 'subj', '科目', '學科'].includes(h)),
+                level:   header.findIndex(h => ['level', 'lvl', '年級', '級別', 'level filter'].includes(h)),
+                question:header.findIndex(h => ['question', 'q', '問題', '題目', '題幹'].includes(h)),
+                correct: header.findIndex(h => ['correct', 'answer', 'ans', '正確答案', '答案', 'correct answer'].includes(h))
+            };
+
+            const useNamed = colIdx.question >= 0 || colIdx.subject >= 0 || colIdx.level >= 0;
+
             const questions = [];
+
             for (let i = 1; i < lines.length; i++) {
                 if (!lines[i].trim()) continue;
                 const row = parseCSVLine(lines[i]);
                 if (row.length < 3) continue;
-                const qText = row[1];
-                const opts = [];
-                for (let j = 2; j <= 5; j++) if (row[j] && row[j].trim()) opts.push(row[j].trim());
-                const correctIdx = parseInt(row[row.length - 1]) - 1;
-                if (opts.length >= 2 && !isNaN(correctIdx) && correctIdx < opts.length) {
-                    questions.push({ q: qText, options: opts, ans: correctIdx });
+
+                let qText = '', opts = [], correctIdx = -1;
+                let subj = '', lvl = '';
+
+                if (useNamed) {
+                    // === Named header mode (recommended for SUBJECT + LEVEL) ===
+                    if (colIdx.question >= 0) qText = row[colIdx.question] || '';
+                    if (colIdx.subject >= 0) subj = row[colIdx.subject] || '';
+                    if (colIdx.level   >= 0) lvl  = row[colIdx.level]   || '';
+
+                    // Try to collect up to 4 options from named columns first
+                    const possibleOptNames = ['option_a','option_b','option_c','option_d','a','b','c','d','opt1','opt2','opt3','opt4','choice1','choice2','choice3','choice4'];
+                    for (const name of possibleOptNames) {
+                        const pos = header.findIndex(h => h === name);
+                        if (pos >= 0 && row[pos] && row[pos].trim()) {
+                            opts.push(row[pos].trim());
+                            if (opts.length >= 4) break;
+                        }
+                    }
+
+                    // If still not enough options, fallback to columns after question
+                    if (opts.length < 2 && colIdx.question >= 0) {
+                        for (let j = colIdx.question + 1; j < row.length && opts.length < 4; j++) {
+                            const h = header[j] || '';
+                            if (row[j] && row[j].trim() && !['correct','answer','ans','正確答案'].includes(h)) {
+                                opts.push(row[j].trim());
+                            }
+                        }
+                    }
+
+                    // Correct answer
+                    if (colIdx.correct >= 0) {
+                        let cVal = (row[colIdx.correct] || '').trim();
+                        correctIdx = parseInt(cVal, 10) - 1;
+                        if (isNaN(correctIdx)) {
+                            // try A/B/C/D
+                            const letter = cVal.toUpperCase().charCodeAt(0);
+                            if (letter >= 65 && letter <= 68) correctIdx = letter - 65;
+                        }
+                    } else {
+                        correctIdx = parseInt(row[row.length - 1], 10) - 1;
+                    }
+                } else {
+                    // === Legacy positional mode (backward compatible) ===
+                    qText = row[1] || '';
+                    for (let j = 2; j <= 5; j++) {
+                        if (row[j] && row[j].trim()) opts.push(row[j].trim());
+                    }
+                    correctIdx = parseInt(row[row.length - 1], 10) - 1;
+                }
+
+                if (qText && opts.length >= 2 && !isNaN(correctIdx) && correctIdx >= 0 && correctIdx < opts.length) {
+                    const qObj = { q: qText.trim(), options: opts, ans: correctIdx };
+                    if (subj) qObj.subject = subj.trim();
+                    if (lvl)  qObj.level   = lvl.trim().toUpperCase().replace('P.', 'P').replace(/^P(\d)$/, 'P$1');
+                    questions.push(qObj);
                 }
             }
             return questions;
@@ -395,15 +464,31 @@
         }
 
         function getRandomQuestion() {
-            let pool = customQuestions.length > 0 ? customQuestions :
-                       (questionsDB[currentSubject] && questionsDB[currentSubject][currentLevel]) || [];
-            if (pool.length === 0) {
-                const all = [];
-                Object.keys(questionsDB).forEach(s => { 
-                    if (questionsDB[s] && questionsDB[s][currentLevel]) all.push(...questionsDB[s][currentLevel]); 
-                });
-                pool = all.length ? all : questionsDB.English.P6;
+            if (customQuestions.length === 0) {
+                return {
+                    q: "⚠️ No question bank loaded! Please upload a CSV or click [Sample Set] first.",
+                    options: ["A. Upload CSV now", "B. Load Sample Set", "C. Go back to Menu", "D. Retry"],
+                    ans: 0
+                };
             }
+
+            // Filter by selected SUBJECT and LEVEL (if the CSV contains those columns)
+            let pool = customQuestions.filter(item => {
+                let match = true;
+                if (currentSubject && item.subject) {
+                    match = match && (item.subject.toLowerCase() === currentSubject.toLowerCase());
+                }
+                if (currentLevel && item.level) {
+                    const normLevel = currentLevel.toUpperCase().replace('P.', 'P');
+                    match = match && (item.level.toUpperCase() === normLevel);
+                }
+                return match;
+            });
+
+            if (pool.length === 0) {
+                pool = customQuestions; // fallback: use all questions if no match for the filter
+            }
+
             const original = pool[Math.floor(Math.random() * pool.length)];
             let shuffled = [...original.options];
             const correctText = shuffled[original.ans];
