@@ -291,13 +291,9 @@
     </div>
 
     <script>
-        // ==================== 內建題庫 ====================
-        const questionsDB = {
-            English: { P6: [{q: "What is the past tense of 'go'?", options: ["goed", "went", "gone", "go"], ans: 1}] },
-            Maths: { P6: [{q: "What is 15% of 200?", options: ["20", "25", "30", "35"], ans: 2}] },
-            Science: { P6: [{q: "What organ pumps blood?", options: ["Lung", "Brain", "Heart", "Kidney"], ans: 2}] },
-            Chinese: { P6: [{q: "「明月幾時有」的下一句是？", options: ["把酒問青天", "不知天上宮闕", "我欲乘風歸去", "千里共嬋娟"], ans: 0}] }
-        };
+        // ==================== 題庫來源 ====================
+        // 已取消內建題庫（questionsDB），現在「永遠只從 .csv 檔案提取問題」
+        // 請務必先點擊「Sample Set」或上傳 CSV 後再開始遊戲
 
         let customQuestions = [];
         let currentSubject = '', currentLevel = '', teams = [], currentQuestions = [];
@@ -349,6 +345,12 @@
         }
 
         function startGame() {
+            // 強制要求先載入 CSV（已取消內建題庫）
+            if (!customQuestions || customQuestions.length === 0) {
+                alert('⚠️ 請先載入題庫！\n\n請點擊「📋 Sample Set」載入預設題庫，\n或上傳您的 CSV 檔案。\n\n（已取消內建題庫，遊戲現在只使用 .csv 檔案）');
+                return;
+            }
+
             const numTeams = parseInt(document.getElementById('num-teams').value);
             currentSubject = document.getElementById('subject').value;
             currentLevel = document.getElementById('level').value;
@@ -359,7 +361,7 @@
             document.getElementById('menu-screen').classList.remove('active');
             document.getElementById('game-screen').classList.add('active');
             const infoEl = document.getElementById('game-info');
-            infoEl.innerHTML = `${currentSubject} • ${currentLevel} <span style="color:#94a3b8; font-size:12px;">(${customQuestions.length > 0 ? customQuestions.length + ' Qs from CSV' : 'Built-in'})</span>`;
+            infoEl.innerHTML = `${currentSubject} • ${currentLevel} <span style="color:#94a3b8; font-size:12px;">(${customQuestions.length} Qs from CSV)</span>`;
             initTeams(numTeams);
         }
 
@@ -496,15 +498,16 @@
         }
 
         function getRandomQuestion() {
-            let pool = customQuestions.length > 0 ? customQuestions :
-                       (questionsDB[currentSubject] && questionsDB[currentSubject][currentLevel]) || [];
-            if (pool.length === 0) {
-                const all = [];
-                Object.keys(questionsDB).forEach(s => { 
-                    if (questionsDB[s] && questionsDB[s][currentLevel]) all.push(...questionsDB[s][currentLevel]); 
-                });
-                pool = all.length ? all : questionsDB.English.P6;
+            // 永遠只從已載入的 CSV 題庫提取問題（已取消內建題庫）
+            if (!customQuestions || customQuestions.length === 0) {
+                // 安全返回，避免遊戲崩潰（實際上 startGame 會先阻擋）
+                return {
+                    q: "請先載入 CSV 題庫！",
+                    options: ["Sample Set", "上傳 CSV", "選擇科目年級", "重新開始"],
+                    ans: 0
+                };
             }
+            const pool = customQuestions;
             const original = pool[Math.floor(Math.random() * pool.length)];
             let shuffled = [...original.options];
             const correctText = shuffled[original.ans];
