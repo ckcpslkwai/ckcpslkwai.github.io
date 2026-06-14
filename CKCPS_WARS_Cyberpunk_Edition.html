@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CKCPS WARS - CYBERPUNK EDITION</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+      
+        :root {
+            --primary: #00f9ff;
+            --secondary: #ff00aa;
+            --accent: #39ff14;
+        }
+      
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Press Start 2P', system-ui;
+            background: linear-gradient(180deg, #0a0a1f 0%, #05050f 100%);
+            color: #fff;
+            text-align: center;
+        }
+      
+        header {
+            background: #0a0a1f;
+            padding: 12px;
+            border-bottom: 3px solid var(--primary);
+        }
+      
+        h1 {
+            margin: 0;
+            font-size: clamp(22px, 5vw, 30px);
+            text-shadow: 0 0 10px var(--primary);
+        }
+      
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 15px;
+        }
+      
+        .screen { display: none; }
+        .screen.active { display: block; }
+      
+        button {
+            font-family: 'Press Start 2P', system-ui;
+            padding: 14px 28px; margin: 8px;
+            background: #12122e;
+            color: #fff;
+            border: 3px solid var(--primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 0 12px rgba(0, 249, 255, 0.4);
+            font-size: 15px;
+        }
+        button:hover {
+            background: var(--primary);
+            color: #000;
+            transform: scale(1.03);
+        }
+      
+        .section {
+            background: #12122e;
+            padding: 20px 18px;     /* 加大垂直空間 */
+            margin: 12px 0;
+            border-radius: 10px;
+            border: 2px solid var(--primary);
+        }
+      
+        select, input[type="number"] {
+            font-family: 'Press Start 2P', system-ui;
+            padding: 12px 12px;     /* 加大內距，讓框更高 */
+            background: #0a0a1f;
+            color: #fff;
+            border: 2px solid var(--accent);
+            margin: 6px 0;          /* 增加上下間距 */
+            font-size: 14px;
+            width: 95%;             /* 加寬 */
+            max-width: 320px;
+            box-sizing: border-box;
+        }
+      
+        label {
+            font-size: 13px;
+            display: block;
+            margin-bottom: 6px;
+        }
+      
+        .score {
+            font-size: 32px;
+            color: var(--accent);
+            text-shadow: 0 0 8px var(--accent);
+        }
+      
+        .question {
+            background: #0a0a1f;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 10px 0;
+            min-height: 85px;
+            display: flex;
+            align-items: center;
+            font-size: clamp(15px, 2.1vw, 17px);
+            text-align: left;
+            border: 2px solid var(--primary);
+            box-sizing: border-box;
+        }
+      
+        .option-btn {
+            padding: 12px 14px;
+            font-size: clamp(13px, 2vw, 15px);
+            border: 2px solid #334155;
+            background: #12122e;
+            text-align: left;
+            margin: 5px 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+      
+        .leaderboard {
+            background: #12122e;
+            padding: 16px;
+            border-radius: 10px;
+            border: 2px solid var(--secondary);
+            margin-bottom: 20px;
+        }
+       
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+            gap: 14px;
+            width: 100%;
+            padding-bottom: 12px;
+        }
+      
+        .team-card {
+            background: #12122e;
+            border: 4px solid #334155;
+            border-radius: 10px;
+            padding: 14px;
+            min-height: 420px;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+       
+        .team-header {
+            margin-bottom: 8px;
+        }
+       
+        .progress-bar {
+            height: 8px;
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            margin: 8px 0;
+            border-radius: 4px;
+        }
+       
+        .options {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+       
+        .compact-grid {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        }
+
+        .csv-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .csv-buttons button {
+            flex: 1;
+        }
+
+        .end-condition {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        .end-left, .end-right {
+            flex: 1;
+            min-width: 220px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🏴‍☠️ CKCPS WARS 🏴‍☠️</h1>
+        <p style="margin:4px 0 0 0; font-size:12px; color:#00f9ff;">CYBERPUNK NEON EDITION • P.1–P.6</p>
+    </header>
+    <div class="container">
+        <!-- MENU SCREEN -->
+        <div id="menu-screen" class="screen active">
+            <div class="compact-grid">
+                <div class="section">
+                    <label style="color:#00f9ff;">NUMBER OF TEAMS</label>
+                    <select id="num-teams">
+                        <option value="2">2 Teams</option>
+                        <option value="3">3 Teams</option>
+                        <option value="4" selected>4 Teams</option>
+                        <option value="5">5 Teams</option>
+                        <option value="6">6 Teams</option>
+                    </select>
+                </div>
+                <div class="section">
+                    <label style="color:#00f9ff;">SUBJECT <span style="font-size:10px; color:#94a3b8;">(filters Sample Set)</span></label>
+                    <select id="subject">
+                        <option value="English">English</option>
+                        <option value="Maths">數學</option>
+                        <option value="Science">科學</option>
+                        <option value="Chinese">中文</option>
+                    </select>
+                </div>
+                <div class="section">
+                    <label style="color:#00f9ff;">LEVEL <span style="font-size:10px; color:#94a3b8;">(filters Sample Set)</span></label>
+                    <select id="level">
+                        <option value="P1">P.1</option>
+                        <option value="P2">P.2</option>
+                        <option value="P3">P.3</option>
+                        <option value="P4">P.4</option>
+                        <option value="P5">P.5</option>
+                        <option value="P6" selected>P.6</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- GAME END CONDITION 左右並排 -->
+            <div class="section">
+                <div class="end-condition">
+                    <div class="end-left">
+                        <label style="color:#ff00aa;">GAME END CONDITION</label>
+                        <select id="end-mode" onchange="toggleEndOptions()" style="width:100%;">
+                            <option value="score">First to Score</option>
+                            <option value="time">Timed Game</option>
+                        </select>
+                    </div>
+                    <div class="end-right">
+                        <div id="score-options">
+                            <label style="color:#ff00aa;">TARGET SCORE</label>
+                            <input type="number" id="target-score" value="100" min="10" step="10" style="width:100%;">
+                        </div>
+                        <div id="time-options" style="display:none;">
+                            <label style="color:#ff00aa;">DURATION (minutes)</label>
+                            <input type="number" id="game-time" value="10" min="1" max="60" style="width:100%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <label style="color:#39ff14;">QUESTION SOURCE</label>
+                <div class="csv-buttons">
+                    <button onclick="document.getElementById('csv-upload').click()">
+                        📁 UPLOAD CSV 上載
+                    </button>
+                    <button onclick="loadDefaultCSV()" style="border-color:#39ff14;">
+                        📋 Sample Set(Mixed) 樣辦題庫(混合)
+                    </button>
+                </div>
+                <p style="margin:8px 0; font-size:11px; color:#94a3b8;">Sample Set uses selected SUBJECT + LEVEL to filter questions from default.csv</p>
+                <input type="file" id="csv-upload" accept=".csv" style="display:none;" onchange="handleCSVUpload(event)">
+            </div>
+           
+            <button onclick="startGame()" style="font-size:22px; padding:20px 60px; margin-top:20px; border-color:#39ff14; box-shadow: 0 0 25px #39ff14;">
+                🚀 START BATTLE!
+            </button>
+        </div>
+
+        <!-- GAME SCREEN -->
+        <div id="game-screen" class="screen">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap;">
+                <strong id="game-info" style="color:#00f9ff;"></strong>
+                <div>
+                    <span id="timer-display" style="font-size:15px; background:#12122e; padding:6px 12px; border-radius:6px; border:2px solid #ff00aa; display:none;"></span>
+                    <button onclick="endGame()" style="padding:10px 20px; font-size:13px;">END GAME</button>
+                </div>
+            </div>
+            
+            <div class="leaderboard">
+                <h3 style="color:#ff00aa;">🏆 LEADERBOARD 🏆</h3>
+                <div id="leaderboard" style="text-align:left;"></div>
+            </div>
+            
+            <div id="team-grid" class="team-grid"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 內建題庫 ====================
+        const questionsDB = {
+            English: { P6: [{q: "What is the past tense of 'go'?", options: ["goed", "went", "gone", "go"], ans: 1}] },
+            Maths: { P6: [{q: "What is 15% of 200?", options: ["20", "25", "30", "35"], ans: 2}] },
+            Science: { P6: [{q: "What organ pumps blood?", options: ["Lung", "Brain", "Heart", "Kidney"], ans: 2}] },
+            Chinese: { P6: [{q: "「明月幾時有」的下一句是？", options: ["把酒問青天", "不知天上宮闕", "我欲乘風歸去", "千里共嬋娟"], ans: 0}] }
+        };
+
+        let customQuestions = [];
+        let currentSubject = '', currentLevel = '', teams = [], currentQuestions = [];
+        let gameInterval = null, endMode = 'score', targetScore = 100, gameEndTime = null;
+
+        function toggleEndOptions() {
+            const mode = document.getElementById('end-mode').value;
+            document.getElementById('score-options').style.display = mode === 'score' ? 'block' : 'none';
+            document.getElementById('time-options').style.display = mode === 'time' ? 'block' : 'none';
+        }
+
+        async function loadDefaultCSV() {
+            try {
+                const response = await fetch('./default.csv');
+                if (!response.ok) throw new Error('File not found');
+                const csvText = await response.text();
+                const allParsed = parseCSV(csvText);
+                const selectedSubject = document.getElementById('subject').value;
+                const selectedLevel = document.getElementById('level').value;
+                customQuestions = filterQuestionsBySubjectLevel(allParsed, selectedSubject, selectedLevel);
+                if (customQuestions.length === 0) {
+                    alert(`⚠️ No questions found for ${selectedSubject} ${selectedLevel} in default.csv.\nLoaded all ${allParsed.length} questions instead.`);
+                    customQuestions = allParsed;
+                } else {
+                    alert(`✅ Default Set loaded! ${customQuestions.length} questions for ${selectedSubject} - ${selectedLevel}`);
+                }
+            } catch (err) {
+                alert('❌ Cannot load default.csv\nPlease make sure default.csv is in the same folder.');
+            }
+        }
+
+        function handleCSVUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                const allParsed = parseCSV(e.target.result);
+                const selectedSubject = document.getElementById('subject').value;
+                const selectedLevel = document.getElementById('level').value;
+                customQuestions = filterQuestionsBySubjectLevel(allParsed, selectedSubject, selectedLevel);
+                if (customQuestions.length === 0) {
+                    alert(`⚠️ No matching questions for ${selectedSubject} ${selectedLevel} in your CSV. Using all ${allParsed.length} questions.`);
+                    customQuestions = allParsed;
+                } else {
+                    alert(`✅ CSV loaded! ${customQuestions.length} questions matched for ${selectedSubject} - ${selectedLevel}`);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function startGame() {
+            const numTeams = parseInt(document.getElementById('num-teams').value);
+            currentSubject = document.getElementById('subject').value;
+            currentLevel = document.getElementById('level').value;
+            endMode = document.getElementById('end-mode').value;
+            if (endMode === 'score') targetScore = parseInt(document.getElementById('target-score').value) || 100;
+            else window.gameMinutes = parseInt(document.getElementById('game-time').value) || 10;
+
+            document.getElementById('menu-screen').classList.remove('active');
+            document.getElementById('game-screen').classList.add('active');
+            const infoEl = document.getElementById('game-info');
+            infoEl.innerHTML = `${currentSubject} • ${currentLevel} <span style="color:#94a3b8; font-size:12px;">(${customQuestions.length > 0 ? customQuestions.length + ' Qs from CSV' : 'Built-in'})</span>`;
+            initTeams(numTeams);
+        }
+
+        function initTeams(numTeams) {
+            teams = []; currentQuestions = [];
+            const colors = ['#f87171', '#60a5fa', '#facc15', '#a78bfa', '#f472b6', '#34d399'];
+            for (let i = 0; i < numTeams; i++) {
+                teams.push({ id: i+1, name: `Team ${String.fromCharCode(65+i)}`, score: 0, color: colors[i % colors.length] });
+                currentQuestions.push(getRandomQuestion());
+            }
+            renderAllTeams();
+            updateLeaderboard();
+            if (endMode === 'time') {
+                gameEndTime = Date.now() + (window.gameMinutes || 10) * 60 * 1000;
+                document.getElementById('timer-display').style.display = 'inline';
+                startTimer();
+            }
+        }
+
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            if (lines.length < 2) return [];
+            const header = parseCSVLine(lines[0]).map(h => h.toLowerCase().trim().replace(/"/g, ''));
+            const questions = [];
+
+            // Detect column indices (support English + Chinese headers)
+            const findIdx = (keywords) => header.findIndex(h => keywords.some(k => h.includes(k)));
+            const idxSubject = findIdx(['subject', '科目', 'subj']);
+            const idxLevel   = findIdx(['level', 'grade', '年級', '級別', 'form', 'p.level', '級']);
+            const idxQ       = findIdx(['question', 'q', '題目', '問題', '題']);
+            const idxCorrect = findIdx(['correct', 'answer', 'ans', '答案', '正確', 'correct answer']);
+
+            // Find option columns (flexible)
+            let optIndices = [];
+            header.forEach((h, i) => {
+                if (['option_a','optiona','a','選項a','選a','opt_a'].some(k => h.includes(k))) optIndices[0] = i;
+                if (['option_b','optionb','b','選項b','選b','opt_b'].some(k => h.includes(k))) optIndices[1] = i;
+                if (['option_c','optionc','c','選項c','選c','opt_c'].some(k => h.includes(k))) optIndices[2] = i;
+                if (['option_d','optiond','d','選項d','選d','opt_d'].some(k => h.includes(k))) optIndices[3] = i;
+            });
+            // If no named option cols, assume standard positional after question or columns 2-5
+            const hasNamedOptions = optIndices.length > 0 && optIndices.some(x => x !== undefined);
+
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                const row = parseCSVLine(lines[i]);
+                if (row.length < 3) continue;
+
+                let qText = '', opts = [], correctIdx = -1;
+                let subj = '', lvl = '';
+
+                if (idxQ !== -1) {
+                    qText = (row[idxQ] || '').trim();
+                } else {
+                    // fallback old: column 1 (0-based)
+                    qText = (row[1] || '').trim();
+                }
+
+                // Options
+                if (hasNamedOptions) {
+                    for (let k = 0; k < 4; k++) {
+                        if (optIndices[k] !== undefined && row[optIndices[k]]) {
+                            opts.push(row[optIndices[k]].trim());
+                        }
+                    }
+                } else if (idxQ !== -1) {
+                    // assume 4 options right after question column, before correct/answer
+                    const start = idxQ + 1;
+                    const end = (idxCorrect !== -1 ? idxCorrect : row.length - 1);
+                    for (let j = start; j < end && opts.length < 4; j++) {
+                        if (row[j] && row[j].trim()) opts.push(row[j].trim());
+                    }
+                } else {
+                    // old positional fallback
+                    for (let j = 2; j <= 5; j++) if (row[j] && row[j].trim()) opts.push(row[j].trim());
+                }
+
+                // Correct answer
+                if (idxCorrect !== -1) {
+                    correctIdx = parseInt(row[idxCorrect]) - 1;
+                } else {
+                    correctIdx = parseInt(row[row.length - 1]) - 1;
+                }
+
+                if (idxSubject !== -1) subj = (row[idxSubject] || '').trim();
+                if (idxLevel !== -1) lvl = (row[idxLevel] || '').trim();
+
+                if (opts.length >= 2 && !isNaN(correctIdx) && correctIdx >= 0 && correctIdx < opts.length && qText) {
+                    questions.push({ 
+                        q: qText, 
+                        options: opts, 
+                        ans: correctIdx,
+                        subject: subj,
+                        level: lvl
+                    });
+                }
+            }
+            return questions;
+        }
+
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '', inQuotes = false;
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') inQuotes = !inQuotes;
+                else if (char === ',' && !inQuotes) { 
+                    result.push(current.trim()); 
+                    current = ''; 
+                }
+                else current += char;
+            }
+            result.push(current.trim());
+            return result;
+        }
+
+        function filterQuestionsBySubjectLevel(allQuestions, subject, level) {
+            if (!allQuestions || allQuestions.length === 0) return [];
+            const norm = (str) => (str || '').toLowerCase().replace(/\.|\s|grade|form|年級|級/g, '').trim();
+            const targetSub = norm(subject);
+            const targetLvl = norm(level);  // e.g. "p6", "p1"
+
+            return allQuestions.filter(q => {
+                const qSub = norm(q.subject);
+                const qLvl = norm(q.level);
+                // Match if both subject and level match, or if CSV didn't have them (empty), include anyway
+                const subMatch = !qSub || qSub === targetSub || 
+                                 (targetSub === 'maths' && (qSub === 'math' || qSub === '數學')) ||
+                                 (targetSub === 'science' && (qSub === '科學')) ||
+                                 (targetSub === 'chinese' && (qSub === '中文' || qSub === 'chinese'));
+                const lvlMatch = !qLvl || qLvl === targetLvl || qLvl === targetLvl.replace('p','');
+                return subMatch && lvlMatch;
+            });
+        }
+
+        function getRandomQuestion() {
+            let pool = customQuestions.length > 0 ? customQuestions :
+                       (questionsDB[currentSubject] && questionsDB[currentSubject][currentLevel]) || [];
+            if (pool.length === 0) {
+                const all = [];
+                Object.keys(questionsDB).forEach(s => { 
+                    if (questionsDB[s] && questionsDB[s][currentLevel]) all.push(...questionsDB[s][currentLevel]); 
+                });
+                pool = all.length ? all : questionsDB.English.P6;
+            }
+            const original = pool[Math.floor(Math.random() * pool.length)];
+            let shuffled = [...original.options];
+            const correctText = shuffled[original.ans];
+            for (let i = shuffled.length-1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i+1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return { q: original.q, options: shuffled, ans: shuffled.indexOf(correctText) };
+        }
+
+function renderAllTeams() {
+    const grid = document.getElementById('team-grid');
+    grid.innerHTML = '';
+    teams.forEach((team, index) => {
+        const card = document.createElement('div');
+        card.className = `team-card team-${team.id}`;
+        card.id = `team-card-${team.id}`;
+        
+        const qText = currentQuestions[index].q;
+        const isShort = qText.length <= 3;
+        
+        card.innerHTML = `
+            <div class="team-header">
+                <div class="team-name" style="color:${team.color}">${team.name}</div>
+                <div class="score" id="score-${team.id}">${team.score}</div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-${team.id}" style="width:0%"></div>
+            </div>
+                <div class="question" id="qtext-${team.id}" 
+                 style="font-size: ${isShort ? '70px' : 'clamp(15px, 2.4vw, 18px)'}; 
+                        line-height: ${isShort ? '1.2' : '1.55'}">
+                ${qText}
+            </div>
+            <div class="options" id="options-${team.id}"></div>
+            <div class="status" id="status-${team.id}"></div>
+        `;
+        grid.appendChild(card);
+
+        const optsDiv = document.getElementById(`options-${team.id}`);
+        currentQuestions[index].options.forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';            
+            btn.textContent = `${String.fromCharCode(65+i)}. ${opt}`;
+            btn.onclick = () => handleAnswer(team.id, i, index);
+            optsDiv.appendChild(btn);
+        });
+    });
+
+        }
+
+
+        function handleAnswer(teamId, selectedIndex, teamIndex) {
+            const q = currentQuestions[teamIndex];
+            const isCorrect = selectedIndex === q.ans;
+            const statusEl = document.getElementById(`status-${teamId}`);
+            const buttons = document.querySelectorAll(`#options-${teamId} .option-btn`);
+           
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === q.ans) btn.style.borderColor = '#39ff14';
+                if (idx === selectedIndex && !isCorrect) btn.style.borderColor = '#ff00aa';
+            });
+            if (isCorrect) {
+                teams[teamIndex].score += 10;
+                statusEl.innerHTML = `<span style="color:#39ff14">✅ CORRECT! +10</span>`;
+            } else {
+                statusEl.innerHTML = `<span style="color:#ff00aa">❌ Wrong. Answer: ${String.fromCharCode(65 + q.ans)}</span>`;
+            }
+            document.getElementById(`score-${teamId}`).textContent = teams[teamIndex].score;
+            const progress = Math.min((teams[teamIndex].score / 300) * 100, 100);
+            document.getElementById(`progress-${teamId}`).style.width = `${progress}%`;
+            updateLeaderboard();
+            if (endMode === 'score' && teams[teamIndex].score >= targetScore) {
+                setTimeout(() => { alert(`🎉 ${teams[teamIndex].name} WINS!`); endGame(); }, 800);
+                return;
+            }
+            setTimeout(() => {
+                currentQuestions[teamIndex] = getRandomQuestion();
+                document.getElementById(`qtext-${teamId}`).textContent = currentQuestions[teamIndex].q;
+                document.getElementById(`status-${teamId}`).innerHTML = '';
+                const optsDiv = document.getElementById(`options-${teamId}`);
+                optsDiv.innerHTML = '';
+                currentQuestions[teamIndex].options.forEach((opt, i) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.textContent = `${String.fromCharCode(65+i)}. ${opt}`;
+                    btn.onclick = () => handleAnswer(teamId, i, teamIndex);
+                    optsDiv.appendChild(btn);
+                });
+            }, 1600);
+        }
+
+        function updateLeaderboard() {
+            const sorted = [...teams].sort((a,b) => b.score - a.score);
+            let html = '';
+            sorted.forEach((t, i) => {
+                html += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #334155;">
+                    <span><strong>#${i+1}</strong> ${t.name}</span>
+                    <span style="color:#39ff14;font-weight:bold;">${t.score} pts</span>
+                </div>`;
+            });
+            document.getElementById('leaderboard').innerHTML = html;
+        }
+
+        function endGame() {
+            if (!confirm("End game and return to menu?")) return;
+            if (gameInterval) clearInterval(gameInterval);
+            document.getElementById('game-screen').classList.remove('active');
+            document.getElementById('menu-screen').classList.add('active');
+            document.getElementById('csv-upload').value = '';
+            document.getElementById('timer-display').style.display = 'none';
+            customQuestions = [];
+        }
+
+        function startTimer() {
+            if (gameInterval) clearInterval(gameInterval);
+            gameInterval = setInterval(() => {
+                const remaining = Math.ceil((gameEndTime - Date.now()) / 1000);
+                if (remaining <= 0) { 
+                    clearInterval(gameInterval); 
+                    alert("⏰ Time's Up!"); 
+                    endGame(); 
+                    return; 
+                }
+                const min = Math.floor(remaining / 60);
+                const sec = remaining % 60;
+                document.getElementById('timer-display').textContent = `TIME: ${min}:${sec < 10 ? '0'+sec : sec}`;
+            }, 1000);
+        }
+
+        document.addEventListener('keydown', e => {
+            if (!document.getElementById('game-screen').classList.contains('active')) return;
+            const key = e.key.toUpperCase();
+            if (!['A','B','C','D'].includes(key)) return;
+            const idx = key.charCodeAt(0) - 65;
+            teams.forEach(team => {
+                const opts = document.getElementById(`options-${team.id}`);
+                if (opts && !opts.querySelector('button[disabled]')) {
+                    const btns = opts.querySelectorAll('.option-btn');
+                    if (btns[idx]) btns[idx].click();
+                }
+            });
+        });
+
+        window.onload = () => toggleEndOptions();
+    </script>
+</body>
+</html>
