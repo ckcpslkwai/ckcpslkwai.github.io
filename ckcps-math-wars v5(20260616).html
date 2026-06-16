@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CKCPS WARS - CYBERPUNK MATH EDITION</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+      
+        :root {
+            --primary: #00f9ff;
+            --secondary: #ff00aa;
+            --accent: #39ff14;
+        }
+      
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Press Start 2P', system-ui;
+            background: linear-gradient(180deg, #0a0a1f 0%, #05050f 100%);
+            color: #fff;
+            text-align: center;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+      
+        header {
+            background: #0a0a1f;
+            padding: 12px;
+            border-bottom: 3px solid var(--primary);
+        }
+      
+        h1 {
+            margin: 0;
+            font-size: clamp(22px, 5vw, 30px);
+            text-shadow: 0 0 10px var(--primary);
+        }
+      
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 15px;
+        }
+      
+        .screen { display: none; }
+        .screen.active { display: block; }
+      
+        button {
+            font-family: 'Press Start 2P', system-ui;
+            padding: 14px 28px; margin: 8px;
+            background: #12122e;
+            color: #fff;
+            border: 3px solid var(--primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 0 12px rgba(0, 249, 255, 0.4);
+            font-size: 15px;
+        }
+        button:hover {
+            background: var(--primary);
+            color: #000;
+            transform: scale(1.03);
+        }
+      
+        .section {
+            background: #12122e;
+            padding: 15px 14px;
+            margin: 10px auto;
+            border-radius: 10px;
+            border: 2px solid var(--primary);
+            max-width: 680px;
+            width: 95%;
+        }
+      
+        select, input[type="number"] {
+            font-family: 'Press Start 2P', system-ui;
+            padding: 12px 12px;
+            background: #0a0a1f;
+            color: #fff;
+            border: 2px solid var(--accent);
+            margin: 6px 0;
+            font-size: 14px;
+            width: 95%;
+            max-width: 320px;
+            box-sizing: border-box;
+        }
+      
+        label {
+            font-size: 13px;
+            display: block;
+            margin-bottom: 6px;
+        }
+      
+        .score {
+            font-size: 32px;
+            color: var(--accent);
+            text-shadow: 0 0 8px var(--accent);
+        }
+      
+        .question {
+            background: #0a0a1f;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin: 4px 0;
+            min-height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: clamp(14px, 2.1vw, 17px);
+            border: 2px solid var(--primary);
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+      
+        .leaderboard {
+            background: #12122e;
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid var(--secondary);
+            margin-bottom: 20px;
+            max-width: 680px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 95%;
+        }
+       
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(235px, 1fr));
+            gap: 12px;
+            width: 100%;
+            padding-bottom: 8px;
+            justify-content: center;
+            justify-items: center;
+            align-content: start;
+        }
+      
+        .team-card {
+            background: #12122e;
+            border: 4px solid #334155;
+            border-radius: 10px;
+            padding: 10px;
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            max-width: 285px;
+            width: 100%;
+        }
+       
+        .team-header {
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: nowrap;
+            gap: 8px;
+        }
+        
+        .team-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-shrink: 1;
+            min-width: 0;
+        }
+       
+        .progress-container {
+            height: 10px;
+            background: #334155;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 6px 0;
+        }
+       
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            transition: width 0.3s ease;
+        }
+       
+        .compact-grid {
+            display: grid;
+            gap: 25px;                    /* 增加間距 */
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .end-condition {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-start;
+        }
+        .end-left, .end-right {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        /* === CALCULATOR STYLES === */
+        .calculator {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 8px;
+            margin-top: 4px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 3px solid #334155;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        
+        .calc-display {
+            background: #0a0a1f;
+            color: #39ff14;
+            font-family: 'Press Start 2P', system-ui;
+            font-size: clamp(18px, 3.5vw, 26px);
+            text-align: right;
+            padding: 7px 11px;
+            border: 3px solid #334155;
+            border-radius: 6px;
+            min-height: 38px;
+            margin-bottom: 5px;
+            box-shadow: inset 0 0 8px rgba(57, 255, 20, 0.3);
+            word-break: break-all;
+            flex-shrink: 0;
+        }
+        
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            flex: 1;
+        }
+        
+        .key {
+            font-family: 'Press Start 2P', system-ui;
+            font-size: clamp(14px, 2.8vw, 17px);
+            padding: 0;
+            aspect-ratio: 1 / 1;
+            background: #12122e;
+            color: #fff;
+            border: 3px solid var(--primary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 8px rgba(0, 249, 255, 0.2);
+        }
+        
+        .key:hover {
+            background: var(--primary);
+            color: #000;
+            transform: scale(1.05);
+        }
+        
+        .key:active {
+            transform: scale(0.95);
+        }
+        
+        .key.clear {
+            background: #f87171;
+            border-color: #f87171;
+            color: #fff;
+            font-size: clamp(15px, 3vw, 18px);
+        }
+        
+        .key.submit {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: #fff;
+            font-weight: bold;
+            font-size: clamp(14px, 3vw, 17px);
+        }
+        
+        .key.submit:hover {
+            background: #60a5fa;
+            color: #000;
+        }
+        
+        .status {
+            min-height: 24px;
+            margin-top: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Responsive */
+        @media (max-width: 1400px) { .team-card { max-width: 275px; } }
+        @media (max-width: 1100px) { .team-card { max-width: 265px; } }
+        @media (max-width: 900px) { .team-card { max-width: 245px; } }
+        @media (max-width: 820px) { .team-card { max-width: 225px; } }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🏴‍☠️ CKCPS WARS 🏴‍☠️</h1>
+        <p style="margin:4px 0 0 0; font-size:12px; color:#00f9ff;">CYBERPUNK MATH EDITION • 四則運算 (+ − × ÷) • P.1–P.6</p>
+    </header>
+    <div class="container">
+        <!-- MENU SCREEN -->
+        <div id="menu-screen" class="screen active">
+            <div class="compact-grid">
+                <div class="section">
+                    <label style="color:#00f9ff;">NUMBER OF TEAMS</label>
+                    <select id="num-teams">
+                        <option value="2">2 Teams</option>
+                        <option value="3">3 Teams</option>
+                        <option value="4" selected>4 Teams</option>
+                        <option value="5">5 Teams</option>
+                        <option value="6">6 Teams</option>
+                    </select>
+                </div>
+                <div class="section">
+                    <label style="color:#00f9ff;">LEVEL</label>
+                    <select id="level">
+                        <option value="P1">P.1 (簡單加減)</option>
+                        <option value="P2">P.2 (加減 + 簡單乘)</option>
+                        <option value="P3" selected>P.3 (四則運算入門)</option>
+                        <option value="P4">P.4 (較大數字)</option>
+                        <option value="P5">P.5 (進階四則)</option>
+                        <option value="P6">P.6 (四則 + 份數 + 簡單方程式)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- GAME END CONDITION -->
+            <div class="section">
+                <div class="end-condition">
+                    <div class="end-left">
+                        <label style="color:#ff00aa;">GAME END CONDITION</label>
+                        <select id="end-mode" onchange="toggleEndOptions()" style="width:100%;">
+                            <option value="score">First to Score</option>
+                            <option value="time">Timed Game</option>
+                        </select>
+                    </div>
+                    <div class="end-right">
+                        <div id="score-options">
+                            <label style="color:#ff00aa;">TARGET SCORE</label>
+                            <input type="number" id="target-score" value="100" min="10" step="10" style="width:100%;">
+                        </div>
+                        <div id="time-options" style="display:none;">
+                            <label style="color:#ff00aa;">DURATION (minutes)</label>
+                            <input type="number" id="game-time" value="8" min="1" max="30" style="width:100%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section" style="background:#0f172a; border-color:#39ff14;">
+                <p style="margin:0; font-size:12px; color:#94a3b8;">
+                    ✅ No CSV upload needed<br>
+                    ✅ Webpage auto-generates 四則運算 questions<br>
+                    ✅ Each team gets different questions
+                </p>
+            </div>
+           
+            <button onclick="startGame()" style="font-size:22px; padding:20px 60px; margin-top:20px; border-color:#39ff14; box-shadow: 0 0 25px #39ff14;">
+                🚀 START MATH BATTLE!
+            </button>
+        </div>
+
+        <!-- GAME SCREEN -->
+        <div id="game-screen" class="screen">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap;">
+                <strong id="game-info" style="color:#00f9ff;"></strong>
+                <div>
+                    <span id="timer-display" style="font-size:15px; background:#12122e; padding:6px 12px; border-radius:6px; border:2px solid #ff00aa; display:none;"></span>
+                    <button onclick="endGame()" style="padding:10px 20px; font-size:13px;">END GAME</button>
+                </div>
+            </div>
+            
+            <div class="leaderboard">
+                <h3 style="color:#ff00aa;">🏆 LEADERBOARD 🏆</h3>
+                <div id="leaderboard" style="text-align:left;"></div>
+            </div>
+            
+            <div id="team-grid" class="team-grid"></div>
+        </div>
+    </div>
+
+    <script>
+        function generateQuestion(level) {
+            const lvl = parseInt(level[1]);
+            if (lvl === 6) {
+                const rand = Math.random();
+                if (rand < 0.30) {
+                    const denominators = [2, 3, 4, 5, 6, 8];
+                    const den = denominators[Math.floor(Math.random() * denominators.length)];
+                    const num = Math.floor(Math.random() * (den - 1)) + 1;
+                    const whole = Math.floor(Math.random() * 12) + 8;
+                    const multiple = whole * den;
+                    const ans = Math.floor(multiple * num / den);
+                    return { q: `${num}/${den} of ${multiple} = ?`, answer: ans };
+                } else if (rand < 0.60) {
+                    const eqType = Math.floor(Math.random() * 4);
+                    let qText, ans;
+                    if (eqType === 0) {
+                        const multiplier = Math.floor(Math.random() * 8) + 3;
+                        ans = Math.floor(Math.random() * 12) + 4;
+                        qText = `${multiplier}x = ${multiplier * ans}, x = ?`;
+                    } else if (eqType === 1) {
+                        const add = Math.floor(Math.random() * 30) + 15;
+                        ans = Math.floor(Math.random() * 25) + 8;
+                        qText = `x + ${add} = ${add + ans}, x = ?`;
+                    } else if (eqType === 2) {
+                        const multiplier = Math.floor(Math.random() * 6) + 3;
+                        const subtract = Math.floor(Math.random() * 15) + 5;
+                        ans = Math.floor(Math.random() * 10) + 6;
+                        qText = `${multiplier}x - ${subtract} = ${multiplier * ans + subtract}, x = ?`;
+                    } else {
+                        const divisor = Math.floor(Math.random() * 6) + 3;
+                        ans = Math.floor(Math.random() * 15) + 6;
+                        qText = `x ÷ ${divisor} = ${ans}, x = ?`;
+                    }
+                    return { q: qText, answer: ans };
+                } else {
+                    const ops = ['+', '-', '×', '÷'];
+                    const op = ops[Math.floor(Math.random() * ops.length)];
+                    let a, b, ans, qText;
+                    if (op === '+') {
+                        a = Math.floor(Math.random() * 180) + 50; b = Math.floor(Math.random() * 180) + 50;
+                        ans = a + b; qText = `${a} + ${b} = ?`;
+                    } else if (op === '-') {
+                        a = Math.floor(Math.random() * 220) + 80;
+                        b = Math.floor(Math.random() * (a * 0.6)) + 20;
+                        ans = a - b; qText = `${a} - ${b} = ?`;
+                    } else if (op === '×') {
+                        a = Math.floor(Math.random() * 18) + 8;
+                        b = Math.floor(Math.random() * 14) + 6;
+                        ans = a * b; qText = `${a} × ${b} = ?`;
+                    } else {
+                        const divisor = Math.floor(Math.random() * 12) + 6;
+                        ans = Math.floor(Math.random() * 25) + 8;
+                        a = divisor * ans; qText = `${a} ÷ ${divisor} = ?`;
+                    }
+                    return { q: qText, answer: ans };
+                }
+            }
+            let a, b, op, ans;
+            let opsPool = lvl === 1 ? ['+', '-'] : lvl === 2 ? ['+', '-', '×'] : ['+', '-', '×', '÷'];
+            op = opsPool[Math.floor(Math.random() * opsPool.length)];
+            if (op === '+') {
+                const maxAdd = (lvl <= 2) ? (lvl === 1 ? 9 : 28) : (lvl * 28 + 15);
+                a = Math.floor(Math.random() * maxAdd) + 3;
+                b = Math.floor(Math.random() * maxAdd) + 3;
+                ans = a + b;
+            } else if (op === '-') {
+                const maxBase = (lvl <= 2) ? (lvl === 1 ? 14 : 45) : (lvl * 35 + 25);
+                a = Math.floor(Math.random() * maxBase) + 10;
+                b = Math.floor(Math.random() * (a - 4)) + 3;
+                ans = a - b;
+            } else if (op === '×') {
+                let maxFactor = lvl >= 5 ? 16 : lvl >= 4 ? 12 : lvl >= 3 ? 9 : 5;
+                a = Math.floor(Math.random() * (maxFactor - 1)) + 3;
+                b = Math.floor(Math.random() * (maxFactor - 1)) + 3;
+                ans = a * b;
+            } else {
+                let maxDiv = (lvl <= 3) ? 8 : lvl >= 5 ? 15 : 12;
+                b = Math.floor(Math.random() * (maxDiv - 1)) + 2;
+                const maxAns = (lvl <= 3) ? 14 : (lvl <= 4 ? 28 : 65);
+                ans = Math.floor(Math.random() * maxAns) + 4;
+                a = ans * b;
+            }
+            return { q: `${a} ${op} ${b} = ?`, answer: ans };
+        }
+
+        let teams = [];
+        let currentLevel = '';
+        let endMode = 'score';
+        let targetScore = 100;
+        let gameEndTime = null;
+        let gameInterval = null;
+
+        function toggleEndOptions() {
+            const mode = document.getElementById('end-mode').value;
+            document.getElementById('score-options').style.display = mode === 'score' ? 'block' : 'none';
+            document.getElementById('time-options').style.display = mode === 'time' ? 'block' : 'none';
+        }
+
+        function startGame() {
+            const numTeams = parseInt(document.getElementById('num-teams').value);
+            currentLevel = document.getElementById('level').value;
+            endMode = document.getElementById('end-mode').value;
+
+            if (endMode === 'score') {
+                targetScore = parseInt(document.getElementById('target-score').value) || 100;
+            } else {
+                window.gameMinutes = parseInt(document.getElementById('game-time').value) || 8;
+            }
+
+            document.getElementById('menu-screen').classList.remove('active');
+            document.getElementById('game-screen').classList.add('active');
+            initTeams(numTeams);
+        }
+
+        function initTeams(numTeams) {
+            teams = [];
+            const colors = ['#f87171', '#60a5fa', '#facc15', '#a78bfa', '#f472b6', '#34d399'];
+
+            for (let i = 0; i < numTeams; i++) {
+                teams.push({
+                    id: i + 1,
+                    name: `Team ${String.fromCharCode(65 + i)}`,
+                    score: 0,
+                    color: colors[i % colors.length],
+                    currentQ: generateQuestion(currentLevel),
+                    input: '',
+                    cooldownUntil: 0
+                });
+            }
+            renderAllTeams();
+            updateLeaderboard();
+
+            const infoEl = document.getElementById('game-info');
+            infoEl.innerHTML = `${currentLevel} • ${endMode === 'score' ? 'First to ' + targetScore : window.gameMinutes + ' min'} • 四則運算`;
+
+            if (endMode === 'time') {
+                gameEndTime = Date.now() + (window.gameMinutes || 8) * 60 * 1000;
+                document.getElementById('timer-display').style.display = 'inline';
+                startTimer();
+            }
+        }
+
+        function renderAllTeams() {
+            const grid = document.getElementById('team-grid');
+            grid.innerHTML = '';
+
+            teams.forEach((team, index) => {
+                const card = document.createElement('div');
+                card.className = 'team-card';
+                card.id = `team-card-${team.id}`;
+                card.style.border = `4px solid ${team.color}`;
+
+                const qText = team.currentQ.q;
+                const isShort = qText.length <= 7;
+
+                card.innerHTML = `
+                    <div class="team-header">
+                        <div class="team-name" style="color:${team.color}; font-size:13px; font-weight:bold;">${team.name}</div>
+                        <div class="score" id="score-${team.id}" style="color:${team.color}; font-size:24px;">${team.score}</div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progress-${team.id}" style="width:0%; background: linear-gradient(90deg, ${team.color}, #39ff14);"></div>
+                    </div>
+                    <div class="question" id="qtext-${team.id}" style="font-size: ${isShort ? '26px' : 'clamp(13px, 2vw, 16px)'}; line-height: ${isShort ? '1.05' : '1.3'};">
+                        ${qText}
+                    </div>
+                    <div class="calculator" id="calc-${team.id}">
+                        <div class="calc-display" id="display-${team.id}">0</div>
+                        <div class="keypad" id="keypad-${team.id}">
+                            <button class="key" data-digit="1">1</button>
+                            <button class="key" data-digit="2">2</button>
+                            <button class="key" data-digit="3">3</button>
+                            <button class="key" data-digit="4">4</button>
+                            <button class="key" data-digit="5">5</button>
+                            <button class="key" data-digit="6">6</button>
+                            <button class="key" data-digit="7">7</button>
+                            <button class="key" data-digit="8">8</button>
+                            <button class="key" data-digit="9">9</button>
+                            <button class="key clear">C</button>
+                            <button class="key" data-digit="0">0</button>
+                            <button class="key submit">OK</button>
+                        </div>
+                    </div>
+                    <div class="status" id="status-${team.id}"></div>
+                `;
+
+                grid.appendChild(card);
+
+                const keypadEl = card.querySelector(`#keypad-${team.id}`);
+                if (keypadEl) {
+                    keypadEl.addEventListener('click', function(e) {
+                        if (e.target.classList.contains('key')) {
+                            handleKeypadClick(team.id, index, e.target);
+                        }
+                    });
+                }
+            });
+        }
+
+        function handleKeypadClick(teamId, teamIndex, keyEl) {
+            const team = teams[teamIndex];
+            if (!team) return;
+
+            if (keyEl.dataset.digit !== undefined) {
+                const d = keyEl.dataset.digit;
+                if ((team.input || '').length < 7) team.input = (team.input || '') + d;
+                updateDisplay(teamId);
+            } else if (keyEl.classList.contains('clear')) {
+                team.input = '';
+                updateDisplay(teamId);
+            } else if (keyEl.classList.contains('submit')) {
+                handleSubmitAnswer(teamId, teamIndex);
+            }
+        }
+
+        function updateDisplay(teamId) {
+            const displayEl = document.getElementById(`display-${teamId}`);
+            if (!displayEl) return;
+            const teamIndex = teams.findIndex(t => t.id === teamId);
+            if (teamIndex === -1) return;
+            displayEl.textContent = teams[teamIndex].input || '0';
+        }
+
+        function handleSubmitAnswer(teamId, teamIndex) {
+            const team = teams[teamIndex];
+            if (!team) return;
+
+            const statusEl = document.getElementById(`status-${teamId}`);
+            const now = Date.now();
+            if (now < (team.cooldownUntil || 0)) {
+                if (statusEl) {
+                    statusEl.innerHTML = `<span style="color:#facc15">⏳ 2秒冷卻中...</span>`;
+                    setTimeout(() => {
+                        if (statusEl && statusEl.innerHTML.includes('冷卻')) {
+                            statusEl.innerHTML = '';
+                        }
+                    }, 800);
+                }
+                return;
+            }
+            team.cooldownUntil = now + 2000;
+
+            // Visual feedback: temporarily disable OK button for 2 seconds
+            const card = document.getElementById(`team-card-${teamId}`);
+            if (card) {
+                const submitBtn = card.querySelector('.key.submit');
+                if (submitBtn) {
+                    submitBtn.style.transition = 'all 0.1s';
+                    submitBtn.style.opacity = '0.45';
+                    submitBtn.style.pointerEvents = 'none';
+                    setTimeout(() => {
+                        if (submitBtn) {
+                            submitBtn.style.opacity = '1';
+                            submitBtn.style.pointerEvents = 'auto';
+                        }
+                    }, 2000);
+                }
+            }
+
+            const entered = parseInt(team.input || '0', 10);
+            const correct = team.currentQ.answer;
+            const isCorrect = entered === correct;
+
+            if (isCorrect) {
+                team.score += 10;
+                if (statusEl) statusEl.innerHTML = `<span style="color:#39ff14">✅ CORRECT! +10</span>`;
+            } else {
+                if (statusEl) statusEl.innerHTML = `<span style="color:#ff00aa">❌ WRONG. Answer: ${correct}</span>`;
+            }
+
+            document.getElementById(`score-${teamId}`).textContent = team.score;
+            const progEl = document.getElementById(`progress-${teamId}`);
+            if (progEl) progEl.style.width = `${Math.min(Math.floor((team.score / 300) * 100), 100)}%`;
+
+            updateLeaderboard();
+
+            if (endMode === 'score' && team.score >= targetScore) {
+                setTimeout(() => { alert(`🎉 ${team.name} WINS!`); endGame(); }, 900);
+                return;
+            }
+
+            setTimeout(() => {
+                team.currentQ = generateQuestion(currentLevel);
+                team.input = '';
+                if (statusEl) statusEl.innerHTML = '';
+
+                const qEl = document.getElementById(`qtext-${teamId}`);
+                if (qEl) {
+                    const newQ = team.currentQ.q;
+                    qEl.textContent = newQ;
+                    const isShort = newQ.length <= 7;
+                    qEl.style.fontSize = isShort ? '24px' : 'clamp(12px, 1.9vw, 15px)';
+                    qEl.style.lineHeight = isShort ? '1.05' : '1.3';
+                }
+                document.getElementById(`display-${teamId}`).textContent = '0';
+            }, 1700);
+        }
+
+        function updateLeaderboard() {
+            const sorted = [...teams].sort((a, b) => b.score - a.score);
+            let html = '';
+            sorted.forEach((t, i) => {
+                html += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #334155;">
+                    <span><strong>#${i+1}</strong> ${t.name}</span>
+                    <span style="color:#39ff14;font-weight:bold;">${t.score} pts</span>
+                </div>`;
+            });
+            document.getElementById('leaderboard').innerHTML = html;
+        }
+
+        function endGame() {
+            if (!confirm("End game and return to menu?")) return;
+            if (gameInterval) clearInterval(gameInterval);
+            document.getElementById('game-screen').classList.remove('active');
+            document.getElementById('menu-screen').classList.add('active');
+            document.getElementById('timer-display').style.display = 'none';
+            teams = [];
+        }
+
+        function startTimer() {
+            if (gameInterval) clearInterval(gameInterval);
+            gameInterval = setInterval(() => {
+                const remaining = Math.ceil((gameEndTime - Date.now()) / 1000);
+                if (remaining <= 0) {
+                    clearInterval(gameInterval);
+                    alert("⏰ Time's Up!");
+                    endGame();
+                    return;
+                }
+                const min = Math.floor(remaining / 60);
+                const sec = remaining % 60;
+                document.getElementById('timer-display').textContent = `TIME: ${min}:${sec < 10 ? '0' + sec : sec}`;
+            }, 1000);
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (!document.getElementById('game-screen').classList.contains('active')) return;
+            if (e.key === 'Escape') {
+                teams.forEach(t => { t.input = ''; const d = document.getElementById(`display-${t.id}`); if(d) d.textContent = '0'; });
+            }
+            if (e.key === 'Enter') {
+                for (let i = 0; i < teams.length; i++) {
+                    const t = teams[i];
+                    if (t.input && document.getElementById(`status-${t.id}`).innerHTML === '') {
+                        handleSubmitAnswer(t.id, i);
+                        break;
+                    }
+                }
+            }
+            if (/^[0-9]$/.test(e.key)) {
+                for (let i = 0; i < teams.length; i++) {
+                    const t = teams[i];
+                    if (document.getElementById(`status-${t.id}`).innerHTML === '') {
+                        if ((t.input || '').length < 7) {
+                            t.input += e.key;
+                            updateDisplay(t.id);
+                        }
+                        break;
+                    }
+                }
+            }
+            if (e.key.toLowerCase() === 'c' || e.key === 'Backspace') {
+                for (let i = 0; i < teams.length; i++) {
+                    const t = teams[i];
+                    if (document.getElementById(`status-${t.id}`).innerHTML === '') {
+                        t.input = '';
+                        updateDisplay(t.id);
+                        break;
+                    }
+                }
+            }
+        });
+
+        window.onload = () => {
+            toggleEndOptions();
+
+            // 禁止右鍵選單（防止學生查看原始碼或作弊）
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+        };
+    </script>
+</body>
+</html>
