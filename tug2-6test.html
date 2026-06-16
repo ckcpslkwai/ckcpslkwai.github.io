@@ -100,7 +100,8 @@
             min-height: 85px;
             display: flex;
             align-items: center;
-            font-size: clamp(15px, 2.1vw, 17px);
+            font-size: 17px; /* 設定一個統一的預設值 */
+            line-height: 1.55;
             text-align: left;
             border: 2px solid var(--primary);
             box-sizing: border-box;
@@ -522,11 +523,11 @@ function renderAllTeams() {
     grid.innerHTML = '';
     teams.forEach((team, index) => {
         const card = document.createElement('div');
-        card.className = `team-card team-${team.id}`;
-        card.id = `team-card-${team.id}`;
-        
+        // ... (省略前面代碼)
+
         const qText = currentQuestions[index].q;
-        const isShort = qText.length <= 2;
+        // 嚴格判斷：只有 1 或 2 個字時才變大
+        const isShort = qText.length > 0 && qText.length <= 2;
         
         card.innerHTML = `
             <div class="team-header">
@@ -536,15 +537,15 @@ function renderAllTeams() {
             <div class="progress-container">
                 <div class="progress-bar" id="progress-${team.id}" style="width:0%"></div>
             </div>
-                <div class="question" id="qtext-${team.id}" 
-                 style="font-size: ${isShort ? '70px' : 'clamp(15px, 2.4vw, 18px)'}; 
+            <div class="question" id="qtext-${team.id}"
+                 style="font-size: ${isShort ? '70px' : '17px'};
                         line-height: ${isShort ? '1.2' : '1.55'}">
                 ${qText}
             </div>
             <div class="options" id="options-${team.id}"></div>
             <div class="status" id="status-${team.id}"></div>
         `;
-        grid.appendChild(card);
+       grid.appendChild(card);
 
         const optsDiv = document.getElementById(`options-${team.id}`);
         currentQuestions[index].options.forEach((opt, i) => {
