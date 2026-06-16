@@ -527,7 +527,7 @@ function renderAllTeams() {
 
         const qText = currentQuestions[index].q;
         // 嚴格判斷：只有 1 或 2 個字時才變大
-        const isShort = qText.length > 0 && qText.length <= 2;
+        const isShort = qText.length > 0 && qText.length <= 5;
         
         card.innerHTML = `
             <div class="team-header">
