@@ -19,6 +19,10 @@
             background: linear-gradient(180deg, #0a0a1f 0%, #05050f 100%);
             color: #fff;
             text-align: center;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
       
         header {
@@ -654,6 +658,10 @@ function renderAllTeams() {
         });
 
         window.onload = () => toggleEndOptions();
+                    // 禁止右鍵選單（防止學生查看原始碼或作弊）
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
     </script>
 </body>
 </html>
