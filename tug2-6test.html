@@ -494,7 +494,7 @@
                 const subMatch = !qSub || qSub === targetSub || 
                                  (targetSub === 'maths' && (qSub === 'math' || qSub === '數學')) ||
                                  (targetSub === '科學' && (qSub === '科學')) ||
-                                 (targetSub === 'science' && (qSub === '科學')) ||
+                                 (targetSub === 'science' && (qSub === 'Science')) ||
                                  (targetSub === 'chinese' && (qSub === '中文' || qSub === 'chinese'));
                 const lvlMatch = !qLvl || qLvl === targetLvl || qLvl === targetLvl.replace('p','');
                 return subMatch && lvlMatch;
