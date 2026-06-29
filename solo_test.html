@@ -70,18 +70,31 @@
             border-radius: 10px;
             border: 2px solid var(--primary);
         }
+
+        /* 首頁選單的藍框統一收窄置中 */
+        #menu-screen .section {
+            max-width: 860px;
+            margin-left: auto;
+            margin-right: auto;
+        }
       
         select, input[type="number"] {
             font-family: 'Press Start 2P', system-ui;
-            padding: 12px 12px;     /* 加大內距，讓框更高 */
+            padding: 10px 12px;
             background: #0a0a1f;
             color: #fff;
             border: 2px solid var(--accent);
-            margin: 6px 0;          /* 增加上下間距 */
+            margin: 4px 0;
             font-size: 14px;
-            width: 95%;             /* 加寬 */
-            max-width: 320px;
+            width: 100%;
             box-sizing: border-box;
+        }
+
+        /* 強制選單頁面內的輸入框對齊 */
+        #menu-screen .compact-grid select,
+        #menu-screen .compact-grid input[type="number"] {
+            width: 100% !important;
+            max-width: none !important;
         }
       
         label {
@@ -118,7 +131,7 @@
             background: #12122e;
             text-align: left;
             margin: 5px 0;
-            width: 70%;
+            width: 100%;
             box-sizing: border-box;
         }
       
@@ -169,13 +182,28 @@
         .compact-grid {
             display: grid;
             gap: 12px;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: 278px 278px 278px;
+            max-width: 860px;
+            margin: 0 auto;
+            justify-content: center;
         }
 
         .csv-buttons {
             display: flex;
             gap: 10px;
             margin-top: 8px;
+        }
+
+        /* Solo Mode：單一卡片收窄並置中 */
+        .team-grid.solo-mode {
+            max-width: 620px;
+            margin: 0 auto;
+            justify-content: center;
+        }
+
+        .team-grid.solo-mode .team-card {
+            min-height: 400px;
+            border-color: #39ff14;
         }
         .csv-buttons button {
             flex: 1;
@@ -184,12 +212,12 @@
         .end-condition {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 16px;
             align-items: flex-start;
         }
         .end-left, .end-right {
             flex: 1;
-            min-width: 220px;
+            min-width: 280px;
         }
     </style>
 </head>
@@ -201,19 +229,11 @@
     <div class="container">
         <!-- MENU SCREEN -->
         <div id="menu-screen" class="screen active">
-            <!-- GAME MODE SELECTION -->
-            <div class="section">
-                <label style="color:#ff00aa; font-size:14px;">GAME MODE</label>
-                <select id="game-mode" onchange="toggleGameMode()" style="width:100%; font-size:15px; padding:10px;">
-                    <option value="team">👥 Team Mode（小組模式）</option>
-                    <option value="solo">🧑 Solo Mode（個人模式）</option>
-                </select>
-            </div>
-
             <div class="compact-grid">
                 <div class="section">
                     <label style="color:#00f9ff;">NUMBER OF TEAMS</label>
-                    <select id="num-teams">
+                    <select id="num-teams" onchange="toggleSoloMode()">
+                        <option value="solo">🧑 SOLO (個人模式)</option>
                         <option value="2">2 Teams</option>
                         <option value="3">3 Teams</option>
                         <option value="4" selected>4 Teams</option>
@@ -222,17 +242,17 @@
                     </select>
                 </div>
                 <div class="section">
-                    <label style="color:#00f9ff;">SUBJECT <span style="font-size:10px; color:#94a3b8;">(filters Sample Set)</span></label>
+                    <label style="color:#00f9ff;">&nbsp;&nbsp;&nbsp;&nbsp;SUBJECT&nbsp;&nbsp;&nbsp;&nbsp;</label>
                     <select id="subject">
+                        <option value="Chinese">Chinese中文</option>
                         <option value="English">English</option>
-                        <option value="Maths">數學/Maths</option>
+                        <option value="Maths">Maths數學</option>
                         <option value="Science">Science</option>
                         <option value="科學">科學</option>
-                        <option value="Chinese">中文</option>
                     </select>
                 </div>
                 <div class="section">
-                    <label style="color:#00f9ff;">LEVEL <span style="font-size:10px; color:#94a3b8;">(filters Sample Set)</span></label>
+                    <label style="color:#00f9ff;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LEVEL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
                     <select id="level">
                         <option value="K" selected>K</option>
                         <option value="P1">P.1</option>
@@ -250,12 +270,12 @@
                 <label style="color:#39ff14;">PLAYER INFORMATION 玩家資料</label>
                 <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:8px;">
                     <div style="flex:1; min-width:130px;">
-                        <label style="font-size:12px; color:#94a3b8;">班級 Class</label>
-                        <input type="text" id="solo-class" placeholder="e.g. 3A " style="width:50%; font-size:15px; padding:8px;">
+                        <label style="font-size:12px; color:#94a3b8;">Class</label>
+                        <input type="text" id="solo-class" placeholder="e.g. 3A" style="width:80%; font-size:15px; padding:8px;">
                     </div>
                     <div style="flex:2; min-width:180px;">
-                        <label style="font-size:12px; color:#94a3b8;">姓名 Name</label>
-                        <input type="text" id="solo-name" placeholder="Full name please 請輸入全名" style="width:70%; font-size:15px; padding:8px;">
+                        <label style="font-size:12px; color:#94a3b8;">Name</label>
+                        <input type="text" id="solo-name" placeholder="Full name please 請輸入全名" style="width:80%; font-size:15px; padding:8px;">
                     </div>
                 </div>
             </div>
@@ -297,6 +317,7 @@
                     </div>
                 </div>
                 <p style="margin:6px 0 0 0; font-size:10px; color:#94a3b8;">
+ 
                 </p>
             </div>
 
@@ -307,10 +328,10 @@
                         📁 UPLOAD CSV 上載
                     </button>
                     <button onclick="loadDefaultCSV()" style="border-color:#39ff14;">
-                        📋 Sample Set(Mixed) 題庫(混合)
+                        📋 Default 預設
                     </button>
                 </div>
-                <p style="margin:8px 0; font-size:11px; color:#94a3b8;">Sample Set uses selected SUBJECT + LEVEL to filter questions from default.csv</p>
+                <p style="margin:8px 0; font-size:11px; color:#94a3b8;"></p>
                 <input type="file" id="csv-upload" accept=".csv" style="display:none;" onchange="handleCSVUpload(event)">
             </div>
            
@@ -398,16 +419,13 @@
             document.getElementById('time-options').style.display = mode === 'time' ? 'block' : 'none';
         }
 
-        function toggleGameMode() {
-            const mode = document.getElementById('game-mode').value;
-            const numTeamsSection = document.getElementById('num-teams').parentElement;
+        function toggleSoloMode() {
+            const numTeamsValue = document.getElementById('num-teams').value;
             const soloInfo = document.getElementById('solo-info');
 
-            if (mode === 'solo') {
-                numTeamsSection.style.display = 'none';
+            if (numTeamsValue === 'solo') {
                 soloInfo.style.display = 'block';
             } else {
-                numTeamsSection.style.display = 'block';
                 soloInfo.style.display = 'none';
             }
         }
@@ -583,10 +601,10 @@
                 return;
             }
 
-            const gameMode = document.getElementById('game-mode').value;
+            const numTeamsValue = document.getElementById('num-teams').value;
 
             let numTeams;
-            if (gameMode === 'solo') {
+            if (numTeamsValue === 'solo') {
                 // Solo Mode 驗證
                 const soloClass = document.getElementById('solo-class').value.trim();
                 const soloName = document.getElementById('solo-name').value.trim();
@@ -600,7 +618,7 @@
                 window.currentSoloPlayer = { class: soloClass, name: soloName };
                 numTeams = 1; // 強制只有 1 個卡片
             } else {
-                numTeams = parseInt(document.getElementById('num-teams').value);
+                numTeams = parseInt(numTeamsValue);
                 window.currentSoloPlayer = null;
             }
 
@@ -614,7 +632,7 @@
             document.getElementById('game-screen').classList.add('active');
             const infoEl = document.getElementById('game-info');
 
-            if (gameMode === 'solo' && window.currentSoloPlayer) {
+            if (numTeamsValue === 'solo' && window.currentSoloPlayer) {
                 infoEl.innerHTML = `${currentSubject} • ${currentLevel} &nbsp;&nbsp; | &nbsp;&nbsp; <span style="color:#39ff14;">${window.currentSoloPlayer.class} ${window.currentSoloPlayer.name}</span>`;
             } else {
                 infoEl.innerHTML = `${currentSubject} • ${currentLevel} <span style="color:#94a3b8; font-size:12px;">(${customQuestions.length} Qs from CSV)</span>`;
@@ -791,6 +809,14 @@
 function renderAllTeams() {
     const grid = document.getElementById('team-grid');
     grid.innerHTML = '';
+
+    // Solo Mode 時收窄並置中
+    if (teams.length === 1) {
+        grid.classList.add('solo-mode');
+    } else {
+        grid.classList.remove('solo-mode');
+    }
+
     teams.forEach((team, index) => {
         const card = document.createElement('div');
         // ... (省略前面代碼)
@@ -827,7 +853,20 @@ function renderAllTeams() {
         });
     });
 
+        // Solo Mode 時讓單一卡片不要太闊，置中並收窄
+        if (teams.length === 1) {
+            const grid = document.getElementById('team-grid');
+            grid.style.maxWidth = '620px';
+            grid.style.margin = '0 auto';
+            grid.style.padding = '0 10px';
+        } else {
+            // Team Mode 恢復原本寬度
+            const grid = document.getElementById('team-grid');
+            grid.style.maxWidth = '';
+            grid.style.margin = '';
+            grid.style.padding = '';
         }
+    }
 
 
         function handleAnswer(teamId, selectedIndex, teamIndex) {
@@ -972,7 +1011,7 @@ function renderAllTeams() {
 
         window.onload = () => {
             toggleEndOptions();
-            toggleGameMode(); // 初始化遊戲模式顯示
+            toggleSoloMode(); // 初始化 Solo 模式顯示
         };
                     // 禁止右鍵選單（防止學生查看原始碼或作弊）
             document.addEventListener('contextmenu', function(e) {
