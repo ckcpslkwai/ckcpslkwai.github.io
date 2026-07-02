@@ -39,7 +39,15 @@
         button:hover { background: var(--primary); color: #000; transform: scale(1.03); }
 
         .section { background: #12122e; padding: 20px 18px; margin: 12px 0; border-radius: 10px; border: 2px solid var(--primary); }
-        #menu-screen .section { max-width: 860px; margin: 0 auto; }
+
+        /* 恢復橫向三欄排版 */
+        .compact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            max-width: 860px;
+            margin: 0 auto;
+        }
 
         .question { background: #0a0a1f; padding: 16px; border-radius: 8px; margin: 10px 0; min-height: 85px; display: flex; align-items: center; font-size: 17px; line-height: 1.55; text-align: left; border: 2px solid var(--primary); }
         .option-btn { padding: 12px 14px; font-size: clamp(13px, 2vw, 15px); border: 2px solid #334155; background: #12122e; text-align: left; margin: 5px 0; width: 100%; }
@@ -47,7 +55,7 @@
         .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 14px; }
         .team-card { background: #12122e; border: 4px solid #334155; border-radius: 10px; padding: 14px; min-height: 420px; display: flex; flex-direction: column; }
 
-        /* Lottery 特效 */
+        /* Lottery */
         .question.lottery {
             background: linear-gradient(45deg, #4a0033, #330066);
             animation: lottery-pulse 1s infinite alternate;
@@ -59,226 +67,13 @@
     </style>
 </head>
 <body>
-    <header>
-        <h1>🏴‍☠️ CKCPS WARS 🏴‍☠️</h1>
-        <p style="margin:4px 0 0 0; font-size:12px; color:#00f9ff;">CYBERPUNK NEON EDITION • P.1–P.6</p>
-    </header>
-    <div class="container">
-        <!-- MENU SCREEN -->
-        <div id="menu-screen" class="screen active">
-            <div class="compact-grid">
-                <div class="section">
-                    <label style="color:#00f9ff;">NUMBER OF TEAMS</label>
-                    <select id="num-teams" onchange="toggleSoloMode()">
-                        <option value="solo">🧑 SOLO (個人模式)</option>
-                        <option value="2">2 Teams</option>
-                        <option value="3">3 Teams</option>
-                        <option value="4" selected>4 Teams</option>
-                        <option value="5">5 Teams</option>
-                        <option value="6">6 Teams</option>
-                    </select>
-                </div>
-                <div class="section">
-                    <label style="color:#00f9ff;">SUBJECT</label>
-                    <select id="subject">
-                        <option value="Chinese">Chinese中文</option>
-                        <option value="English">English</option>
-                        <option value="Maths">Maths數學</option>
-                        <option value="Science">Science</option>
-                        <option value="科學">科學</option>
-                    </select>
-                </div>
-                <div class="section">
-                    <label style="color:#00f9ff;">LEVEL</label>
-                    <select id="level">
-                        <option value="K" selected>K</option>
-                        <option value="P1">P.1</option>
-                        <option value="P2">P.2</option>
-                        <option value="P3">P.3</option>
-                        <option value="P4">P.4</option>
-                        <option value="P5">P.5</option>
-                        <option value="P6">P.6</option>
-                    </select>
-                </div>
-            </div>
-
-            <div id="solo-info" class="section" style="display:none; border-color:#39ff14;">
-                <label style="color:#39ff14;">PLAYER INFORMATION</label>
-                <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:8px;">
-                    <div style="flex:1; min-width:130px;">
-                        <label style="font-size:12px; color:#94a3b8;">Class</label>
-                        <input type="text" id="solo-class" placeholder="e.g. 3A" style="width:80%; font-size:15px; padding:8px;">
-                    </div>
-                    <div style="flex:2; min-width:180px;">
-                        <label style="font-size:12px; color:#94a3b8;">Name</label>
-                        <input type="text" id="solo-name" placeholder="Full name please" style="width:80%; font-size:15px; padding:8px;">
-                    </div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="end-condition">
-                    <div class="end-left">
-                        <label style="color:#ff00aa;">GAME END CONDITION</label>
-                        <select id="end-mode" onchange="toggleEndOptions()" style="width:100%;">
-                            <option value="score">First to Score</option>
-                            <option value="time">Timed Game</option>
-                        </select>
-                    </div>
-                    <div class="end-right">
-                        <div id="score-options">
-                            <label style="color:#ff00aa;">TARGET SCORE</label>
-                            <input type="number" id="target-score" value="100" min="10" step="10" style="width:100%;">
-                        </div>
-                        <div id="time-options" style="display:none;">
-                            <label style="color:#ff00aa;">DURATION (minutes)</label>
-                            <input type="number" id="game-time" value="10" min="1" max="60" style="width:100%;">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="section">
-                <label style="color:#00f9ff;">BACKGROUND MUSIC</label>
-                <select id="music-track" style="width:100%;">
-                    <option value="">No music</option>
-                    <option value="Haaland.mp3">Music 1</option>
-                    <option value="greensleeves.mp3">Music 2</option>
-                    <option value="music3.mp3">Music 3</option>
-                </select>
-            </div>
-
-            <div class="section">
-                <label style="color:#39ff14;">QUESTION SOURCE</label>
-                <button onclick="document.getElementById('csv-upload').click()">📁 UPLOAD CSV</button>
-                <button onclick="loadDefaultCSV()" style="border-color:#39ff14;">📋 Default</button>
-                <input type="file" id="csv-upload" accept=".csv" style="display:none;" onchange="handleCSVUpload(event)">
-            </div>
-           
-            <button onclick="startGame()" style="font-size:22px; padding:20px 60px; margin-top:20px; border-color:#39ff14;">
-                🚀 START BATTLE!
-            </button>
-        </div>
-
-        <!-- GAME SCREEN -->
-        <div id="game-screen" class="screen">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <strong id="game-info" style="color:#00f9ff;"></strong>
-                <button id="pause-btn" onclick="togglePause()" style="border-color:#ff00aa;">⏸️ PAUSE</button>
-                <button onclick="endGame()">END GAME</button>
-            </div>
-            
-            <div class="leaderboard">
-                <h3 style="color:#ff00aa;">🏆 LEADERBOARD 🏆</h3>
-                <div id="leaderboard" style="text-align:left;"></div>
-            </div>
-            
-            <div id="team-grid" class="team-grid"></div>
-        </div>
-    </div>
+    <!-- 完整 HTML 結構與之前相同，請使用你原本的 menu-screen 部分 -->
+    <!-- 為了精準，我只給你需要替換的核心 script 部分 -->
 
     <script>
-        let customQuestions = [];
-        let currentSubject = '', currentLevel = '', teams = [], currentQuestions = [];
-        let gameInterval = null, endMode = 'score', targetScore = 100, gameEndTime = null;
-        let isPaused = false;
-        let pausedRemainingTime = 0;
-        let pendingResultTimeouts = {};
+        // ... (你的原有變數、音樂、CSV 載入函數保持不變) ...
+
         let teamMilestones = {};
-
-        let bgmAudio = null;
-        let isMusicPlaying = false;
-
-        function toggleEndOptions() {
-            const mode = document.getElementById('end-mode').value;
-            document.getElementById('score-options').style.display = mode === 'score' ? 'block' : 'none';
-            document.getElementById('time-options').style.display = mode === 'time' ? 'block' : 'none';
-        }
-
-        function toggleSoloMode() {
-            document.getElementById('solo-info').style.display = document.getElementById('num-teams').value === 'solo' ? 'block' : 'none';
-        }
-
-        function disableAllAnswerButtons(disabled) {
-            document.querySelectorAll('#team-grid .option-btn').forEach(btn => btn.disabled = disabled);
-        }
-
-        function togglePause() {
-            // ... (原有 pause 邏輯) ...
-            const pauseBtn = document.getElementById('pause-btn');
-            isPaused = !isPaused;
-            if (isPaused) {
-                if (gameInterval) clearInterval(gameInterval);
-                disableAllAnswerButtons(true);
-                pauseBtn.innerHTML = '▶️ RESUME';
-            } else {
-                disableAllAnswerButtons(false);
-                pauseBtn.innerHTML = '⏸️ PAUSE';
-            }
-        }
-
-        function playBackgroundMusic() {
-            const track = document.getElementById('music-track').value;
-            if (!track) return;
-            stopBackgroundMusic();
-            bgmAudio = new Audio(track);
-            bgmAudio.loop = true;
-            bgmAudio.volume = 0.6;
-            bgmAudio.play().catch(() => {});
-            isMusicPlaying = true;
-        }
-
-        function stopBackgroundMusic() {
-            if (bgmAudio) { bgmAudio.pause(); bgmAudio = null; }
-            isMusicPlaying = false;
-        }
-
-        // CSV 相關函數 (loadDefaultCSV, handleCSVUpload, parseCSV 等) 請保留你原本的版本
-        // 這裡省略以節省空間，請保持原有的 parseCSV / filterQuestionsBySubjectLevel / getRandomQuestion
-
-        function startGame() {
-            if (!customQuestions || customQuestions.length === 0) {
-                alert('請先載入題庫！');
-                return;
-            }
-            const numTeamsValue = document.getElementById('num-teams').value;
-            let numTeams = numTeamsValue === 'solo' ? 1 : parseInt(numTeamsValue);
-            if (numTeamsValue === 'solo') {
-                const c = document.getElementById('solo-class').value.trim();
-                const n = document.getElementById('solo-name').value.trim();
-                if (!c || !n) { alert('請填寫班級和姓名！'); return; }
-                window.currentSoloPlayer = {class: c, name: n};
-            } else {
-                window.currentSoloPlayer = null;
-            }
-
-            currentSubject = document.getElementById('subject').value;
-            currentLevel = document.getElementById('level').value;
-            endMode = document.getElementById('end-mode').value;
-            if (endMode === 'score') targetScore = parseInt(document.getElementById('target-score').value) || 100;
-            else window.gameMinutes = parseInt(document.getElementById('game-time').value) || 10;
-
-            document.getElementById('menu-screen').classList.remove('active');
-            document.getElementById('game-screen').classList.add('active');
-
-            initTeams(numTeams);
-            playBackgroundMusic();
-        }
-
-        function initTeams(numTeams) {
-            teams = []; currentQuestions = [];
-            teamMilestones = {};
-            const colors = ['#f87171', '#60a5fa', '#facc15', '#a78bfa', '#f472b6', '#34d399'];
-            for (let i = 0; i < numTeams; i++) {
-                const tid = i+1;
-                teams.push({ id: tid, name: `Team ${String.fromCharCode(65+i)}`, score: 0, color: colors[i % colors.length] });
-                teamMilestones[tid] = 0;
-                currentQuestions.push(getRandomQuestion());
-            }
-            renderAllTeams();
-            updateLeaderboard();
-            // timer & pause reset...
-        }
 
         function triggerLottery(teamIndex) {
             const team = teams[teamIndex];
@@ -333,97 +128,31 @@
             return true;
         }
 
-        function disableOtherTeamsAnswers(exceptIndex) {
-            teams.forEach((team, idx) => {
-                if (idx !== exceptIndex) {
-                    const opts = document.getElementById(`options-${team.id}`);
-                    if (opts) opts.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
-                }
-            });
-        }
-
-        function enableAllAnswerButtons() {
-            document.querySelectorAll('#team-grid .option-btn').forEach(btn => btn.disabled = false);
-        }
-
-        function renderTeamQuestion(teamIndex) {
-            // ... (原有 renderTeamQuestion 程式碼) ...
-        }
-
-        function renderAllTeams() {
-            // ... (原有 renderAllTeams 程式碼) ...
-        }
-
+        // handleAnswer 中的關鍵修正
         function handleAnswer(teamId, selectedIndex, teamIndex) {
-            const q = currentQuestions[teamIndex];
-            const isCorrect = selectedIndex === q.ans;
-            const statusEl = document.getElementById(`status-${teamId}`);
-            const buttons = document.querySelectorAll(`#options-${teamId} .option-btn`);
-           
-            buttons.forEach((btn, idx) => {
-                btn.disabled = true;
-                if (idx === q.ans) btn.style.borderColor = '#39ff14';
-                if (idx === selectedIndex && !isCorrect) btn.style.borderColor = '#ff00aa';
-            });
-
-            if (isCorrect) {
-                teams[teamIndex].score += 10;
-                statusEl.innerHTML = `<span style="color:#39ff14">✅ CORRECT! +10</span>`;
-            } else {
-                statusEl.innerHTML = `<span style="color:#ff00aa">❌ Wrong. Answer: ${String.fromCharCode(65 + q.ans)}</span>`;
-            }
+            // ... 原有答題 + 分數更新程式碼 ...
 
             document.getElementById(`score-${teamId}`).textContent = teams[teamIndex].score;
             const progress = Math.min((teams[teamIndex].score / 300) * 100, 100);
             document.getElementById(`progress-${teamId}`).style.width = `${progress}%`;
             updateLeaderboard();
 
-            // 抽獎檢查（移到勝利條件之前）
+            // 抽獎 (先檢查)
             const numTeamsValue = document.getElementById('num-teams') ? document.getElementById('num-teams').value : '4';
             if (numTeamsValue !== 'solo' && parseInt(numTeamsValue) >= 2 && triggerLottery(teamIndex)) {
                 return;
             }
 
-            // 勝利條件
+            // 勝利條件 (後檢查)
             if (endMode === 'score' && teams[teamIndex].score >= targetScore) {
                 setTimeout(() => { alert(`🎉 ${teams[teamIndex].name} WINS!`); endGame(); }, 800);
                 return;
             }
 
-            pendingResultTimeouts[teamId] = setTimeout(() => {
-                currentQuestions[teamIndex] = getRandomQuestion();
-                renderTeamQuestion(teamIndex);
-                document.getElementById(`status-${teamId}`).innerHTML = '';
-                delete pendingResultTimeouts[teamId];
-            }, 1600);
+            // 正常換題...
         }
 
-        function updateLeaderboard() {
-            const sorted = [...teams].sort((a,b) => b.score - a.score);
-            let html = '';
-            sorted.forEach((t, i) => {
-                html += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #334155;">
-                    <span><strong>#${i+1}</strong> ${t.name}</span>
-                    <span style="color:#39ff14;font-weight:bold;">${t.score} pts</span>
-                </div>`;
-            });
-            document.getElementById('leaderboard').innerHTML = html;
-        }
-
-        function endGame() {
-            if (!confirm("End game and return to menu?")) return;
-            stopBackgroundMusic();
-            if (gameInterval) clearInterval(gameInterval);
-            teamMilestones = {};
-            document.getElementById('game-screen').classList.remove('active');
-            document.getElementById('menu-screen').classList.add('active');
-            document.getElementById('csv-upload').value = '';
-        }
-
-        window.onload = () => {
-            toggleEndOptions();
-            toggleSoloMode();
-        };
+        // 其他函數 (renderAllTeams, initTeams, endGame) 保持你原本的
     </script>
 </body>
 </html>
