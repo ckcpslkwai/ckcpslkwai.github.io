@@ -376,6 +376,37 @@
         let pausedRemainingTime = 0;
         let pendingResultTimeouts = {};   // 用來儲存各隊「顯示結果後自動換題」的 timer ID
 
+        // ==================== 幸運大抽獎系統 ====================
+        let nextCorrectMultiplier = 1; // 下一題3倍分數的旗標
+
+        const lotteryPrizes = [
+            {
+                emoji: "🏴‍☠️",
+                text: "從隨機對手偷取 5 分",
+                effect: "steal5"
+            },
+            {
+                emoji: "❄️",
+                text: "暫停一個對手作答 5 秒",
+                effect: "freezeOne5s"
+            },
+            {
+                emoji: "💎",
+                text: "自己額外獲得 10 分",
+                effect: "extra10"
+            },
+            {
+                emoji: "⚡",
+                text: "暫停所有對手作答 1 秒",
+                effect: "freezeAll1s"
+            },
+            {
+                emoji: "🔥",
+                text: "下一題答對獲得 3倍分數",
+                effect: "tripleNext"
+            }
+        ];
+
         // ==================== SOLO MODE RECORDS ====================
         let soloRecords = JSON.parse(localStorage.getItem('ckcps_solo_records') || '[]');
 
@@ -881,8 +912,10 @@ function renderAllTeams() {
                 if (idx === selectedIndex && !isCorrect) btn.style.borderColor = '#ff00aa';
             });
             if (isCorrect) {
-                teams[teamIndex].score += 10;
-                statusEl.innerHTML = `<span style="color:#39ff14">✅ CORRECT! +10</span>`;
+                const points = 10 * nextCorrectMultiplier;
+                teams[teamIndex].score += points;
+                statusEl.innerHTML = `<span style="color:#39ff14">✅ CORRECT! +${points}</span>`;
+                nextCorrectMultiplier = 1; // 重置
             } else {
                 statusEl.innerHTML = `<span style="color:#ff00aa">❌ Wrong. Answer: ${String.fromCharCode(65 + q.ans)}</span>`;
             }
@@ -890,6 +923,11 @@ function renderAllTeams() {
             const progress = Math.min((teams[teamIndex].score / 300) * 100, 100);
             document.getElementById(`progress-${teamId}`).style.width = `${progress}%`;
             updateLeaderboard();
+
+            // 幸運大抽獎觸發檢查 (50 分倍數)
+            if (teams[teamIndex].score % 50 === 0 && teams[teamIndex].score > 0) {
+                setTimeout(() => triggerLottery(teamIndex), 800);
+            }
             if (endMode === 'score' && teams[teamIndex].score >= targetScore) {
                 setTimeout(() => { alert(`🎉 ${teams[teamIndex].name} WINS!`); endGame(); }, 800);
                 return;
@@ -1008,6 +1046,89 @@ function renderAllTeams() {
                 }
             });
         });
+
+        // ==================== 幸運大抽獎 ====================
+        function triggerLottery(teamIndex) {
+            const overlay = document.getElementById('lottery-overlay');
+            const resultEl = document.getElementById('lottery-result');
+            
+            overlay.classList.add('show');
+            
+            // 隨機抽獎動畫
+            let spins = 0;
+            const spinInterval = setInterval(() => {
+                const randomPrize = lotteryPrizes[Math.floor(Math.random() * lotteryPrizes.length)];
+                resultEl.textContent = randomPrize.emoji + " " + randomPrize.text;
+                spins++;
+                
+                if (spins > 12) {
+                    clearInterval(spinInterval);
+                    const selectedPrize = lotteryPrizes[Math.floor(Math.random() * lotteryPrizes.length)];
+                    resultEl.textContent = selectedPrize.emoji + " " + selectedPrize.text;
+                    applyLotteryPrize(selectedPrize, teamIndex);
+                }
+            }, 120);
+        }
+
+        function applyLotteryPrize(prize, teamIndex) {
+            const currentTeam = teams[teamIndex];
+            
+            switch (prize.effect) {
+                case "steal5":
+                    if (teams.length > 1) {
+                        let targetIndex;
+                        do {
+                            targetIndex = Math.floor(Math.random() * teams.length);
+                        } while (targetIndex === teamIndex);
+                        teams[targetIndex].score = Math.max(0, teams[targetIndex].score - 5);
+                    }
+                    currentTeam.score += 5;
+                    break;
+                    
+                case "freezeOne5s":
+                    if (teams.length > 1) {
+                        let targetIndex;
+                        do {
+                            targetIndex = Math.floor(Math.random() * teams.length);
+                        } while (targetIndex === teamIndex);
+                        const targetOpts = document.getElementById(`options-${teams[targetIndex].id}`);
+                        if (targetOpts) {
+                            const btns = targetOpts.querySelectorAll('.option-btn');
+                            btns.forEach(b => b.disabled = true);
+                            setTimeout(() => btns.forEach(b => b.disabled = false), 5000);
+                        }
+                    }
+                    break;
+                    
+                case "extra10":
+                    currentTeam.score += 10;
+                    break;
+                    
+                case "freezeAll1s":
+                    teams.forEach((t, idx) => {
+                        if (idx !== teamIndex) {
+                            const opts = document.getElementById(`options-${t.id}`);
+                            if (opts) {
+                                const btns = opts.querySelectorAll('.option-btn');
+                                btns.forEach(b => b.disabled = true);
+                                setTimeout(() => btns.forEach(b => b.disabled = false), 1000);
+                            }
+                        }
+                    });
+                    break;
+                    
+                case "tripleNext":
+                    nextCorrectMultiplier = 3;
+                    break;
+            }
+            
+            updateLeaderboard();
+        }
+
+        function closeLottery() {
+            const overlay = document.getElementById('lottery-overlay');
+            overlay.classList.remove('show');
+        }
 
         window.onload = () => {
             toggleEndOptions();
