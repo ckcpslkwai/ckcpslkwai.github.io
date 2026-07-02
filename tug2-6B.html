@@ -160,6 +160,8 @@
             display: flex;
             flex-direction: column;
             box-sizing: border-box;
+            position: relative; /* 為了凍結遮罩定位 */
+            transition: opacity 0.3s;
         }
        
         .team-header {
@@ -219,6 +221,24 @@
             flex: 1;
             min-width: 280px;
         }
+
+        /* 凍結特效遮罩樣式 */
+        .freeze-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 150, 255, 0.25);
+            backdrop-filter: blur(2px);
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #00f9ff;
+            font-size: 20px;
+            font-weight: bold;
+            text-shadow: 0 0 10px #00f9ff;
+            z-index: 10;
+            pointer-events: all;
+        }
     </style>
 </head>
 <body>
@@ -227,7 +247,6 @@
         <p style="margin:4px 0 0 0; font-size:12px; color:#00f9ff;">CYBERPUNK NEON EDITION • P.1–P.6</p>
     </header>
     <div class="container">
-        <!-- MENU SCREEN -->
         <div id="menu-screen" class="screen active">
             <div class="compact-grid">
                 <div class="section">
@@ -265,7 +284,6 @@
                 </div>
             </div>
 
-            <!-- SOLO MODE PLAYER INFO -->
             <div id="solo-info" class="section" style="display:none; border-color:#39ff14;">
                 <label style="color:#39ff14;">PLAYER INFORMATION 玩家資料</label>
                 <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:8px;">
@@ -280,7 +298,6 @@
                 </div>
             </div>
 
-            <!-- GAME END CONDITION 左右並排 -->
             <div class="section">
                 <div class="end-condition">
                     <div class="end-left">
@@ -303,7 +320,6 @@
                 </div>
             </div>
 
-            <!-- BACKGROUND MUSIC -->
             <div class="section">
                 <label style="color:#00f9ff;">BACKGROUND MUSIC</label>
                 <div style="display:flex; align-items:center; gap:12px; margin-top:8px; flex-wrap:wrap;">
@@ -316,9 +332,6 @@
                         </select>
                     </div>
                 </div>
-                <p style="margin:6px 0 0 0; font-size:10px; color:#94a3b8;">
- 
-                </p>
             </div>
 
             <div class="section">
@@ -331,19 +344,17 @@
                         📋 Default 預設
                     </button>
                 </div>
-                <p style="margin:8px 0; font-size:11px; color:#94a3b8;"></p>
                 <input type="file" id="csv-upload" accept=".csv" style="display:none;" onchange="handleCSVUpload(event)">
             </div>
-           
+            
             <button onclick="startGame()" style="font-size:22px; padding:20px 60px; margin-top:20px; border-color:#39ff14; box-shadow: 0 0 25px #39ff14;">
                 🚀 START BATTLE!
             </button>
         </div>
 
-        <!-- GAME SCREEN -->
         <div id="game-screen" class="screen">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
-                <strong id="game-info" style="color:#00f9ff; flex:1;"></strong>
+                <strong id="game-info" style="color:#00f9ff; flex:1; text-align:left;"></strong>
                 
                 <div style="display:flex; align-items:center; gap:8px; justify-content:center; flex:1;">
                     <span id="timer-display" style="font-size:15px; background:#12122e; padding:6px 12px; border-radius:6px; border:2px solid #ff00aa; display:none;"></span>
@@ -356,7 +367,7 @@
             </div>
             
             <div class="leaderboard">
-                <h3 style="color:#ff00aa;">🏆 LEADERBOARD 🏆</h3>
+                <h3 style="color:#ff00aa; margin: 5px 0 12px 0;">🏆 LEADERBOARD 🏆</h3>
                 <div id="leaderboard" style="text-align:left;"></div>
             </div>
             
@@ -364,860 +375,8 @@
         </div>
     </div>
 
-    <script>
-        // ==================== 題庫來源 ====================
-        // 已取消內建題庫（questionsDB），現在「永遠只從 .csv 檔案提取問題」
-        // 請務必先點擊「Sample Set」或上傳 CSV 後再開始遊戲
-
-        let customQuestions = [];
-        let currentSubject = '', currentLevel = '', teams = [], currentQuestions = [];
-        let gameInterval = null, endMode = 'score', targetScore = 100, gameEndTime = null;
-        let isPaused = false;
-        let pausedRemainingTime = 0;
-        let pendingResultTimeouts = {};   // 用來儲存各隊「顯示結果後自動換題」的 timer ID
-
-        // ==================== SOLO MODE RECORDS ====================
-        let soloRecords = JSON.parse(localStorage.getItem('ckcps_solo_records') || '[]');
-
-        // ==================== GOOGLE SHEET 雲端記錄設定 ====================
-        // ⚠️ 使用前請把下面 URL 改成你自己部署的 Google Apps Script Web App URL
-        const GOOGLE_SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyMVPcda6_YBIBXmy7iZFQjbIilACiNGVTz1CwB3yMNy7Od3VS81AE8lbKkTjABmt5f/exec';
-
-        async function saveSoloResultToGoogleSheet(playerData) {
-            if (!GOOGLE_SHEET_WEBAPP_URL || GOOGLE_SHEET_WEBAPP_URL.includes('你的部署ID')) {
-                alert('尚未設定 Google Sheet Web App URL！\n請先按照說明部署 Apps Script 並填入 URL。');
-                return false;
-            }
-
-            try {
-                const response = await fetch(GOOGLE_SHEET_WEBAPP_URL, {
-                    method: 'POST',
-                    mode: 'no-cors', // Apps Script Web App 常用
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(playerData)
-                });
-
-                // 因為 no-cors 無法讀取回應，所以直接假設成功
-                alert(`✅ 成績已成功儲存到雲端！\n\n班級：${playerData.class}\n姓名：${playerData.name}\n分數：${playerData.score}`);
-                return true;
-            } catch (error) {
-                console.error(error);
-                alert('❌ 儲存失敗，請檢查網絡或 URL 是否正確。');
-                return false;
-            }
-        }
-
-        // ==================== BACKGROUND MUSIC ====================
-        let bgmAudio = null;
-        let isMusicPlaying = false;
-
-        function toggleEndOptions() {
-            const mode = document.getElementById('end-mode').value;
-            document.getElementById('score-options').style.display = mode === 'score' ? 'block' : 'none';
-            document.getElementById('time-options').style.display = mode === 'time' ? 'block' : 'none';
-        }
-
-        function toggleSoloMode() {
-            const numTeamsValue = document.getElementById('num-teams').value;
-            const soloInfo = document.getElementById('solo-info');
-
-            if (numTeamsValue === 'solo') {
-                soloInfo.style.display = 'block';
-            } else {
-                soloInfo.style.display = 'none';
-            }
-        }
-
-        // ==================== PAUSE / RESUME ====================
-        function disableAllAnswerButtons(disabled) {
-            // More reliable: directly select all answer buttons in the grid
-            const allButtons = document.querySelectorAll('#team-grid .option-btn');
-            allButtons.forEach(btn => {
-                btn.disabled = disabled;
-            });
-        }
-
-        function togglePause() {
-            const pauseBtn = document.getElementById('pause-btn');
-            if (!pauseBtn) return;
-
-            isPaused = !isPaused;
-
-            if (isPaused) {
-                // === PAUSE ===
-                if (gameInterval) {
-                    clearInterval(gameInterval);
-                    gameInterval = null;
-                }
-                if (endMode === 'time' && gameEndTime) {
-                    pausedRemainingTime = gameEndTime - Date.now();
-                }
-                disableAllAnswerButtons(true);
-
-                // 清除所有「顯示結果後自動換下一題」的 timer，讓畫面凍結在正確/錯誤畫面
-                Object.values(pendingResultTimeouts).forEach(id => clearTimeout(id));
-                pendingResultTimeouts = {};
-
-                // 暫停背景音樂
-                pauseBackgroundMusic();
-
-                pauseBtn.innerHTML = '▶️ RESUME';
-                pauseBtn.style.borderColor = '#facc15';
-                pauseBtn.style.boxShadow = '0 0 12px rgba(250, 204, 21, 0.5)';
-            } else {
-                // === RESUME ===
-                if (endMode === 'time' && pausedRemainingTime > 0) {
-                    gameEndTime = Date.now() + pausedRemainingTime;
-                    startTimer();
-                }
-                disableAllAnswerButtons(false);
-
-                // 恢復背景音樂
-                resumeBackgroundMusic();
-
-                // 如果之前有隊伍正顯示「正確/錯誤」結果，Resume 時立即幫他們換下一題
-                teams.forEach((team, idx) => {
-                    const statusEl = document.getElementById(`status-${team.id}`);
-                    if (statusEl && statusEl.innerHTML.trim() !== '') {
-                        // 清除狀態並換新題
-                        currentQuestions[idx] = getRandomQuestion();
-                        const qEl = document.getElementById(`qtext-${team.id}`);
-                        if (qEl) qEl.textContent = currentQuestions[idx].q;
-                        if (statusEl) statusEl.innerHTML = '';
-
-                        const optsDiv = document.getElementById(`options-${team.id}`);
-                        if (optsDiv) {
-                            optsDiv.innerHTML = '';
-                            currentQuestions[idx].options.forEach((opt, i) => {
-                                const btn = document.createElement('button');
-                                btn.className = 'option-btn';
-                                btn.textContent = `${String.fromCharCode(65 + i)}. ${opt}`;
-                                btn.onclick = () => handleAnswer(team.id, i, idx);
-                                optsDiv.appendChild(btn);
-                            });
-                        }
-                    }
-                });
-
-                pauseBtn.innerHTML = '⏸️ PAUSE';
-                pauseBtn.style.borderColor = '#ff00aa';
-                pauseBtn.style.boxShadow = '0 0 12px rgba(0, 249, 255, 0.4)';
-            }
-        }
-
-        // ==================== BACKGROUND MUSIC (使用同資料夾的 mp3) ====================
-        function playBackgroundMusic() {
-            if (isMusicPlaying) return;
-
-            const track = document.getElementById('music-track')?.value;
-
-            // 如果選擇 "No music" 或沒有選擇，則不播放音樂
-            if (!track) {
-                isMusicPlaying = false;
-                return;
-            }
-
-            // 停止舊音樂
-            stopBackgroundMusic();
-
-            bgmAudio = new Audio(track);
-            bgmAudio.loop = true;
-            bgmAudio.volume = 0.6; // 固定音量
-
-            bgmAudio.play().catch(() => {
-                // 如果檔案不存在或無法播放，靜默失敗
-                console.log('%c[Music] 無法播放 ' + track + '，請確認檔案是否存在於同資料夾', 'color:#f59e0b');
-            });
-
-            isMusicPlaying = true;
-        }
-
-        function stopBackgroundMusic() {
-            isMusicPlaying = false;
-            if (bgmAudio) {
-                bgmAudio.pause();
-                bgmAudio.currentTime = 0;
-                bgmAudio = null;
-            }
-        }
-
-        function pauseBackgroundMusic() {
-            if (bgmAudio && !bgmAudio.paused) {
-                bgmAudio.pause();
-            }
-        }
-
-        function resumeBackgroundMusic() {
-            if (bgmAudio && bgmAudio.paused && isMusicPlaying) {
-                bgmAudio.play().catch(() => {});
-            }
-        }
-
-        async function loadDefaultCSV() {
-            try {
-                const response = await fetch('./default.csv');
-                if (!response.ok) throw new Error('File not found');
-                const csvText = await response.text();
-                const allParsed = parseCSV(csvText);
-                const selectedSubject = document.getElementById('subject').value;
-                const selectedLevel = document.getElementById('level').value;
-                customQuestions = filterQuestionsBySubjectLevel(allParsed, selectedSubject, selectedLevel);
-                if (customQuestions.length === 0) {
-                    alert(`⚠️ No questions found for ${selectedSubject} ${selectedLevel} in default.csv.\nLoaded all ${allParsed.length} questions instead.`);
-                    customQuestions = allParsed;
-                } else {
-                    alert(`✅ Default Set loaded! ${customQuestions.length} questions for ${selectedSubject} - ${selectedLevel}`);
-                }
-            } catch (err) {
-                alert('❌ Cannot load default.csv\nPlease make sure default.csv is in the same folder.');
-            }
-        }
-
-        function handleCSVUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = e => {
-                const allParsed = parseCSV(e.target.result);
-                const selectedSubject = document.getElementById('subject').value;
-                const selectedLevel = document.getElementById('level').value;
-                customQuestions = filterQuestionsBySubjectLevel(allParsed, selectedSubject, selectedLevel);
-                if (customQuestions.length === 0) {
-                    alert(`⚠️ No matching questions for ${selectedSubject} ${selectedLevel} in your CSV. Using all ${allParsed.length} questions.`);
-                    customQuestions = allParsed;
-                } else {
-                    alert(`✅ CSV loaded! ${customQuestions.length} questions matched for ${selectedSubject} - ${selectedLevel}`);
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        function startGame() {
-            // 強制要求先載入 CSV（已取消內建題庫）
-            if (!customQuestions || customQuestions.length === 0) {
-                alert('⚠️ 請先載入題庫！\n\n請點擊「📋 Sample Set」載入預設題庫，\n或上傳您的 CSV 檔案。\n\n（已取消內建題庫，遊戲現在只使用 .csv 檔案）');
-                return;
-            }
-
-            const numTeamsValue = document.getElementById('num-teams').value;
-
-            let numTeams;
-            if (numTeamsValue === 'solo') {
-                // Solo Mode 驗證
-                const soloClass = document.getElementById('solo-class').value.trim();
-                const soloName = document.getElementById('solo-name').value.trim();
-
-                if (!soloClass || !soloName) {
-                    alert('請填寫班級和姓名！\nPlease enter your Class and Name.');
-                    return;
-                }
-
-                // 儲存 Solo 玩家資料
-                window.currentSoloPlayer = { class: soloClass, name: soloName };
-                numTeams = 1; // 強制只有 1 個卡片
-            } else {
-                numTeams = parseInt(numTeamsValue);
-                window.currentSoloPlayer = null;
-            }
-
-            currentSubject = document.getElementById('subject').value;
-            currentLevel = document.getElementById('level').value;
-            endMode = document.getElementById('end-mode').value;
-            if (endMode === 'score') targetScore = parseInt(document.getElementById('target-score').value) || 100;
-            else window.gameMinutes = parseInt(document.getElementById('game-time').value) || 10;
-
-            document.getElementById('menu-screen').classList.remove('active');
-            document.getElementById('game-screen').classList.add('active');
-            const infoEl = document.getElementById('game-info');
-
-            if (numTeamsValue === 'solo' && window.currentSoloPlayer) {
-                infoEl.innerHTML = `${currentSubject} • ${currentLevel} &nbsp;&nbsp; | &nbsp;&nbsp; <span style="color:#39ff14;">${window.currentSoloPlayer.class} ${window.currentSoloPlayer.name}</span>`;
-            } else {
-                infoEl.innerHTML = `${currentSubject} • ${currentLevel} <span style="color:#94a3b8; font-size:12px;">(${customQuestions.length} Qs from CSV)</span>`;
-            }
-
-            initTeams(numTeams);
-            playBackgroundMusic();
-        }
-
-        function initTeams(numTeams) {
-            teams = []; currentQuestions = [];
-            const colors = ['#f87171', '#60a5fa', '#facc15', '#a78bfa', '#f472b6', '#34d399'];
-            for (let i = 0; i < numTeams; i++) {
-                teams.push({ id: i+1, name: `Team ${String.fromCharCode(65+i)}`, score: 0, color: colors[i % colors.length] });
-                currentQuestions.push(getRandomQuestion());
-            }
-            renderAllTeams();
-            updateLeaderboard();
-
-            // Reset pause state
-            isPaused = false;
-            pausedRemainingTime = 0;
-            const pauseBtn = document.getElementById('pause-btn');
-            if (pauseBtn) {
-                pauseBtn.innerHTML = '⏸️ PAUSE';
-                pauseBtn.style.borderColor = '#ff00aa';
-                pauseBtn.style.boxShadow = '0 0 12px rgba(0, 249, 255, 0.4)';
-                pauseBtn.style.display = 'inline-block';   // Always show in both modes
-            }
-
-            if (endMode === 'time') {
-                gameEndTime = Date.now() + (window.gameMinutes || 10) * 60 * 1000;
-                document.getElementById('timer-display').style.display = 'inline';
-                startTimer();
-            } else {
-                document.getElementById('timer-display').style.display = 'none';
-            }
-        }
-
-        function parseCSV(csvText) {
-            // 移除 UTF-8 BOM（如果存在）
-            if (csvText.charCodeAt(0) === 0xFEFF) {
-                csvText = csvText.slice(1);
-            }
-
-            const lines = csvText.trim().split('\n');
-            if (lines.length < 2) return [];
-
-            // 解析 header 並清理欄位名稱（處理換行、引號、BOM）
-            let rawHeader = parseCSVLine(lines[0]);
-            const header = rawHeader.map(h => 
-                h.toLowerCase()
-                 .trim()
-                 .replace(/"/g, '')
-                 .replace(/\n/g, ' ')
-                 .replace(/\s+/g, ' ')
-                 .trim()
-            );
-
-            const questions = [];
-
-            // 根據新 CSV 格式精確對應欄位
-            const findIdx = (keywords) => header.findIndex(h => keywords.some(k => h.includes(k)));
-
-            const idxSubject = findIdx(['subject']);
-            const idxLevel   = findIdx(['level']);
-            const idxQ       = findIdx(['question text']);
-
-            // Answer 欄位（依順序 Answer 1 ~ Answer 4）
-            const idxAnswer1 = findIdx(['answer 1']);
-            const idxAnswer2 = findIdx(['answer 2']);
-            const idxAnswer3 = findIdx(['answer 3']);
-            const idxAnswer4 = findIdx(['answer 4']);
-
-            const idxCorrect = findIdx(['correct answer', 'correct']);
-
-            for (let i = 1; i < lines.length; i++) {
-                if (!lines[i].trim()) continue;
-                const row = parseCSVLine(lines[i]);
-                if (row.length < 4) continue;
-
-                const qText = (idxQ !== -1 ? row[idxQ] : row[3] || '').trim();
-
-                // 收集非空選項（Answer 1~4）
-                const opts = [];
-                [idxAnswer1, idxAnswer2, idxAnswer3, idxAnswer4].forEach(idx => {
-                    if (idx !== -1 && row[idx] && row[idx].trim()) {
-                        opts.push(row[idx].trim());
-                    }
-                });
-
-                // Correct Answer（1-based → 0-based）
-                let correctIdx = -1;
-                if (idxCorrect !== -1 && row[idxCorrect]) {
-                    correctIdx = parseInt(row[idxCorrect].trim()) - 1;
-                } else {
-                    // 備用：取最後一欄
-                    correctIdx = parseInt(row[row.length - 1]) - 1;
-                }
-
-                const subj = (idxSubject !== -1 ? row[idxSubject] : '').trim();
-                const lvl  = (idxLevel   !== -1 ? row[idxLevel]   : '').trim();
-
-                if (qText && opts.length >= 2 && !isNaN(correctIdx) && correctIdx >= 0 && correctIdx < opts.length) {
-                    questions.push({
-                        q: qText,
-                        options: opts,
-                        ans: correctIdx,
-                        subject: subj,
-                        level: lvl
-                    });
-                }
-            }
-            return questions;
-        }
-
-        function parseCSVLine(line) {
-            const result = [];
-            let current = '', inQuotes = false;
-            for (let i = 0; i < line.length; i++) {
-                const char = line[i];
-                if (char === '"') inQuotes = !inQuotes;
-                else if (char === ',' && !inQuotes) { 
-                    result.push(current.trim()); 
-                    current = ''; 
-                }
-                else current += char;
-            }
-            result.push(current.trim());
-            return result;
-        }
-
-        function filterQuestionsBySubjectLevel(allQuestions, subject, level) {
-            if (!allQuestions || allQuestions.length === 0) return [];
-            const norm = (str) => (str || '').toLowerCase().replace(/\.|\s|grade|form|年級|級/g, '').trim();
-            const targetSub = norm(subject);
-            const targetLvl = norm(level);  // e.g. "p6", "p1"
-
-            return allQuestions.filter(q => {
-                const qSub = norm(q.subject);
-                const qLvl = norm(q.level);
-                // Match if both subject and level match, or if CSV didn't have them (empty), include anyway
-                const subMatch = !qSub || qSub === targetSub || 
-                                 (targetSub === 'maths' && (qSub === 'math' || qSub === '數學')) ||
-                                 (targetSub === '科學' && (qSub === '科學')) ||
-                                 (targetSub === 'science' && (qSub === 'Science')) ||
-                                 (targetSub === 'chinese' && (qSub === '中文' || qSub === 'chinese'));
-                const lvlMatch = !qLvl || qLvl === targetLvl || qLvl === targetLvl.replace('p','');
-                return subMatch && lvlMatch;
-            });
-        }
-
-        function getRandomQuestion() {
-            // 永遠只從已載入的 CSV 題庫提取問題（已取消內建題庫）
-            if (!customQuestions || customQuestions.length === 0) {
-                // 安全返回，避免遊戲崩潰（實際上 startGame 會先阻擋）
-                return {
-                    q: "請先載入 CSV 題庫！",
-                    options: ["Sample Set", "上傳 CSV", "選擇科目年級", "重新開始"],
-                    ans: 0
-                };
-            }
-            const pool = customQuestions;
-            const original = pool[Math.floor(Math.random() * pool.length)];
-            let shuffled = [...original.options];
-            const correctText = shuffled[original.ans];
-            for (let i = shuffled.length-1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i+1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            return { q: original.q, options: shuffled, ans: shuffled.indexOf(correctText) };
-        }
-
-function renderAllTeams() {
-    const grid = document.getElementById('team-grid');
-    grid.innerHTML = '';
-
-    // Solo Mode 時收窄並置中
-    if (teams.length === 1) {
-        grid.classList.add('solo-mode');
-    } else {
-        grid.classList.remove('solo-mode');
-    }
-
-    teams.forEach((team, index) => {
-        const card = document.createElement('div');
-        // ... (省略前面代碼)
-
-        const qText = currentQuestions[index].q;
-        // 嚴格判斷：只有 1 或 2 個字時才變大
-        const isShort = qText.length > 0 && qText.length <= 5;
-        
-        card.innerHTML = `
-            <div class="team-header">
-                <div class="team-name" style="color:${team.color}">${team.name}</div>
-                <div class="score" id="score-${team.id}">${team.score}</div>
-            </div>
-            <div class="progress-container">
-                <div class="progress-bar" id="progress-${team.id}" style="width:0%"></div>
-            </div>
-            <div class="question" id="qtext-${team.id}"
-                 style="font-size: ${isShort ? '70px' : '17px'};
-                        line-height: ${isShort ? '1.2' : '1.55'}">
-                ${qText}
-            </div>
-            <div class="options" id="options-${team.id}"></div>
-            <div class="status" id="status-${team.id}"></div>
-        `;
-       grid.appendChild(card);
-
-        const optsDiv = document.getElementById(`options-${team.id}`);
-        currentQuestions[index].options.forEach((opt, i) => {
-            const btn = document.createElement('button');
-            btn.className = 'option-btn';            
-            btn.textContent = `${String.fromCharCode(65+i)}. ${opt}`;
-            btn.onclick = () => handleAnswer(team.id, i, index);
-            optsDiv.appendChild(btn);
-        });
-    });
-
-        // Solo Mode 時讓單一卡片不要太闊，置中並收窄
-        if (teams.length === 1) {
-            const grid = document.getElementById('team-grid');
-            grid.style.maxWidth = '620px';
-            grid.style.margin = '0 auto';
-            grid.style.padding = '0 10px';
-        } else {
-            // Team Mode 恢復原本寬度
-            const grid = document.getElementById('team-grid');
-            grid.style.maxWidth = '';
-            grid.style.margin = '';
-            grid.style.padding = '';
-        }
-    }
-
-
-        function handleAnswer(teamId, selectedIndex, teamIndex) {
-            const q = currentQuestions[teamIndex];
-            const isCorrect = selectedIndex === q.ans;
-            const statusEl = document.getElementById(`status-${teamId}`);
-            const buttons = document.querySelectorAll(`#options-${teamId} .option-btn`);
-           
-            buttons.forEach((btn, idx) => {
-                btn.disabled = true;
-                if (idx === q.ans) btn.style.borderColor = '#39ff14';
-                if (idx === selectedIndex && !isCorrect) btn.style.borderColor = '#ff00aa';
-            });
-            if (isCorrect) {
-                teams[teamIndex].score += 10;
-                statusEl.innerHTML = `<span style="color:#39ff14">✅ CORRECT! +10</span>`;
-            } else {
-                statusEl.innerHTML = `<span style="color:#ff00aa">❌ Wrong. Answer: ${String.fromCharCode(65 + q.ans)}</span>`;
-            }
-            document.getElementById(`score-${teamId}`).textContent = teams[teamIndex].score;
-            const progress = Math.min((teams[teamIndex].score / 300) * 100, 100);
-            document.getElementById(`progress-${teamId}`).style.width = `${progress}%`;
-            updateLeaderboard();
-            if (endMode === 'score' && teams[teamIndex].score >= targetScore) {
-                setTimeout(() => { alert(`🎉 ${teams[teamIndex].name} WINS!`); endGame(); }, 800);
-                return;
-            }
-            // 儲存 timer ID，方便 Pause 時清除
-            pendingResultTimeouts[teamId] = setTimeout(() => {
-                currentQuestions[teamIndex] = getRandomQuestion();
-                document.getElementById(`qtext-${teamId}`).textContent = currentQuestions[teamIndex].q;
-                document.getElementById(`status-${teamId}`).innerHTML = '';
-                const optsDiv = document.getElementById(`options-${teamId}`);
-                optsDiv.innerHTML = '';
-                currentQuestions[teamIndex].options.forEach((opt, i) => {
-                    const btn = document.createElement('button');
-                    btn.className = 'option-btn';
-                    btn.textContent = `${String.fromCharCode(65+i)}. ${opt}`;
-                    btn.onclick = () => handleAnswer(teamId, i, teamIndex);
-                    optsDiv.appendChild(btn);
-                });
-
-                delete pendingResultTimeouts[teamId];
-            }, 1600);
-        }
-
-        function updateLeaderboard() {
-            const sorted = [...teams].sort((a,b) => b.score - a.score);
-            let html = '';
-            sorted.forEach((t, i) => {
-                html += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #334155;">
-                    <span><strong>#${i+1}</strong> ${t.name}</span>
-                    <span style="color:#39ff14;font-weight:bold;">${t.score} pts</span>
-                </div>`;
-            });
-            document.getElementById('leaderboard').innerHTML = html;
-        }
-
-        function endGame() {
-            if (!confirm("End game and return to menu?")) return;
-
-            const wasSolo = !!window.currentSoloPlayer;
-            const finalScore = (teams.length > 0) ? teams[0].score : 0;
-
-            stopBackgroundMusic();
-            if (gameInterval) clearInterval(gameInterval);
-
-            // Solo Mode 結束後詢問是否儲存到雲端
-            if (wasSolo && window.currentSoloPlayer) {
-                const player = window.currentSoloPlayer;
-                const confirmSave = confirm(
-                    `Solo Mode 結束！\n\n` +
-                    `班級：${player.class}\n` +
-                    `姓名：${player.name}\n` +
-                    `分數：${finalScore} 分\n\n` +
-                    `是否要將成績儲存到 Google Sheet 雲端？`
-                );
-
-                if (confirmSave) {
-                    const recordData = {
-                        timestamp: new Date().toISOString(),
-                        date: new Date().toLocaleDateString('zh-HK'),
-                        time: new Date().toLocaleTimeString('zh-HK'),
-                        class: player.class,
-                        name: player.name,
-                        subject: currentSubject,
-                        level: currentLevel,
-                        score: finalScore,
-                        endMode: endMode,
-                        targetOrTime: endMode === 'score' ? targetScore : (window.gameMinutes || 10)
-                    };
-
-                    saveSoloResultToGoogleSheet(recordData);
-                }
-            }
-
-            // Reset pause state
-            isPaused = false;
-            pausedRemainingTime = 0;
-            const pauseBtn = document.getElementById('pause-btn');
-            if (pauseBtn) {
-                pauseBtn.style.display = 'none';
-                pauseBtn.innerHTML = '⏸️ PAUSE';
-            }
-            document.getElementById('game-screen').classList.remove('active');
-            document.getElementById('menu-screen').classList.add('active');
-            document.getElementById('csv-upload').value = '';
-            document.getElementById('timer-display').style.display = 'none';
-            customQuestions = [];
-            window.currentSoloPlayer = null;
-        }
-
-        function startTimer() {
-            if (gameInterval) clearInterval(gameInterval);
-            gameInterval = setInterval(() => {
-                const remaining = Math.ceil((gameEndTime - Date.now()) / 1000);
-                if (remaining <= 0) { 
-                    clearInterval(gameInterval); 
-                    alert("⏰ Time's Up!"); 
-                    endGame(); 
-                    return; 
-                }
-                const min = Math.floor(remaining / 60);
-                const sec = remaining % 60;
-                document.getElementById('timer-display').textContent = `TIME: ${min}:${sec < 10 ? '0'+sec : sec}`;
-            }, 1000);
-        }
-
-        document.addEventListener('keydown', e => {
-            if (!document.getElementById('game-screen').classList.contains('active') || isPaused) return;
-            const key = e.key.toUpperCase();
-            if (!['A','B','C','D'].includes(key)) return;
-            const idx = key.charCodeAt(0) - 65;
-            teams.forEach(team => {
-                const opts = document.getElementById(`options-${team.id}`);
-                if (opts && !opts.querySelector('button[disabled]')) {
-                    const btns = opts.querySelectorAll('.option-btn');
-                    if (btns[idx]) btns[idx].click();
-                }
-            });
-        });
-
-        window.onload = () => {
-            toggleEndOptions();
-            toggleSoloMode(); // 初始化 Solo 模式顯示
-        };
-                    // 禁止右鍵選單（防止學生查看原始碼或作弊）
-            document.addEventListener('contextmenu', function(e) {
-                e.preventDefault();
-                return false;
-            });
-    </script>
-
-<div id="lucky-draw-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; text-align: center; font-family: sans-serif;">
-    <div style="background: #111; border: 4px solid #ff0055; box-shadow: 0 0 20px #ff0055, inset 0 0 10px #ff0055; padding: 40px; border-radius: 15px; max-width: 500px; width: 90%;">
-        <h2 id="lucky-player-title" style="color: #00ffff; text-shadow: 0 0 10px #00ffff; font-size: 24px; margin-bottom: 10px;">🏆 恭喜玩家 🏆</h2>
-        <p style="color: #fff; font-size: 18px; margin-bottom: 20px;">分數達到 50 或其倍數！觸發幸運大抽獎！</p>
-        <div id="lucky-roulette" style="font-size: 28px; color: #ffff00; font-weight: bold; min-height: 50px; margin: 20px 0; text-shadow: 0 0 8px #ffff00;">
-            🎲 正在抽取技能...
-        </div>
-        <div id="lucky-result" style="font-size: 22px; color: #00ff00; font-weight: bold; display: none; text-shadow: 0 0 10px #00ff00;"></div>
-    </div>
-</div>
-
-<script>
-// ==================== 抽獎系統狀態與邏輯控制 ====================
-
-// 儲存每位玩家/隊伍的特殊狀態（例如：下一題倍數、是否被凍結）
-// 提示：請在遊戲初始化 (Start Battle) 時為每位玩家初始化此物件
-let playerEffects = {}; 
-
-// 初始化特定玩家的狀態函數
-function initPlayerEffect(playerId) {
-    if (!playerEffects[playerId]) {
-        playerEffects[playerId] = {
-            nextScoreMultiplier: 1, // 預設分數倍數
-            isFrozen: false,        // 是否被暫停作答
-            lastMilestone: 0        // 上一次觸發抽獎的50分里程碑 (防止反覆觸發)
-        };
-    }
-}
-
-// 5種功能的定義與權重
-const PRIZES = [
-    { id: 'steal', text: '🏴‍☠️ 從隨機對手偷取 5 分！' },
-    { id: 'freeze1', text: '❄️ 暫停一個對手作答 5 秒！' },
-    { id: 'gain10', text: '💎 自己獲得額外 10 分！' },
-    { id: 'freezeAll', text: '⚡ 暫停所有對手作答 1 秒！' },
-    { id: 'triple', text: '🔥 下一題答對時獲得 3 倍分數！' }
-];
-
-/**
- * 核心修改點：每當玩家得分改變時，請調用此函數
- * @param {string|number} playerId - 玩家或隊伍的唯一識別碼
- * @param {number} oldScore - 加分前的分數
- * @param {number} newScore - 加分後的分數
- */
-function checkScoreMilestone(playerId, oldScore, newScore) {
-    initPlayerEffect(playerId);
-    
-    // 計算目前達到了第幾個 50 分區間 (50分=1, 100分=2, 150分=3...)
-    let currentMilestone = Math.floor(newScore / 50);
-    
-    // 如果突破了新的 50 分門檻，且大於之前紀錄的里程碑
-    if (newScore >= 50 && currentMilestone > playerEffects[playerId].lastMilestone) {
-        playerEffects[playerId].lastMilestone = currentMilestone; // 更新里程碑紀錄
-        
-        // 延遲一點點時間跳出抽獎，避免與原本的「答對加分」動畫衝突
-        setTimeout(() => {
-            executeLuckyDraw(playerId);
-        }, 800);
-    }
-}
-
-/**
- * 執行抽獎動畫與效果應用
- */
-function executeLuckyDraw(playerId) {
-    const overlay = document.getElementById('lucky-draw-overlay');
-    const roulette = document.getElementById('lucky-roulette');
-    const resultDiv = document.getElementById('lucky-result');
-    const title = document.getElementById('lucky-player-title');
-    
-    // 獲取玩家名稱（整合原系統時，可替換為原系統獲取隊伍名稱的變數，例如 teams[playerId].name）
-    let playerName = "玩家 " + playerId; 
-    title.innerText = `🏆 恭喜 ${playerName} 🏆`;
-    
-    // 顯示全螢幕抽獎彈窗
-    overlay.style.display = 'flex';
-    roulette.style.display = 'block';
-    resultDiv.style.display = 'none';
-    
-    // 霓虹跑馬燈滾動特效
-    let count = 0;
-    let interval = setInterval(() => {
-        let randomPrize = PRIZES[Math.floor(Math.random() * PRIZES.length)];
-        roulette.innerText = randomPrize.text;
-        count++;
-        if (count > 12) { // 滾動 12 次後停止
-            clearInterval(interval);
-            
-            // 決定最終抽中項目
-            const finalPrize = PRIZES[Math.floor(Math.random() * PRIZES.length)];
-            
-            // 顯示最終結果
-            roulette.style.display = 'none';
-            resultDiv.innerText = finalPrize.text;
-            resultDiv.style.display = 'block';
-            
-            // 套用實際的遊戲功能效果
-            applyPrizeEffect(playerId, finalPrize.id);
-            
-            // 3秒後自動關閉抽獎視窗，讓比賽繼續
-            setTimeout(() => {
-                overlay.style.display = 'none';
-            }, 3000);
-        }
-    }, 150);
-}
-
-/**
- * 套用五大技能效果的核心邏輯
- */
-function applyPrizeEffect(playerId, prizeId) {
-    // 獲取所有對手的列表（請根據原網頁的隊伍數組/物件取得）
-    // 假設原網頁所有參賽玩家 ID 在一個陣列中，例如：allPlayerIds = [1, 2, 3, 4]
-    let allPlayerIds = typeof gameTeams !== 'undefined' ? Object.keys(gameTeams) : [1, 2, 3, 4]; // 這裡需依原代碼適配
-    let opponents = allPlayerIds.filter(id => id != playerId);
-
-    switch(prizeId) {
-        case "steal": // 1. 從某一個對手偷取5分
-            if (opponents.length > 0) {
-                let targetOpponent = opponents[Math.floor(Math.random() * opponents.length)];
-                
-                // 扣除對手5分（這裡需要調用原系統的「加/減分函數」，假設叫對應的修改分數方法）
-                // 範例邏輯：
-                // let currentOppScore = getPlayerScore(targetOpponent);
-                // let deductScore = currentOppScore >= 5 ? 5 : currentOppScore;
-                // updatePlayerScore(targetOpponent, -deductScore);
-                // updatePlayerScore(playerId, deductScore);
-                console.log(`${playerId} 從 ${targetOpponent} 偷了 5 分`);
-            }
-            break;
-            
-        case "freeze1": // 2. 暫停一個對手作答5秒
-            if (opponents.length > 0) {
-                let targetOpponent = opponents[Math.floor(Math.random() * opponents.length)];
-                freezePlayer(targetOpponent, 5000);
-            }
-            break;
-            
-        case "gain10": // 3. 自己獲得10分
-            // updatePlayerScore(playerId, 10);
-            console.log(`${playerId} 獲得額外 10 分`);
-            break;
-            
-        case "freezeAll": // 4. 暫停所有對手1秒
-            opponents.forEach(targetOpponent => {
-                freezePlayer(targetOpponent, 1000);
-            });
-            break;
-            
-        case "triple": // 5. 下一題正確時獲得3倍分數
-            initPlayerEffect(playerId);
-            playerEffects[playerId].nextScoreMultiplier = 3;
-            console.log(`${playerId} 下一題分數將乘以 3 倍`);
-            break;
-    }
-}
-
-/**
- * 凍結玩家/隊伍的函數
- */
-function freezePlayer(playerId, duration) {
-    initPlayerEffect(playerId);
-    playerEffects[playerId].isFrozen = true;
-    
-    // 【重要提示】需要在原系統的「搶答/點擊答案」函數最前端加入判斷：
-    // if (playerEffects[playerId] && playerEffects[playerId].isFrozen) { return; // 被凍結中，不允許作答 }
-    
-    // 可在前端對該隊伍的 UI 加上半透明或雪花特效（例如：document.getElementById('team-box-'+playerId).style.opacity = '0.4';）
-    console.log(`玩家 ${playerId} 被凍結 ${duration/1000} 秒`);
-
-    setTimeout(() => {
-        playerEffects[playerId].isFrozen = false;
-        // 解除 UI 凍結特效
-        console.log(`玩家 ${playerId} 解除凍結`);
-    }, duration);
-}
-
-/**
- * 核心修改點：每當玩家「答對題目」計算得分時
- * 請在原系統將分數加上去之前，先調用此函數計算加權後的分數
- * @param {string|number} playerId - 玩家ID
- * @param {number} baseScore - 原本這題該得的基礎分數（例如 10分）
- * @return {number} 經過倍數計算後的最終分數
- */
-function getCalculatedScore(playerId, baseScore) {
-    initPlayerEffect(playerId);
-    let multiplier = playerEffects[playerId].nextScoreMultiplier || 1;
-    
-    // 計算最終得分
-    let finalScore = baseScore * multiplier;
-    
-    // 使用完畢後，將倍數重設回 1 倍
-    if (multiplier > 1) {
-        playerEffects[playerId].nextScoreMultiplier = 1;
-    }
-    
-    return finalScore;
-}
-</script>
-</body>
-</html>
+    <div id="lucky-draw-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; text-align: center; font-family: 'Press Start 2P', sans-serif;">
+        <div style="background: #111; border: 4px solid #ff0055; box-shadow: 0 0 20px #ff0055, inset 0 0 10px #ff0055; padding: 40px; border-radius: 15px; max-width: 600px; width: 90%;">
+            <h2 id="lucky-player-title" style="color: #00ffff; text-shadow: 0 0 10px #00ffff; font-size: 20px; margin-bottom: 15px; line-height: 1.4;">🏆 恭喜玩家 🏆</h2>
+            <p style="color: #fff; font-size: 12px; margin-bottom: 25px; line-height: 1.6;">分數達到 50 或其倍數！<br>觸發幸運大抽獎！</p>
+            <div id="lucky-roulette" style="font-size: 16px; color: #ffff00; font-weight: bold; min-height: 6
