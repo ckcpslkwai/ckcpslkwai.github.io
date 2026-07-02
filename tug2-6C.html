@@ -527,8 +527,8 @@
             const team = teams[teamIndex];
             const teamId = team.id;
             const score = team.score;
-            const currentMilestone = Math.floor(score / 15) * 15;
-            if (currentMilestone < 15 || (teamMilestones[teamId] && teamMilestones[teamId] >= currentMilestone)) return false;
+            const currentMilestone = Math.floor(score / 30) * 30;
+            if (currentMilestone < 30 || (teamMilestones[teamId] && teamMilestones[teamId] >= currentMilestone)) return false;
 
             teamMilestones[teamId] = currentMilestone;
 
