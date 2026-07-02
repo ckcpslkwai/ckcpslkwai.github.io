@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CKCPS WARS - Mr.Lee EDITION</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+     
+        :root {
+            --primary: #00f9ff;
+            --secondary: #ff00aa;
+            --accent: #39ff14;
+        }
+     
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Press Start 2P', system-ui;
+            background: linear-gradient(180deg, #0a0a1f 0%, #05050f 100%);
+            color: #fff;
+            text-align: center;
+            user-select: none;
+        }
+     
+        header { background: #0a0a1f; padding: 12px; border-bottom: 3px solid var(--primary); }
+        h1 { margin: 0; font-size: clamp(22px, 5vw, 30px); text-shadow: 0 0 10px var(--primary); }
+
+        .container { max-width: 100%; margin: 0 auto; padding: 15px; }
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        button {
+            font-family: 'Press Start 2P', system-ui;
+            padding: 14px 28px; margin: 8px;
+            background: #12122e; color: #fff;
+            border: 3px solid var(--primary);
+            cursor: pointer; transition: all 0.2s;
+        }
+        button:hover { background: var(--primary); color: #000; transform: scale(1.03); }
+
+        .section { background: #12122e; padding: 20px 18px; margin: 12px 0; border-radius: 10px; border: 2px solid var(--primary); }
+        #menu-screen .section { max-width: 860px; margin: 0 auto; }
+
+        select, input[type="number"] {
+            font-family: 'Press Start 2P', system-ui;
+            padding: 10px 12px;
+            background: #0a0a1f;
+            color: #fff;
+            border: 2px solid var(--accent);
+            margin: 4px 0;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        label { font-size: 13px; display: block; margin-bottom: 6px; }
+
+        .score { font-size: 32px; color: var(--accent); text-shadow: 0 0 8px var(--accent); }
+
+        .question {
+            background: #0a0a1f;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 10px 0;
+            min-height: 85px;
+            display: flex;
+            align-items: center;
+            font-size: 17px;
+            line-height: 1.55;
+            text-align: left;
+            border: 2px solid var(--primary);
+        }
+     
+        .option-btn {
+            padding: 12px 14px;
+            font-size: clamp(13px, 2vw, 15px);
+            border: 2px solid #334155;
+            background: #12122e;
+            text-align: left;
+            margin: 5px 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .leaderboard { background: #12122e; padding: 16px; border-radius: 10px; border: 2px solid var(--secondary); margin-bottom: 20px; }
+      
+        .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 14px; width: 100%; padding-bottom: 12px; }
+     
+        .team-card {
+            background: #12122e;
+            border: 4px solid #334155;
+            border-radius: 10px;
+            padding: 14px;
+            min-height: 420px;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+      
+        .compact-grid {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: 278px 278px 278px;
+            max-width: 860px;
+            margin: 0 auto;
+            justify-content: center;
+        }
+
+        /* Lottery 特效 */
+        .question.lottery {
+            background: linear-gradient(45deg, #4a0033, #330066);
+            animation: lottery-pulse 1s infinite alternate;
+        }
+        @keyframes lottery-pulse {
+            from { box-shadow: 0 0 15px #ff00aa; }
+            to { box-shadow: 0 0 35px #ffd700; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 你的 HTML 結構保持不變 -->
+    <header>
+        <h1>🏴‍☠️ CKCPS WARS 🏴‍☠️</h1>
+        <p style="margin:4px 0 0 0; font-size:12px; color:#00f9ff;">CYBERPUNK NEON EDITION • P.1–P.6</p>
+    </header>
+    <div class="container">
+        <!-- MENU SCREEN (完全保留你提供的) -->
+        <div id="menu-screen" class="screen active">
+            <!-- ... 你原本的 menu-screen 全部內容 ... -->
+            <!-- (為了節省篇幅這裡省略，你直接把你提供的 menu-screen 貼上即可) -->
+        </div>
+
+        <!-- GAME SCREEN (保留) -->
+        <div id="game-screen" class="screen">
+            <!-- ... 你原本的 game-screen ... -->
+        </div>
+    </div>
+
+    <script>
+        // ==================== 原有變數 + 新增 teamMilestones ====================
+        let customQuestions = [];
+        let currentSubject = '', currentLevel = '', teams = [], currentQuestions = [];
+        let gameInterval = null, endMode = 'score', targetScore = 100, gameEndTime = null;
+        let isPaused = false;
+        let pausedRemainingTime = 0;
+        let pendingResultTimeouts = {};
+        let teamMilestones = {};   // ← 新增：每30分倍數追蹤
+
+        let bgmAudio = null;
+        let isMusicPlaying = false;
+
+        // ... (你原本的 toggleEndOptions, toggleSoloMode, pause, music, CSV 載入等全部保留) ...
+
+        function startGame() {
+            // ... 你原本的 startGame ...
+            initTeams(numTeams);
+            playBackgroundMusic();
+        }
+
+        function initTeams(numTeams) {
+            teams = []; currentQuestions = [];
+            teamMilestones = {};   // 重置抽獎記錄
+            const colors = ['#f87171', '#60a5fa', '#facc15', '#a78bfa', '#f472b6', '#34d399'];
+            for (let i = 0; i < numTeams; i++) {
+                const tid = i+1;
+                teams.push({ id: tid, name: `Team ${String.fromCharCode(65+i)}`, score: 0, color: colors[i % colors.length] });
+                teamMilestones[tid] = 0;
+                currentQuestions.push(getRandomQuestion());
+            }
+            renderAllTeams();
+            updateLeaderboard();
+            // ... 原本的 pause & timer 設定 ...
+        }
+
+        // ==================== 每30分抽獎核心 ====================
+        function triggerLottery(teamIndex) {
+            const team = teams[teamIndex];
+            const teamId = team.id;
+            const score = team.score;
+            const currentMilestone = Math.floor(score / 30) * 30;
+
+            if (currentMilestone < 30 || (teamMilestones[teamId] && teamMilestones[teamId] >= currentMilestone)) return false;
+
+            teamMilestones[teamId] = currentMilestone;
+
+            const qEl = document.getElementById(`qtext-${teamId}`);
+            const optsDiv = document.getElementById(`options-${teamId}`);
+            const statusEl = document.getElementById(`status-${teamId}`);
+
+            qEl.innerHTML = `<span style="color:#ff00aa; font-size:22px;">🎰 LOTTERY DRAW! 🎰<br>TEAM ${team.name} HIT ${currentMilestone}!</span>`;
+            optsDiv.innerHTML = `<div style="padding:20px; color:#39ff14; font-size:18px;">抽獎中... RANDOM REWARD!</div>`;
+
+            setTimeout(() => {
+                const effect = Math.floor(Math.random() * 3);
+                let message = '';
+                if (effect === 0) { // 偷分
+                    let stolenTotal = 0;
+                    teams.forEach((t, idx) => {
+                        if (idx !== teamIndex) {
+                            const steal = Math.min(5, t.score);
+                            t.score -= steal;
+                            stolenTotal += steal;
+                        }
+                    });
+                    team.score += stolenTotal;
+                    message = `🦹 STOLE ${stolenTotal} PTS!`;
+                } else if (effect === 1) { // +10
+                    team.score += 10;
+                    message = `🎁 BONUS +10 PTS!`;
+                } else { // 暫停
+                    message = `⏳ OTHERS PAUSED 5s!`;
+                    disableOtherTeamsAnswers(teamIndex);
+                    setTimeout(enableAllAnswerButtons, 5000);
+                }
+                statusEl.innerHTML = `<span style="color:#ffd700; font-size:20px;">${message}</span>`;
+                document.getElementById(`score-${teamId}`).textContent = team.score;
+                updateLeaderboard();
+                const progress = Math.min((team.score / 300) * 100, 100);
+                document.getElementById(`progress-${teamId}`).style.width = `${progress}%`;
+
+                setTimeout(() => {
+                    currentQuestions[teamIndex] = getRandomQuestion();
+                    renderTeamQuestion(teamIndex);
+                    statusEl.innerHTML = '';
+                }, 2500);
+            }, 1200);
+            return true;
+        }
+
+        function disableOtherTeamsAnswers(exceptIndex) {
+            teams.forEach((team, idx) => {
+                if (idx !== exceptIndex) {
+                    const opts = document.getElementById(`options-${team.id}`);
+                    if (opts) opts.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+                }
+            });
+        }
+
+        function enableAllAnswerButtons() {
+            document.querySelectorAll('#team-grid .option-btn').forEach(btn => btn.disabled = false);
+        }
+
+        function renderTeamQuestion(teamIndex) {
+            const q = currentQuestions[teamIndex];
+            const qEl = document.getElementById(`qtext-${teams[teamIndex].id}`);
+            const optsDiv = document.getElementById(`options-${teams[teamIndex].id}`);
+            const isShort = q.q.length <= 5;
+            if (qEl) {
+                qEl.style.fontSize = isShort ? '70px' : '17px';
+                qEl.style.lineHeight = isShort ? '1.2' : '1.55';
+                qEl.textContent = q.q;
+            }
+            if (optsDiv) {
+                optsDiv.innerHTML = '';
+                q.options.forEach((opt, i) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.textContent = `${String.fromCharCode(65+i)}. ${opt}`;
+                    btn.onclick = () => handleAnswer(teams[teamIndex].id, i, teamIndex);
+                    optsDiv.appendChild(btn);
+                });
+            }
+        }
+
+        // handleAnswer - 關鍵修改
+        function handleAnswer(teamId, selectedIndex, teamIndex) {
+            const q = currentQuestions[teamIndex];
+            const isCorrect = selectedIndex === q.ans;
+            const statusEl = document.getElementById(`status-${teamId}`);
+            const buttons = document.querySelectorAll(`#options-${teamId} .option-btn`);
+           
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === q.ans) btn.style.borderColor = '#39ff14';
+                if (idx === selectedIndex && !isCorrect) btn.style.borderColor = '#ff00aa';
+            });
+
+            if (isCorrect) {
+                teams[teamIndex].score += 10;
+                statusEl.innerHTML = `<span style="color:#39ff14">✅ CORRECT! +10</span>`;
+            } else {
+                statusEl.innerHTML = `<span style="color:#ff00aa">❌ Wrong. Answer: ${String.fromCharCode(65 + q.ans)}</span>`;
+            }
+
+            document.getElementById(`score-${teamId}`).textContent = teams[teamIndex].score;
+            const progress = Math.min((teams[teamIndex].score / 300) * 100, 100);
+            document.getElementById(`progress-${teamId}`).style.width = `${progress}%`;
+            updateLeaderboard();
+
+            // === 抽獎檢查 (放在勝利條件之前) ===
+            const numTeamsValue = document.getElementById('num-teams').value;
+            if (numTeamsValue !== 'solo' && parseInt(numTeamsValue) >= 2 && triggerLottery(teamIndex)) {
+                return;
+            }
+
+            if (endMode === 'score' && teams[teamIndex].score >= targetScore) {
+                setTimeout(() => { alert(`🎉 ${teams[teamIndex].name} WINS!`); endGame(); }, 800);
+                return;
+            }
+
+            pendingResultTimeouts[teamId] = setTimeout(() => {
+                currentQuestions[teamIndex] = getRandomQuestion();
+                renderTeamQuestion(teamIndex);
+                document.getElementById(`status-${teamId}`).innerHTML = '';
+                delete pendingResultTimeouts[teamId];
+            }, 1600);
+        }
+
+        // 其他函數 (renderAllTeams, updateLeaderboard, endGame, startTimer 等) 請保留你原本的
+        // 在 initTeams 和 endGame 中確保有 teamMilestones = {};
+
+        window.onload = () => {
+            toggleEndOptions();
+            toggle
