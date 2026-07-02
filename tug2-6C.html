@@ -375,6 +375,7 @@
         let isPaused = false;
         let pausedRemainingTime = 0;
         let pendingResultTimeouts = {};   // 用來儲存各隊「顯示結果後自動換題」的 timer ID
+        let nextCorrectMultiplier = 1; // 下一題3倍分數的旗標
 
         // ==================== 幸運大抽獎系統 ====================
         let nextCorrectMultiplier = 1; // 下一題3倍分數的旗標
@@ -409,6 +410,123 @@
 
         // ==================== SOLO MODE RECORDS ====================
         let soloRecords = JSON.parse(localStorage.getItem('ckcps_solo_records') || '[]');
+
+        // ==================== LOTTERY SYSTEM (50分倍數抽獎) ====================
+        const lotteryPrizes = [
+            {
+                emoji: "🏴‍☠️",
+                text: "從隨機對手偷取 5 分",
+                effect: "steal5"
+            },
+            {
+                emoji: "❄️",
+                text: "暫停一個對手作答 5 秒",
+                effect: "freezeOne5s"
+            },
+            {
+                emoji: "💎",
+                text: "自己額外獲得 10 分",
+                effect: "extra10"
+            },
+            {
+                emoji: "⚡",
+                text: "暫停所有對手作答 3 秒",
+                effect: "freezeAll3s"
+            },
+            {
+                emoji: "🔥",
+                text: "下一題答對獲得 3倍分數",
+                effect: "tripleNext"
+            }
+        ];
+
+        let lotteryModalTimeout = null;
+
+        function triggerLottery(teamIndex) {
+            const team = teams[teamIndex];
+            const modal = document.getElementById('lottery-modal');
+            const resultEl = document.getElementById('lottery-result');
+            const textEl = document.getElementById('lottery-text');
+
+            modal.style.display = 'flex';
+
+            // 簡單隨機抽獎
+            const prize = lotteryPrizes[Math.floor(Math.random() * lotteryPrizes.length)];
+            resultEl.textContent = prize.emoji;
+            textEl.textContent = prize.text;
+
+            // 執行效果
+            setTimeout(() => {
+                applyLotteryEffect(prize.effect, teamIndex);
+            }, 1200);
+        }
+
+        function applyLotteryEffect(effect, teamIndex) {
+            const team = teams[teamIndex];
+
+            switch (effect) {
+                case "steal5":
+                    // 從隨機其他隊伍偷 5 分
+                    const otherTeams = teams.filter((t, i) => i !== teamIndex);
+                    if (otherTeams.length > 0) {
+                        const victim = otherTeams[Math.floor(Math.random() * otherTeams.length)];
+                        const stealAmount = Math.min(5, victim.score);
+                        victim.score -= stealAmount;
+                        team.score += stealAmount;
+                    }
+                    break;
+
+                case "freezeOne5s":
+                    // 暫停一個對手 5 秒
+                    const opponents = teams.filter((t, i) => i !== teamIndex);
+                    if (opponents.length > 0) {
+                        const targetTeam = opponents[Math.floor(Math.random() * opponents.length)];
+                        const optsDiv = document.getElementById(`options-${targetTeam.id}`);
+                        if (optsDiv) {
+                            const buttons = optsDiv.querySelectorAll('.option-btn');
+                            buttons.forEach(b => b.disabled = true);
+                            setTimeout(() => {
+                                buttons.forEach(b => b.disabled = false);
+                            }, 5000);
+                        }
+                    }
+                    break;
+
+                case "extra10":
+                    team.score += 10;
+                    break;
+
+                case "freezeAll3s":
+                    // 暫停所有其他對手 3 秒
+                    teams.forEach((t, i) => {
+                        if (i !== teamIndex) {
+                            const optsDiv = document.getElementById(`options-${t.id}`);
+                            if (optsDiv) {
+                                const buttons = optsDiv.querySelectorAll('.option-btn');
+                                buttons.forEach(b => b.disabled = true);
+                                setTimeout(() => {
+                                    buttons.forEach(b => b.disabled = false);
+                                }, 3000);
+                            }
+                        }
+                    });
+                    break;
+
+                case "tripleNext":
+                    nextCorrectMultiplier = 3;
+                    setTimeout(() => nextCorrectMultiplier = 1, 30000); // 30秒後恢復
+                    break;
+            }
+
+            updateLeaderboard();
+        }
+
+        function closeLotteryModal() {
+            const modal = document.getElementById('lottery-modal');
+            modal.style.display = 'none';
+            // 抽獎結束後繼續下一題
+            // 注意：這裡需要記錄是哪個隊伍觸發的抽獎，實際使用時需改進
+        }
 
         // ==================== GOOGLE SHEET 雲端記錄設定 ====================
         // ⚠️ 使用前請把下面 URL 改成你自己部署的 Google Apps Script Web App URL
@@ -923,6 +1041,12 @@ function renderAllTeams() {
             const progress = Math.min((teams[teamIndex].score / 300) * 100, 100);
             document.getElementById(`progress-${teamId}`).style.width = `${progress}%`;
             updateLeaderboard();
+
+            // 幸運大抽獎觸發檢查 (目前測試用每20分觸發一次，正式版可改回 50)
+            if (teams[teamIndex].score % 20 === 0 && teams[teamIndex].score > 0) {
+                console.log(`🎰 Lucky Draw Triggered! Team ${teamIndex} score = ${teams[teamIndex].score}`);
+                setTimeout(() => triggerLottery(teamIndex), 800);
+            }
 
             // 幸運大抽獎觸發檢查 (50 分倍數)
             if (teams[teamIndex].score % 50 === 0 && teams[teamIndex].score > 0) {
