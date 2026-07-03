@@ -659,10 +659,10 @@
             if (teams.length === 1) grid.classList.add('solo-mode');
             else grid.classList.remove('solo-mode');
 
-            teams.forEach((team, index) => {
-                const card = document.createElement('div');
-                const qText = currentQuestions[index].q;
-                const isShort = qText.length > 0 && qText.length <= 5;
+teams.forEach((team, index) => {
+    const card = document.createElement('div');
+    card.className = 'team-card'; // ✨ 加上這一行，讓程式能識別隊伍卡片
+    const qText = currentQuestions[index].q;
                 card.innerHTML = `
                     <div class="team-header">
                         <div class="team-name" style="color:${team.color}">${team.name}</div>
@@ -721,17 +721,32 @@
             setTimeout(() => {
                 const effects = [
                     { id: 1, text: "🚀 自己 +10分！", apply: () => { teams[teamIndex].score += 10; } },
-                    { id: 2, text: "🦹 隨機偷取對手5分！", apply: () => {
-                        if (teams.length > 1) {
-                            let targets = teams.filter((t, i) => i !== teamIndex);
-                            if (targets.length > 0) {
-                                const target = targets[Math.floor(Math.random() * targets.length)];
-                                const targetIdx = teams.findIndex(t => t.id === target.id);
-                                target.score = Math.max(0, target.score - 5);
-                                teams[targetIdx] = target;
-                            }
-                        }
-                    }},
+{ id: 2, text: "🦹 隨機偷取對手5分！", apply: () => {
+    if (teams.length > 1) {
+        let targets = teams.filter((t, i) => i !== teamIndex && t.score >= 5);
+        if (targets.length === 0) targets = teams.filter((t, i) => i !== teamIndex);
+        if (targets.length > 0) {
+            const target = targets[Math.floor(Math.random() * targets.length)];
+            const targetIdx = teams.findIndex(t => t.id === target.id);
+            
+            // 1. 扣減對手分數
+            target.score = Math.max(0, target.score - 5);
+            teams[targetIdx] = target;
+            
+            // 2. 自己增加 5 分 (這才是偷取)
+            teams[teamIndex].score += 5; 
+            
+            // 3. ✨ 即時更新受害者隊伍卡片的 UI 畫面
+            const targetScoreEl = document.getElementById(`score-${target.id}`);
+            const targetProgressEl = document.getElementById(`progress-${target.id}`);
+            if (targetScoreEl) targetScoreEl.textContent = target.score;
+            if (targetProgressEl) {
+                const targetProgress = Math.min((target.score / 300) * 100, 100);
+                targetProgressEl.style.width = `${targetProgress}%`;
+            }
+        }
+    }
+}},
                     { id: 3, text: "⏳ 其他隊伍暫停7秒！", apply: () => {
                         disableOtherTeamsForSeconds(7, teamId);
                     }}
