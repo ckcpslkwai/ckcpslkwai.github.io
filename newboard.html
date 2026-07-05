@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Subject Leaderboard</title>
+  <title>Subject Leaderboard V2607052303</title>
   <style>
     /* 沿用您提供的 CSS 樣式 */
     :root { --primary: #4a90e2; --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); --card-bg: rgba(255,255,255,0.12); --card-border: rgba(255,255,255,0.18); --text-light: #f0f4ff; }
@@ -38,15 +38,26 @@
     // 儲存每個 Subject 的狀態
     let subjectData = {}; 
 
-    async function fetchData() {
+async function fetchData() {
+      const statusEl = document.getElementById('status');
       try {
-        const response = await fetch(CORS_PROXY + encodeURIComponent(API_URL));
+        // 嘗試直接 fetch，不要透過 allorigins (有些已失效)
+        const response = await fetch(API_URL, {
+            method: 'GET',
+            mode: 'cors' // 嘗試開啟跨域模式
+        });
+        
+        if (!response.ok) {
+           throw new Error(`HTTP 錯誤! 狀態碼: ${response.status}`);
+        }
+        
         const data = await response.json();
         processAndRender(data);
       } catch (err) {
-        document.getElementById('status').textContent = "讀取失敗，請檢查網路或 API 權限";
-        console.error(err);
+        console.error("詳細錯誤:", err);
+        statusEl.innerHTML = `讀取失敗: ${err.message}<br><small style="color:red;">請確認您的 GAS 部署是否已允許跨域，或在 Console (F12) 查看詳細原因</small>`;
       }
+    }
     }
 
     function processAndRender(data) {
