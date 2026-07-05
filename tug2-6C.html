@@ -62,23 +62,30 @@
             color: #000;
             transform: scale(1.03);
         }
+        button:disabled {
+            background: #334155 !important;
+            color: #94a3b8 !important;
+            border-color: #475569 !important;
+            box-shadow: none !important;
+            transform: none !important;
+            cursor: not-allowed;
+        }
       
         .section {
             background: #12122e;
-            padding: 20px 18px;     /* 加大垂直空間 */
+            padding: 20px 18px;
             margin: 12px 0;
             border-radius: 10px;
             border: 2px solid var(--primary);
         }
 
-        /* 首頁選單的藍框統一收窄置中 */
         #menu-screen .section {
             max-width: 860px;
             margin-left: auto;
             margin-right: auto;
         }
       
-        select, input[type="number"] {
+        select, input[type="number"], input[type="text"] {
             font-family: 'Press Start 2P', system-ui;
             padding: 10px 12px;
             background: #0a0a1f;
@@ -90,7 +97,6 @@
             box-sizing: border-box;
         }
 
-        /* 強制選單頁面內的輸入框對齊 */
         #menu-screen .compact-grid select,
         #menu-screen .compact-grid input[type="number"] {
             width: 100% !important;
@@ -117,7 +123,8 @@
             min-height: 85px;
             display: flex;
             align-items: center;
-            font-size: 17px; /* 設定一個統一的預設值 */
+            justify-content: center;
+            font-size: 17px; 
             line-height: 1.55;
             text-align: left;
             border: 2px solid var(--primary);
@@ -152,6 +159,8 @@
         }
       
         .team-card {
+            position: relative; /* 給 Freeze Overlay 用的定位點 */
+            overflow: hidden;
             background: #12122e;
             border: 4px solid #334155;
             border-radius: 10px;
@@ -164,19 +173,35 @@
        
         .team-header {
             margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
        
+        .progress-container {
+            width: 100%;
+            background: #334155;
+            border-radius: 4px;
+        }
+
         .progress-bar {
             height: 8px;
             background: linear-gradient(90deg, var(--accent), var(--primary));
             margin: 8px 0;
             border-radius: 4px;
+            transition: width 0.3s;
         }
        
         .options {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
+        }
+
+        .status {
+            min-height: 20px;
+            margin-top: 8px;
+            font-size: 14px;
         }
        
         .compact-grid {
@@ -194,7 +219,6 @@
             margin-top: 8px;
         }
 
-        /* Solo Mode：單一卡片收窄並置中 */
         .team-grid.solo-mode {
             max-width: 620px;
             margin: 0 auto;
@@ -205,6 +229,7 @@
             min-height: 400px;
             border-color: #39ff14;
         }
+        
         .csv-buttons button {
             flex: 1;
         }
@@ -218,6 +243,29 @@
         .end-left, .end-right {
             flex: 1;
             min-width: 280px;
+        }
+
+        /* Freeze Overlay Style */
+        .freeze-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(10, 10, 31, 0.85);
+            backdrop-filter: blur(3px);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #00f9ff;
+            text-align: center;
+            text-shadow: 0 0 15px #00f9ff;
+            line-height: 1.8;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
@@ -254,3 +302,275 @@
                     <label style="color:#00f9ff;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LEVEL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
                     <select id="level">
                         <option value="K" selected>K</option>
+                        <option value="P1">P.1</option>
+                        <option value="P2">P.2</option>
+                        <option value="P3">P.3</option>
+                        <option value="P4">P.4</option>
+                        <option value="P5">P.5</option>
+                        <option value="P6">P.6</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="solo-info" class="section" style="display:none; border-color:#39ff14;">
+                <label style="color:#39ff14;">PLAYER INFORMATION 玩家資料</label>
+                <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:8px;">
+                    <div style="flex:1; min-width:130px;">
+                        <label style="font-size:12px; color:#94a3b8;">Class</label>
+                        <input type="text" id="solo-class" placeholder="e.g. 3A" style="width:80%; font-size:15px; padding:8px;">
+                    </div>
+                    <div style="flex:2; min-width:180px;">
+                        <label style="font-size:12px; color:#94a3b8;">Name</label>
+                        <input type="text" id="solo-name" placeholder="Full name please 請輸入全名" style="width:80%; font-size:15px; padding:8px;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="end-condition">
+                    <div class="end-left">
+                        <label style="color:#ff00aa;">GAME END CONDITION</label>
+                        <select id="end-mode" onchange="toggleEndOptions()" style="width:100%;">
+                            <option value="score">First to Score</option>
+                            <option value="time">Timed Game</option>
+                        </select>
+                    </div>
+                    <div class="end-right">
+                        <div id="score-options">
+                            <label style="color:#ff00aa;">TARGET SCORE</label>
+                            <input type="number" id="target-score" value="300" min="50" step="50" style="width:100%;">
+                        </div>
+                        <div id="time-options" style="display:none;">
+                            <label style="color:#ff00aa;">DURATION (minutes)</label>
+                            <input type="number" id="game-time" value="10" min="1" max="60" style="width:100%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <label style="color:#00f9ff;">BACKGROUND MUSIC</label>
+                <div style="display:flex; align-items:center; gap:12px; margin-top:8px; flex-wrap:wrap;">
+                    <div style="flex:1; min-width:220px;">
+                        <select id="music-track" style="width:100%; font-size:13px;">
+                            <option value="">No music</option>
+                            <option value="Haaland.mp3">Music 1</option>
+                            <option value="Greensleeves.mp3">Music 2</option>
+                            <option value="music3.mp3">Music 3</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <label style="color:#39ff14;">QUESTION SOURCE</label>
+                <div class="csv-buttons">
+                    <button onclick="document.getElementById('csv-upload').click()">
+                        📁 UPLOAD CSV 上載
+                    </button>
+                    <button onclick="loadDefaultCSV()" style="border-color:#39ff14;">
+                        📋 Default 預設
+                    </button>
+                </div>
+                <input type="file" id="csv-upload" accept=".csv" style="display:none;" onchange="handleCSVUpload(event)">
+            </div>
+           
+            <button onclick="startGame()" style="font-size:22px; padding:20px 60px; margin-top:20px; border-color:#39ff14; box-shadow: 0 0 25px #39ff14;">
+                🚀 START BATTLE!
+            </button>
+        </div>
+
+        <div id="game-screen" class="screen">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+                <strong id="game-info" style="color:#00f9ff; flex:1; text-align:left;"></strong>
+                
+                <div style="display:flex; align-items:center; gap:8px; justify-content:center; flex:1;">
+                    <span id="timer-display" style="font-size:15px; background:#12122e; padding:6px 12px; border-radius:6px; border:2px solid #ff00aa; display:none;"></span>
+                    <button id="pause-btn" onclick="togglePause()" style="padding:10px 20px; font-size:13px; border-color:#ff00aa;">⏸️ PAUSE</button>
+                </div>
+                
+                <div style="flex:1; text-align:right;">
+                    <button onclick="endGame()" style="padding:10px 20px; font-size:13px;">END GAME</button>
+                </div>
+            </div>
+            
+            <div class="leaderboard">
+                <h3 style="color:#ff00aa;">🏆 LEADERBOARD 🏆</h3>
+                <div id="leaderboard" style="text-align:left;"></div>
+            </div>
+            
+            <div id="team-grid" class="team-grid"></div>
+        </div>
+    </div>
+
+    <script>
+        let customQuestions = [];
+        let currentSubject = '', currentLevel = '', teams = [], currentQuestions = [];
+        let gameInterval = null, endMode = 'score', targetScore = 100, gameEndTime = null;
+        let isPaused = false;
+        let pausedRemainingTime = 0;
+        let pendingResultTimeouts = {};
+
+        const GOOGLE_SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyMVPcda6_YBIBXmy7iZFQjbIilACiNGVTz1CwB3yMNy7Od3VS81AE8lbKkTjABmt5f/exec';
+
+        async function saveSoloResultToGoogleSheet(playerData) {
+            if (!GOOGLE_SHEET_WEBAPP_URL || GOOGLE_SHEET_WEBAPP_URL.includes('你的部署ID')) {
+                alert('尚未設定 Google Sheet Web App URL！');
+                return false;
+            }
+            try {
+                const response = await fetch(GOOGLE_SHEET_WEBAPP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(playerData)
+                });
+                alert(`✅ 成績已成功儲存到雲端！\n\n班級：${playerData.class}\n姓名：${playerData.name}\n分數：${playerData.score}`);
+                return true;
+            } catch (error) {
+                console.error(error);
+                alert('❌ 儲存失敗，請檢查網絡或 URL 是否正確。');
+                return false;
+            }
+        }
+
+        let bgmAudio = null;
+        let isMusicPlaying = false;
+
+        function toggleEndOptions() {
+            const mode = document.getElementById('end-mode').value;
+            document.getElementById('score-options').style.display = mode === 'score' ? 'block' : 'none';
+            document.getElementById('time-options').style.display = mode === 'time' ? 'block' : 'none';
+        }
+
+        function toggleSoloMode() {
+            const numTeamsValue = document.getElementById('num-teams').value;
+            const soloInfo = document.getElementById('solo-info');
+            soloInfo.style.display = numTeamsValue === 'solo' ? 'block' : 'none';
+        }
+
+        function disableAllAnswerButtons(disabled) {
+            const allButtons = document.querySelectorAll('#team-grid .option-btn');
+            allButtons.forEach(btn => btn.disabled = disabled);
+        }
+
+        function togglePause() {
+            const pauseBtn = document.getElementById('pause-btn');
+            if (!pauseBtn) return;
+            isPaused = !isPaused;
+
+            if (isPaused) {
+                if (gameInterval) { clearInterval(gameInterval); gameInterval = null; }
+                if (endMode === 'time' && gameEndTime) pausedRemainingTime = gameEndTime - Date.now();
+                disableAllAnswerButtons(true);
+                Object.values(pendingResultTimeouts).forEach(id => clearTimeout(id));
+                pendingResultTimeouts = {};
+                pauseBackgroundMusic();
+                pauseBtn.innerHTML = '▶️ RESUME';
+                pauseBtn.style.borderColor = '#facc15';
+                pauseBtn.style.boxShadow = '0 0 12px rgba(250, 204, 21, 0.5)';
+            } else {
+                if (endMode === 'time' && pausedRemainingTime > 0) {
+                    gameEndTime = Date.now() + pausedRemainingTime;
+                    startTimer();
+                }
+                disableAllAnswerButtons(false);
+                resumeBackgroundMusic();
+                
+                teams.forEach((team, idx) => {
+                    // 只重製那些狀態停留在 "CORRECT" 或 "Wrong" 的隊伍
+                    const statusEl = document.getElementById(`status-${team.id}`);
+                    if (statusEl && (statusEl.innerHTML.includes('CORRECT') || statusEl.innerHTML.includes('Wrong'))) {
+                        currentQuestions[idx] = getRandomQuestion();
+                        renderTeamQuestion(team.id, idx);
+                    }
+                });
+
+                pauseBtn.innerHTML = '⏸️ PAUSE';
+                pauseBtn.style.borderColor = '#ff00aa';
+                pauseBtn.style.boxShadow = '0 0 12px rgba(0, 249, 255, 0.4)';
+            }
+        }
+
+        function playBackgroundMusic() {
+            if (isMusicPlaying) return;
+            const track = document.getElementById('music-track')?.value;
+            if (!track) { isMusicPlaying = false; return; }
+            stopBackgroundMusic();
+            bgmAudio = new Audio(track);
+            bgmAudio.loop = true;
+            bgmAudio.volume = 0.6;
+            bgmAudio.play().catch(() => console.log('%c[Music] 無法播放', 'color:#f59e0b'));
+            isMusicPlaying = true;
+        }
+
+        function stopBackgroundMusic() {
+            isMusicPlaying = false;
+            if (bgmAudio) { bgmAudio.pause(); bgmAudio.currentTime = 0; bgmAudio = null; }
+        }
+
+        function pauseBackgroundMusic() { if (bgmAudio && !bgmAudio.paused) bgmAudio.pause(); }
+        function resumeBackgroundMusic() { if (bgmAudio && bgmAudio.paused && isMusicPlaying) bgmAudio.play().catch(()=>{}); }
+
+        async function loadDefaultCSV() {
+            try {
+                const response = await fetch('./default.csv');
+                if (!response.ok) throw new Error('File not found');
+                const csvText = await response.text();
+                const allParsed = parseCSV(csvText);
+                const selectedSubject = document.getElementById('subject').value;
+                const selectedLevel = document.getElementById('level').value;
+                customQuestions = filterQuestionsBySubjectLevel(allParsed, selectedSubject, selectedLevel);
+                if (customQuestions.length === 0) customQuestions = allParsed;
+                alert(`✅ Default Set loaded! ${customQuestions.length} questions for ${selectedSubject} - ${selectedLevel}`);
+            } catch (err) {
+                alert('❌ Cannot load default.csv\nPlease make sure default.csv is in the same folder.');
+            }
+        }
+
+        function handleCSVUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                const allParsed = parseCSV(e.target.result);
+                const selectedSubject = document.getElementById('subject').value;
+                const selectedLevel = document.getElementById('level').value;
+                customQuestions = filterQuestionsBySubjectLevel(allParsed, selectedSubject, selectedLevel);
+                if (customQuestions.length === 0) customQuestions = allParsed;
+                alert(`✅ CSV loaded! ${customQuestions.length} questions matched for ${selectedSubject} - ${selectedLevel}`);
+            };
+            reader.readAsText(file);
+        }
+
+        function startGame() {
+            if (!customQuestions || customQuestions.length === 0) {
+                alert('⚠️ 請先載入題庫！\n請點擊「📋 Sample Set」或上傳 CSV。');
+                return;
+            }
+
+            const numTeamsValue = document.getElementById('num-teams').value;
+            let numTeams;
+            if (numTeamsValue === 'solo') {
+                const soloClass = document.getElementById('solo-class').value.trim();
+                const soloName = document.getElementById('solo-name').value.trim();
+                if (!soloClass || !soloName) { alert('請填寫班級和姓名！'); return; }
+                window.currentSoloPlayer = { class: soloClass, name: soloName };
+                numTeams = 1;
+            } else {
+                numTeams = parseInt(numTeamsValue);
+                window.currentSoloPlayer = null;
+            }
+
+            currentSubject = document.getElementById('subject').value;
+            currentLevel = document.getElementById('level').value;
+            endMode = document.getElementById('end-mode').value;
+            if (endMode === 'score') targetScore = parseInt(document.getElementById('target-score').value) || 100;
+            else window.gameMinutes = parseInt(document.getElementById('game-time').value) || 10;
+
+            document.getElementById('menu-screen').classList.remove('active');
+            document.getElementById('game-screen').classList.add('active');
+            const infoEl = document.getElementById('game-info');
+
+            if (numTeamsValue === 'solo' && window.currentSoloPlayer) {
+                infoEl.innerHTML = `${currentSubject} • ${currentLevel} &nbsp;|&nbsp; <span style="color:#39ff14;">${window.currentSoloPlayer.class} ${window.currentSoloPlayer.
