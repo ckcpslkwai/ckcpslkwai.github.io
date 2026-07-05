@@ -337,11 +337,11 @@
                 <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:8px;">
                     <div style="flex:1; min-width:130px;">
                         <label style="font-size:12px; color:#94a3b8;">Class</label>
-                        <input type="text" id="solo-class" placeholder="e.g. 3A" style="width:80%; font-size:15px; padding:8px;">
+                        <input type="text" id="solo-class" placeholder="e.g. 3A" style="width:80%; font-size:15px; padding:8px;" readonly>
                     </div>
                     <div style="flex:2; min-width:180px;">
                         <label style="font-size:12px; color:#94a3b8;">Name</label>
-                        <input type="text" id="solo-name" placeholder="Full name please 請輸入全名" style="width:80%; font-size:15px; padding:8px;">
+                        <input type="text" id="solo-name" placeholder="Full name please 請輸入全名" style="width:80%; font-size:15px; padding:8px;" readonly>
                     </div>
                 </div>
             </div>
@@ -451,37 +451,38 @@
                 const response = await fetch('./password.csv');
                 if (!response.ok) throw new Error('找不到 password.csv 檔案');
                 
-                // 去除可能存在的 BOM
                 let text = await response.text();
                 if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
                 
                 const lines = text.trim().split('\n');
                 let isValid = false;
+                let playerName = "";
 
-                // 從第 2 行開始比對 (略過標題 Class,Number,Password)
+                // 比對 Class, Number, Name, Password
                 for (let i = 1; i < lines.length; i++) {
                     if (!lines[i].trim()) continue;
                     let parts = lines[i].split(',').map(s => s.replace(/"/g, '').trim());
                     
-                    if (parts.length >= 3) {
-                        // 班別不分大小寫比對，密碼區分大小寫
+                    if (parts.length >= 4) {
+                        // parts[0]=Class, parts[1]=Number, parts[2]=Name, parts[3]=Password
                         if (parts[0].toLowerCase() === cls.toLowerCase() &&
                             parts[1] === num &&
-                            parts[2] === pwd) {
+                            parts[3] === pwd) {
                             isValid = true;
+                            playerName = parts[2];
                             break;
                         }
                     }
                 }
 
                 if (isValid) {
-                    alert("✅ 登入成功！");
+                    alert(`✅ 登入成功！歡迎，${playerName}！`);
                     document.getElementById('login-screen').classList.remove('active');
                     document.getElementById('menu-screen').classList.add('active');
                     
-                    // 自動帶入資料到 Solo Mode，減輕輸入負擔
+                    // 自動帶入資料到 Solo Mode
                     document.getElementById('solo-class').value = cls.toUpperCase();
-                    document.getElementById('solo-name').value = `No.${num}`;
+                    document.getElementById('solo-name').value = playerName;
                 } else {
                     alert("❌ 班別、班號或密碼錯誤！\n(Invalid credentials)");
                 }
