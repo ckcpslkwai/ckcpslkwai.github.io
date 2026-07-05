@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS V2607052133</title>
+    <title>CKCPS WARS V2607052209</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
       
@@ -739,6 +739,7 @@
 
             initTeams(numTeams);
             playBackgroundMusic();
+            fetchCloudLeaderboard();
         }
 
         function initTeams(numTeams) {
@@ -1188,6 +1189,56 @@
             e.preventDefault();
             return false;
         });
+
+        // 🚀 全新加入：從 Google Sheet 下載前 5 名排行並顯示在網頁上
+async function fetchCloudLeaderboard() {
+    const leaderboardEl = document.getElementById('leaderboard');
+    if (!leaderboardEl) return;
+
+    leaderboardEl.innerHTML = '<div style="text-align:center; color:#94a3b8;">📥 正在連線雲端排行...</div>';
+
+    if (!GOOGLE_SHEET_WEBAPP_URL || GOOGLE_SHEET_WEBAPP_URL.includes('你的部署ID')) {
+        leaderboardEl.innerHTML = '<div style="color:#ff00aa;">⚠️ 未設定雲端網址</div>';
+        return;
+    }
+
+    try {
+        // 呼叫 Apps Script 的 doGet
+        const response = await fetch(GOOGLE_SHEET_WEBAPP_URL);
+        if (!response.ok) throw new Error('網路回應異常');
+        
+        const topData = await response.json();
+
+        if (topData.error) {
+            leaderboardEl.innerHTML = `<div style="color:#ff00aa;">❌ 錯誤: ${topData.error}</div>`;
+            return;
+        }
+
+        if (!topData || topData.length === 0) {
+            leaderboardEl.innerHTML = '<div style="text-align:center; color:#94a3b8;">目前暫無雲端排行資料</div>';
+            return;
+        }
+
+        // 渲染前 5 名到畫面上
+        let html = '';
+        topData.forEach((t, i) => {
+            // 根據科目與年級做簡易過濾（可選，若只想顯示當前選定科目的排行）
+            html += `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #334155; font-size:13px;">
+                <span>
+                    <strong style="color:#ff00aa;">#${i+1}</strong> 
+                    <span style="color:#00f9ff;">[${t.class}]</span> ${t.name} 
+                    <small style="color:#94a3b8; font-size:10px;">(${t.subject} ${t.level})</small>
+                </span>
+                <span style="color:#39ff14; font-weight:bold;">${t.score} pts</span>
+            </div>`;
+        });
+        leaderboardEl.innerHTML = html;
+
+    } catch (error) {
+        console.error(error);
+        leaderboardEl.innerHTML = '<div style="color:#ff00aa; text-align:center;">❌ 無法下載雲端排行</div>';
+    }
+}
     </script>
 </body>
 </html>
