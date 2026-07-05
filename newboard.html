@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>成績輪播顯示</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; }
+        #displayArea { font-size: 2em; border: 2px solid #333; padding: 20px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <h1>各科成績排名</h1>
+    <div id="displayArea">載入中...</div>
+
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyMVPcda6_YBIBXmy7iZFQjbIilACiNGVTz1CwB3yMNy7Od3VS81AE8lbKkTjABmt5f/exec';
+        let dataQueue = [];
+        let currentIndex = 0;
+
+        async function fetchData() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json(); // 假設回傳格式為 [{subject, level, name, rank}, ...]
+                processData(data);
+            } catch (e) {
+                document.getElementById('displayArea').innerText = "無法讀取資料";
+            }
+        }
+
+        function processData(data) {
+            // 邏輯：按 Subject 和 Level 分組，過濾重複姓名並保留最高名次 (假設名次數字越小越好)
+            let tempMap = {};
+            data.forEach(item => {
+                const key = `${item.subject}-${item.level}`;
+                if (!tempMap[key]) tempMap[key] = {};
+                
+                if (!tempMap[key][item.name] || item.rank < tempMap[key][item.name].rank) {
+                    tempMap[key][item.name] = item;
+                }
+            });
+
+            // 將處理後的資料平坦化放入輪播佇列
+            dataQueue = Object.values(tempMap).flatMap(group => Object.values(group));
+            startCarousel();
+        }
+
+        function startCarousel() {
+            if (dataQueue.length === 0) return;
+            
+            setInterval(() => {
+                const item = dataQueue[currentIndex];
+                document.getElementById('displayArea').innerHTML = `
+                    <h3>${item.subject} - ${item.level}</h3>
+                    <p>學生: ${item.name}</p>
+                    <p>名次: ${item.rank}</p>
+                `;
+                currentIndex = (currentIndex + 1) % dataQueue.length;
+            }, 10000);
+        }
+
+        fetchData();
+    </script>
+</body>
+</html>
