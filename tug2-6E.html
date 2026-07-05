@@ -491,7 +491,7 @@
 
         // ==================== 雲端上傳成績 ====================
         async function saveSoloResultToGoogleSheet(playerData) {
-            if (!GOOGLE_SHEET_WEBAPP_URL || GOOGLE_SHEET_WEBAPP_URL.includes('你的部署ID')) return false;
+            if (!GOOGLE_SHEET_WEBAPP_URL || GOOGLE_SHEET_WEBAPP_URL.includes('AKfycbyMVPcda6_YBIBXmy7iZFQjbIilACiNGVTz1CwB3yMNy7Od3VS81AE8lbKkTjABmt5f')) return false;
             try {
                 await fetch(GOOGLE_SHEET_WEBAPP_URL, {
                     method: 'POST', mode: 'no-cors',
@@ -513,7 +513,7 @@
 
             leaderboardEl.innerHTML = '<div style="text-align:center; color:#00f9ff; font-size:11px; animation:pulse 1s infinite;">📥 正在連線並載入班級成績...</div>';
 
-            if (!GOOGLE_SHEET_WEBAPP_URL || GOOGLE_SHEET_WEBAPP_URL.includes('你的部署ID')) {
+            if (!GOOGLE_SHEET_WEBAPP_URL || GOOGLE_SHEET_WEBAPP_URL.includes('AKfycbyMVPcda6_YBIBXmy7iZFQjbIilACiNGVTz1CwB3yMNy7Od3VS81AE8lbKkTjABmt5f')) {
                 leaderboardEl.innerHTML = '<div style="color:#ff00aa;text-align:center;font-size:11px;">⚠️ 未設定雲端網址</div>';
                 return;
             }
