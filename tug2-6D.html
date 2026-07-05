@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS - Mr.Lee EDITION</title>
+    <title>CKCPS WARS V2607052133</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
       
@@ -62,6 +62,14 @@
             color: #000;
             transform: scale(1.03);
         }
+        button:disabled {
+            background: #334155 !important;
+            color: #94a3b8 !important;
+            border-color: #475569 !important;
+            box-shadow: none !important;
+            transform: none !important;
+            cursor: not-allowed;
+        }
       
         .section {
             background: #12122e;
@@ -77,7 +85,7 @@
             margin-right: auto;
         }
       
-        select, input[type="number"], input[type="text"] {
+        select, input[type="number"], input[type="text"], input[type="password"] {
             font-family: 'Press Start 2P', system-ui;
             padding: 10px 12px;
             background: #0a0a1f;
@@ -115,7 +123,8 @@
             min-height: 85px;
             display: flex;
             align-items: center;
-            font-size: 17px;
+            justify-content: center;
+            font-size: 17px; 
             line-height: 1.55;
             text-align: left;
             border: 2px solid var(--primary);
@@ -150,6 +159,8 @@
         }
       
         .team-card {
+            position: relative; 
+            overflow: hidden;
             background: #12122e;
             border: 4px solid #334155;
             border-radius: 10px;
@@ -162,6 +173,9 @@
        
         .team-header {
             margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
        
         .progress-container {
@@ -230,6 +244,28 @@
             flex: 1;
             min-width: 280px;
         }
+
+        .freeze-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(10, 10, 31, 0.85);
+            backdrop-filter: blur(3px);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #00f9ff;
+            text-align: center;
+            text-shadow: 0 0 15px #00f9ff;
+            line-height: 1.8;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
@@ -238,15 +274,36 @@
         <p style="margin:4px 0 0 0; font-size:12px; color:#00f9ff;">CYBERPUNK NEON EDITION • P.1–P.6</p>
     </header>
     <div class="container">
-        <div id="menu-screen" class="screen active">
+        
+        <div id="login-screen" class="screen active">
+            <div class="section" style="max-width: 400px; margin: 40px auto; border-color: #facc15; padding: 30px 25px;">
+                <h2 style="color: #facc15; margin-top: 0;">PLAYER LOGIN</h2>
+                <p style="font-size: 11px; color: #94a3b8; margin-bottom: 25px;">請輸入班別、班號與密碼</p>
+
+                <label style="color:#00f9ff; text-align: left;">Class 班別</label>
+                <input type="text" id="login-class" placeholder="e.g. 3A">
+
+                <label style="color:#00f9ff; text-align: left; margin-top: 15px;">Class Number 班號</label>
+                <input type="text" id="login-num" placeholder="e.g. 15">
+
+                <label style="color:#00f9ff; text-align: left; margin-top: 15px;">Password 密碼</label>
+                <input type="password" id="login-pwd" placeholder="****">
+
+                <button onclick="attemptLogin()" style="width: 100%; margin-top: 25px; font-size: 18px; border-color: #facc15; box-shadow: 0 0 15px #facc15;">
+                    🔓 LOGIN
+                </button>
+            </div>
+        </div>
+
+        <div id="menu-screen" class="screen">
             <div class="compact-grid">
                 <div class="section">
                     <label style="color:#00f9ff;">NUMBER OF TEAMS</label>
                     <select id="num-teams" onchange="toggleSoloMode()">
-                        <option value="solo">🧑 SOLO (個人模式)</option>
+                        <option value="solo" selected>🧑 SOLO (個人模式)</option>
                         <option value="2">2 Teams</option>
                         <option value="3">3 Teams</option>
-                        <option value="4" selected>4 Teams</option>
+                        <option value="4">4 Teams</option>
                         <option value="5">5 Teams</option>
                         <option value="6">6 Teams</option>
                     </select>
@@ -280,11 +337,11 @@
                 <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:8px;">
                     <div style="flex:1; min-width:130px;">
                         <label style="font-size:12px; color:#94a3b8;">Class</label>
-                        <input type="text" id="solo-class" placeholder="e.g. 3A" style="width:80%; font-size:15px; padding:8px;">
+                        <input type="text" id="solo-class" placeholder="e.g. 3A" style="width:80%; font-size:15px; padding:8px;" readonly>
                     </div>
                     <div style="flex:2; min-width:180px;">
                         <label style="font-size:12px; color:#94a3b8;">Name</label>
-                        <input type="text" id="solo-name" placeholder="Full name please 請輸入全名" style="width:80%; font-size:15px; padding:8px;">
+                        <input type="text" id="solo-name" placeholder="Full name please 請輸入全名" style="width:80%; font-size:15px; padding:8px;" readonly>
                     </div>
                 </div>
             </div>
@@ -301,7 +358,7 @@
                     <div class="end-right">
                         <div id="score-options">
                             <label style="color:#ff00aa;">TARGET SCORE</label>
-                            <input type="number" id="target-score" value="100" min="10" step="10" style="width:100%;">
+                            <input type="number" id="target-score" value="300" min="50" step="50" style="width:100%;">
                         </div>
                         <div id="time-options" style="display:none;">
                             <label style="color:#ff00aa;">DURATION (minutes)</label>
@@ -358,7 +415,7 @@
             </div>
             
             <div class="leaderboard">
-                <h3 style="color:#ff00aa;">🏆 LEADERBOARD 🏆</h3>
+                <h3 id="leaderboard-title" style="color:#ff00aa;">🏆 LEADERBOARD 🏆</h3>
                 <div id="leaderboard" style="text-align:left;"></div>
             </div>
             
@@ -367,22 +424,83 @@
     </div>
 
     <script>
+        window.onerror = function(message, source, lineno, colno, error) {
+            alert("⚠️ 遊戲偵測到錯誤: \n" + message + "\n位於第 " + lineno + " 行\n請檢查程式碼。");
+            return true;
+        };
+
         let customQuestions = [];
         let currentSubject = '', currentLevel = '', teams = [], currentQuestions = [];
         let gameInterval = null, endMode = 'score', targetScore = 100, gameEndTime = null;
-        let isPaused = false;
-        let pausedRemainingTime = 0;
-        let pendingResultTimeouts = {};
+        let isPaused = false, pausedRemainingTime = 0, pendingResultTimeouts = {};
 
+        // 後端 Google Apps Script 的部署網址
         const GOOGLE_SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyMVPcda6_YBIBXmy7iZFQjbIilACiNGVTz1CwB3yMNy7Od3VS81AE8lbKkTjABmt5f/exec';
 
-        async function saveSoloResultToGoogleSheet(playerData) {
-            if (!GOOGLE_SHEET_WEBAPP_URL || GOOGLE_SHEET_WEBAPP_URL.includes('你的部署ID')) {
-                alert('尚未設定 Google Sheet Web App URL！');
-                return false;
+        // ==================== LOGIN SYSTEM ====================
+        async function attemptLogin() {
+            const cls = document.getElementById('login-class').value.trim();
+            const num = document.getElementById('login-num').value.trim();
+            const pwd = document.getElementById('login-pwd').value.trim();
+
+            if (!cls || !num || !pwd) {
+                alert("請填寫班別、班號與密碼！\n(Please fill in all fields)");
+                return;
             }
+
             try {
-                const response = await fetch(GOOGLE_SHEET_WEBAPP_URL, {
+                const response = await fetch('./password.csv');
+                if (!response.ok) throw new Error('找不到 password.csv 檔案');
+                
+                let text = await response.text();
+                if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+                
+                const lines = text.trim().split('\n');
+                let isValid = false;
+                let playerName = "";
+
+                // 自動相容兩種常見的 CSV 排位設定
+                // 1) Class, Number, Name, Password 
+                // 2) Class, Number, Password, Name
+                for (let i = 1; i < lines.length; i++) {
+                    if (!lines[i].trim()) continue;
+                    let parts = lines[i].split(',').map(s => s.replace(/"/g, '').trim());
+                    
+                    if (parts.length >= 4) {
+                        if (parts[0].toLowerCase() === cls.toLowerCase() && parts[1] === num) {
+                            if (parts[2] === pwd) {
+                                isValid = true;
+                                playerName = parts[3]; // 第 4 欄是名字
+                                break;
+                            } else if (parts[3] === pwd) {
+                                isValid = true;
+                                playerName = parts[2]; // 第 3 欄是名字
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (isValid) {
+                    alert(`✅ 登入成功！歡迎，${playerName}！`);
+                    document.getElementById('login-screen').classList.remove('active');
+                    document.getElementById('menu-screen').classList.add('active');
+                    
+                    document.getElementById('solo-class').value = cls.toUpperCase();
+                    document.getElementById('solo-name').value = playerName;
+                } else {
+                    alert("❌ 班別、班號或密碼錯誤！\n(Invalid credentials)");
+                }
+            } catch (err) {
+                alert("⚠️ 無法載入驗證檔。\n請確保密碼表命名為 'password.csv' 且位於相同資料夾。\n" + err.message);
+            }
+        }
+
+        // 雲端儲存
+        async function saveSoloResultToGoogleSheet(playerData) {
+            if (!GOOGLE_SHEET_WEBAPP_URL) return false;
+            try {
+                await fetch(GOOGLE_SHEET_WEBAPP_URL, {
                     method: 'POST', mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(playerData)
@@ -390,44 +508,84 @@
                 alert(`✅ 成績已成功儲存到雲端！\n\n班級：${playerData.class}\n姓名：${playerData.name}\n分數：${playerData.score}`);
                 return true;
             } catch (error) {
-                console.error(error);
-                alert('❌ 儲存失敗，請檢查網絡或 URL 是否正確。');
+                alert('❌ 儲存失敗，請檢查網路或 URL 是否正確。');
                 return false;
             }
         }
 
-        // ==================== NEW: FETCH CLOUD LEADERBOARD FOR SOLO MODE ====================
-        async function fetchSoloLeaderboard(subject, level) {
+        // ==================== 串接雲端歷史高分榜 (Solo Mode) ====================
+        async function fetchCloudLeaderboard(subject, level) {
             const leaderboardEl = document.getElementById('leaderboard');
-            if (!leaderboardEl) return;
-            leaderboardEl.innerHTML = '<div style="color:#00f9ff; font-size:12px; padding:5px 0;">⌛ Loading Cloud Leaderboard...</div>';
-            
+            if (!GOOGLE_SHEET_WEBAPP_URL) {
+                leaderboardEl.innerHTML = '<div style="color:#ffaa00;text-align:center;font-size:11px;">未設定雲端 URL</div>';
+                return;
+            }
+
+            leaderboardEl.innerHTML = '<div style="color:#00f9ff;text-align:center;font-size:11px;animation:pulse 1s infinite;">LOADING CLOUD DATA...</div>';
+
             try {
-                // 發送 GET 請求攜帶科目與難度參數
-                const url = `${GOOGLE_SHEET_WEBAPP_URL}?action=getLeaderboard&subject=${encodeURIComponent(subject)}&level=${encodeURIComponent(level)}`;
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('Fetch leaderboard failed');
-                const data = await response.json();
+                // 網址加上隨機參數防止快取
+                const response = await fetch(`${GOOGLE_SHEET_WEBAPP_URL}?t=${Date.now()}`);
+                if (!response.ok) throw new Error('網絡回應異常');
                 
-                if (Array.isArray(data) && data.length > 0) {
-                    // 確保由高到低排序
-                    const sortedData = data.sort((a, b) => (b.score || 0) - (a.score || 0));
-                    let html = '';
-                    // 僅抓取前 5 名
-                    sortedData.slice(0, 5).forEach((item, i) => {
-                        const classStr = item.class ? `[${item.class}] ` : '';
-                        html += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #334155;">
-                            <span><strong>#${i+1}</strong> ${classStr}${item.name || 'Anonymous'}</span>
-                            <span style="color:#39ff14;font-weight:bold;">${item.score || 0} pts</span>
-                        </div>`;
-                    });
-                    leaderboardEl.innerHTML = html;
-                } else {
-                    leaderboardEl.innerHTML = '<div style="color:#94a3b8; font-size:12px; padding:5px 0;">No cloud records found. Be the first!</div>';
+                const allRecords = await response.json();
+                if (!Array.isArray(allRecords)) {
+                    leaderboardEl.innerHTML = '<div style="color:#ff00aa;text-align:center;font-size:11px;">雲端資料結構錯誤</div>';
+                    return;
                 }
+
+                // 1. 篩選：同科目、同 LEVEL
+                const norm = (str) => (str || '').toLowerCase().replace(/\.|\s|grade|form|年級|級/g, '').trim();
+                const targetSub = norm(subject);
+                const targetLvl = norm(level);
+
+                let filtered = allRecords.filter(r => {
+                    const rSub = norm(r.subject);
+                    const rLvl = norm(r.level);
+                    const subMatch = rSub === targetSub || 
+                                     (targetSub === 'maths' && (rSub === 'math' || rSub === '數學')) ||
+                                     (targetSub === '科學' && (rSub === '科學')) ||
+                                     (targetSub === 'science' && (rSub === 'science')) ||
+                                     (targetSub === 'chinese' && (rSub === '中文' || rSub === 'chinese'));
+                    const lvlMatch = rLvl === targetLvl || rLvl === targetLvl.replace('p','');
+                    return subMatch && lvlMatch;
+                });
+
+                // 2. 去重：同一個玩家名字只保留最高分
+                let uniquePlayers = {};
+                filtered.forEach(r => {
+                    const nameKey = r.name ? r.name.trim() : 'Unknown';
+                    const scoreVal = parseInt(r.score) || 0;
+                    if (!uniquePlayers[nameKey] || scoreVal > uniquePlayers[nameKey].score) {
+                        uniquePlayers[nameKey] = {
+                            class: r.class || '',
+                            name: nameKey,
+                            score: scoreVal
+                        };
+                    }
+                });
+
+                // 3. 排序與精確抓取前 5 名
+                let top5 = Object.values(uniquePlayers).sort((a, b) => b.score - a.score).slice(0, 5);
+
+                // 4. 渲染到畫面
+                if (top5.length === 0) {
+                    leaderboardEl.innerHTML = '<div style="color:#94a3b8;text-align:center;font-size:11px;">暫無此科目年級的歷史紀錄</div>';
+                    return;
+                }
+
+                let html = '';
+                top5.forEach((t, i) => {
+                    html += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #334155;font-size:12px;">
+                        <span><strong>#${i+1}</strong> [${t.class}] ${t.name}</span>
+                        <span style="color:#39ff14;font-weight:bold;">${t.score} pts</span>
+                    </div>`;
+                });
+                leaderboardEl.innerHTML = html;
+
             } catch (err) {
                 console.error(err);
-                leaderboardEl.innerHTML = '<div style="color:#ff00aa; font-size:12px; padding:5px 0;">⚠️ Cannot load cloud leaderboard.</div>';
+                leaderboardEl.innerHTML = '<div style="color:#ff00aa;text-align:center;font-size:11px;">無法下載雲端排行</div>';
             }
         }
 
@@ -473,32 +631,12 @@
                 }
                 disableAllAnswerButtons(false);
                 resumeBackgroundMusic();
-
+                
                 teams.forEach((team, idx) => {
                     const statusEl = document.getElementById(`status-${team.id}`);
-                    if (statusEl && statusEl.innerHTML.trim() !== '') {
+                    if (statusEl && (statusEl.innerHTML.includes('CORRECT') || statusEl.innerHTML.includes('Wrong'))) {
                         currentQuestions[idx] = getRandomQuestion();
-                        const qEl = document.getElementById(`qtext-${team.id}`);
-                        const qText = currentQuestions[idx].q;
-                        const isShort = qText.length > 0 && qText.length <= 5;
-                        if (qEl) {
-                            qEl.style.fontSize = isShort ? '70px' : '17px';
-                            qEl.style.lineHeight = isShort ? '1.2' : '1.55';
-                            qEl.textContent = qText;
-                        }
-                        if (statusEl) statusEl.innerHTML = '';
-
-                        const optsDiv = document.getElementById(`options-${team.id}`);
-                        if (optsDiv) {
-                            optsDiv.innerHTML = '';
-                            currentQuestions[idx].options.forEach((opt, i) => {
-                                const btn = document.createElement('button');
-                                btn.className = 'option-btn';
-                                btn.textContent = `${String.fromCharCode(65 + i)}. ${opt}`;
-                                btn.onclick = () => handleAnswer(team.id, i, idx);
-                                optsDiv.appendChild(btn);
-                            });
-                        }
+                        renderTeamQuestion(team.id, idx);
                     }
                 });
 
@@ -510,7 +648,8 @@
 
         function playBackgroundMusic() {
             if (isMusicPlaying) return;
-            const track = document.getElementById('music-track')?.value;
+            const musicSelect = document.getElementById('music-track');
+            const track = musicSelect ? musicSelect.value : '';
             if (!track) { isMusicPlaying = false; return; }
             stopBackgroundMusic();
             bgmAudio = new Audio(track);
@@ -526,7 +665,7 @@
         }
 
         function pauseBackgroundMusic() { if (bgmAudio && !bgmAudio.paused) bgmAudio.pause(); }
-        function resumeBackgroundMusic() { if (bgmAudio && bgmAudio.paused && isMusicPlaying) bgmAudio.play().catch(() => {}); }
+        function resumeBackgroundMusic() { if (bgmAudio && bgmAudio.paused && isMusicPlaying) bgmAudio.play().catch(()=>{}); }
 
         async function loadDefaultCSV() {
             try {
@@ -537,14 +676,10 @@
                 const selectedSubject = document.getElementById('subject').value;
                 const selectedLevel = document.getElementById('level').value;
                 customQuestions = filterQuestionsBySubjectLevel(allParsed, selectedSubject, selectedLevel);
-                if (customQuestions.length === 0) {
-                    alert(`⚠️ No questions found. Loaded all ${allParsed.length} instead.`);
-                    customQuestions = allParsed;
-                } else {
-                    alert(`✅ Default Set loaded! ${customQuestions.length} questions for ${selectedSubject} - ${selectedLevel}`);
-                }
+                if (customQuestions.length === 0) customQuestions = allParsed;
+                alert(`✅ 預設題庫已成功載入！\n(Default Set loaded!)\n共 ${customQuestions.length} 題匹配 ${selectedSubject} - ${selectedLevel}`);
             } catch (err) {
-                alert('❌ Cannot load default.csv');
+                alert('❌ 無法載入 default.csv\n可能原因：檔案不在相同資料夾，或是瀏覽器阻擋了本地檔案讀取。請改用「上載」按鈕匯入。');
             }
         }
 
@@ -557,12 +692,8 @@
                 const selectedSubject = document.getElementById('subject').value;
                 const selectedLevel = document.getElementById('level').value;
                 customQuestions = filterQuestionsBySubjectLevel(allParsed, selectedSubject, selectedLevel);
-                if (customQuestions.length === 0) {
-                    alert(`⚠️ No matching questions. Using all ${allParsed.length} questions.`);
-                    customQuestions = allParsed;
-                } else {
-                    alert(`✅ CSV loaded! ${customQuestions.length} questions matched for ${selectedSubject} - ${selectedLevel}`);
-                }
+                if (customQuestions.length === 0) customQuestions = allParsed;
+                alert(`✅ CSV 題庫已成功載入！\n(CSV loaded!)\n共 ${customQuestions.length} 題匹配 ${selectedSubject} - ${selectedLevel}`);
             };
             reader.readAsText(file);
         }
@@ -578,10 +709,7 @@
             if (numTeamsValue === 'solo') {
                 const soloClass = document.getElementById('solo-class').value.trim();
                 const soloName = document.getElementById('solo-name').value.trim();
-                if (!soloClass || !soloName) {
-                    alert('請填寫班級和姓名！\nPlease enter your Class and Name.');
-                    return;
-                }
+                if (!soloClass || !soloName) { alert('請填寫班級和姓名！(Please enter Class and Name)'); return; }
                 window.currentSoloPlayer = { class: soloClass, name: soloName };
                 numTeams = 1;
             } else {
@@ -600,9 +728,13 @@
             const infoEl = document.getElementById('game-info');
 
             if (numTeamsValue === 'solo' && window.currentSoloPlayer) {
-                infoEl.innerHTML = `${currentSubject} • ${currentLevel} &nbsp;&nbsp; | &nbsp;&nbsp; <span style="color:#39ff14;">${window.currentSoloPlayer.class} ${window.currentSoloPlayer.name}</span>`;
+                infoEl.innerHTML = `${currentSubject} • ${currentLevel} &nbsp;|&nbsp; <span style="color:#39ff14;">${window.currentSoloPlayer.class} ${window.currentSoloPlayer.name}</span>`;
+                // 變更排行榜標題，並載入同科目、Level 的歷史前 5 名
+                document.getElementById('leaderboard-title').textContent = "🏆 CLOUD TOP 5 🏆";
+                fetchCloudLeaderboard(currentSubject, currentLevel);
             } else {
-                infoEl.innerHTML = `${currentSubject} • ${currentLevel} <span style="color:#94a3b8; font-size:12px;">(${customQuestions.length} Qs from CSV)</span>`;
+                infoEl.innerHTML = `${currentSubject} • ${currentLevel} <span style="color:#94a3b8; font-size:12px;">(${customQuestions.length} Qs)</span>`;
+                document.getElementById('leaderboard-title').textContent = "🏆 LEADERBOARD 🏆";
             }
 
             initTeams(numTeams);
@@ -613,20 +745,15 @@
             teams = []; currentQuestions = [];
             const colors = ['#f87171', '#60a5fa', '#facc15', '#a78bfa', '#f472b6', '#34d399'];
             for (let i = 0; i < numTeams; i++) {
-                // Solo 模式下將隊伍名稱直接指定為玩家真實名字
-                let tName = `Team ${String.fromCharCode(65+i)}`;
-                if (numTeams === 1 && window.currentSoloPlayer) {
-                    tName = window.currentSoloPlayer.name;
-                }
-                teams.push({ id: i+1, name: tName, score: 0, color: colors[i % colors.length] });
+                // Solo Mode 顯示學生姓名，多隊顯示 Team A/B/C...
+                let displayName = window.currentSoloPlayer ? window.currentSoloPlayer.name : `Team ${String.fromCharCode(65+i)}`;
+                teams.push({ id: i+1, name: displayName, score: 0, color: colors[i % colors.length], multiplier: 1 });
                 currentQuestions.push(getRandomQuestion());
             }
             renderAllTeams();
-
-            // 如果是個人模式，載入雲端前五名；若否，更新本地即時排行榜
-            if (window.currentSoloPlayer) {
-                fetchSoloLeaderboard(currentSubject, currentLevel);
-            } else {
+            
+            // 多隊模式才渲染即時位置排行
+            if (!window.currentSoloPlayer) {
                 updateLeaderboard();
             }
 
@@ -636,7 +763,6 @@
             if (pauseBtn) {
                 pauseBtn.innerHTML = '⏸️ PAUSE';
                 pauseBtn.style.borderColor = '#ff00aa';
-                pauseBtn.style.boxShadow = '0 0 12px rgba(0, 249, 255, 0.4)';
                 pauseBtn.style.display = 'inline-block';
             }
 
@@ -655,7 +781,7 @@
             if (lines.length < 2) return [];
 
             let rawHeader = parseCSVLine(lines[0]);
-            const header = rawHeader.map(h => h.toLowerCase().trim().replace(/"/g, '').replace(/\n/g, ' ').replace(/\s+/g, ' ').trim());
+            const header = rawHeader.map(h => h.toLowerCase().replace(/"/g, '').replace(/\n/g, ' ').replace(/\s+/g, ' ').trim());
             const questions = [];
             const findIdx = (keywords) => header.findIndex(h => keywords.some(k => h.includes(k)));
 
@@ -709,12 +835,9 @@
         function filterQuestionsBySubjectLevel(allQuestions, subject, level) {
             if (!allQuestions || allQuestions.length === 0) return [];
             const norm = (str) => (str || '').toLowerCase().replace(/\.|\s|grade|form|年級|級/g, '').trim();
-            const targetSub = norm(subject);
-            const targetLvl = norm(level);
-
+            const targetSub = norm(subject), targetLvl = norm(level);
             return allQuestions.filter(q => {
-                const qSub = norm(q.subject);
-                const qLvl = norm(q.level);
+                const qSub = norm(q.subject), qLvl = norm(q.level);
                 const subMatch = !qSub || qSub === targetSub || 
                                  (targetSub === 'maths' && (qSub === 'math' || qSub === '數學')) ||
                                  (targetSub === '科學' && (qSub === '科學')) ||
@@ -726,9 +849,7 @@
         }
 
         function getRandomQuestion() {
-            if (!customQuestions || customQuestions.length === 0) {
-                return { q: "請先載入 CSV 題庫！", options: ["A", "B", "C", "D"], ans: 0 };
-            }
+            if (!customQuestions || customQuestions.length === 0) return { q: "載入異常！", options: ["A", "B"], ans: 0 };
             const pool = customQuestions;
             const original = pool[Math.floor(Math.random() * pool.length)];
             let shuffled = [...original.options];
@@ -740,60 +861,186 @@
             return { q: original.q, options: shuffled, ans: shuffled.indexOf(correctText) };
         }
 
+        function renderTeamQuestion(teamId, teamIndex) {
+            const qEl = document.getElementById(`qtext-${teamId}`);
+            const optsDiv = document.getElementById(`options-${teamId}`);
+            const statusEl = document.getElementById(`status-${teamId}`);
+            if(!qEl || !optsDiv || !statusEl) return;
+
+            const qText = currentQuestions[teamIndex].q;
+            const isShort = qText.length > 0 && qText.length <= 5;
+            
+            qEl.style.fontSize = isShort ? '70px' : '17px';
+            qEl.style.lineHeight = isShort ? '1.2' : '1.55';
+            qEl.innerHTML = qText;
+            
+            if(teams[teamIndex].multiplier === 3) {
+                statusEl.innerHTML = `<span style="color:#ff4500; font-weight:bold; animation: pulse 1s infinite;">🔥 3x POINTS NEXT Q! 🔥</span>`;
+            } else {
+                statusEl.innerHTML = '';
+            }
+            
+            optsDiv.innerHTML = '';
+            currentQuestions[teamIndex].options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = `${String.fromCharCode(65+i)}. ${opt}`;
+                btn.onclick = () => handleAnswer(teamId, i, teamIndex);
+                optsDiv.appendChild(btn);
+            });
+        }
+
         function renderAllTeams() {
             const grid = document.getElementById('team-grid');
             grid.innerHTML = '';
 
-            if (teams.length === 1) {
-                grid.classList.add('solo-mode');
-            } else {
-                grid.classList.remove('solo-mode');
-            }
+            if (teams.length === 1) grid.classList.add('solo-mode');
+            else grid.classList.remove('solo-mode');
 
             teams.forEach((team, index) => {
                 const card = document.createElement('div');
                 card.className = 'team-card';
-                card.id = `card-${team.id}`;
-
-                const qText = currentQuestions[index].q;
-                const isShort = qText.length > 0 && qText.length <= 5;
+                card.id = `card-${team.id}`; 
                 
                 card.innerHTML = `
-                    <div class="team-header" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div class="team-header">
                         <div class="team-name" style="color:${team.color}; font-weight:bold;">${team.name}</div>
                         <div class="score" id="score-${team.id}">${team.score}</div>
                     </div>
                     <div class="progress-container">
                         <div class="progress-bar" id="progress-${team.id}" style="width:0%"></div>
                     </div>
-                    <div class="question" id="qtext-${team.id}"
-                         style="font-size: ${isShort ? '70px' : '17px'}; line-height: ${isShort ? '1.2' : '1.55'}">
-                        ${qText}
-                    </div>
+                    <div class="question" id="qtext-${team.id}"></div>
                     <div class="options" id="options-${team.id}"></div>
                     <div class="status" id="status-${team.id}"></div>
                 `;
                 grid.appendChild(card);
+                renderTeamQuestion(team.id, index);
+            });
+        }
 
-                const optsDiv = document.getElementById(`options-${team.id}`);
-                currentQuestions[index].options.forEach((opt, i) => {
-                    const btn = document.createElement('button');
-                    btn.className = 'option-btn';            
-                    btn.textContent = `${String.fromCharCode(65+i)}. ${opt}`;
-                    btn.onclick = () => handleAnswer(team.id, i, index);
-                    optsDiv.appendChild(btn);
-                });
+        function freezeTeam(targetTeamIndex, seconds) {
+            const team = teams[targetTeamIndex];
+            const card = document.getElementById(`card-${team.id}`);
+            if(!card) return;
+            
+            let overlay = document.getElementById(`freeze-${team.id}`);
+            if(!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = `freeze-${team.id}`;
+                overlay.className = 'freeze-overlay';
+                card.appendChild(overlay);
+            }
+            
+            overlay.style.display = 'flex';
+            let timeLeft = seconds;
+            overlay.innerHTML = `<h2 style="margin:0;">❄️ FROZEN ❄️<br><span style="font-size:32px;">${timeLeft}s</span></h2>`;
+            
+            if(team.freezeTimer) clearInterval(team.freezeTimer);
+            
+            team.freezeTimer = setInterval(() => {
+                if(isPaused) return; 
+                timeLeft--;
+                if(timeLeft <= 0) {
+                    clearInterval(team.freezeTimer);
+                    team.freezeTimer = null;
+                    if(overlay) overlay.style.display = 'none';
+                } else {
+                    if(overlay) overlay.innerHTML = `<h2 style="margin:0;">❄️ FROZEN ❄️<br><span style="font-size:32px;">${timeLeft}s</span></h2>`;
+                }
+            }, 1000);
+        }
+
+        function applyPrize(prize, teamIndex) {
+            const me = teams[teamIndex];
+            const opponents = teams.map((t, i) => i).filter(i => i !== teamIndex);
+
+            if (prize.type === 'steal') {
+                if (opponents.length > 0) {
+                    const validOpps = opponents.filter(i => teams[i].score > 0);
+                    if(validOpps.length > 0) {
+                        const targetIdx = validOpps[Math.floor(Math.random() * validOpps.length)];
+                        const stealAmt = Math.min(5, teams[targetIdx].score);
+                        teams[targetIdx].score -= stealAmt;
+                        me.score += stealAmt;
+                    } else { me.score += 5; }
+                } else { me.score += 5; }
+            } else if (prize.type === 'freeze1') {
+                if (opponents.length > 0) {
+                    const targetIdx = opponents[Math.floor(Math.random() * opponents.length)];
+                    freezeTeam(targetIdx, 5);
+                }
+            } else if (prize.type === 'add10') {
+                me.score += 10;
+            } else if (prize.type === 'freezeAll') {
+                opponents.forEach(i => freezeTeam(i, 3));
+            } else if (prize.type === 'triple') {
+                me.multiplier = 3;
+            }
+
+            const maxTarget = endMode === 'score' ? targetScore : 300;
+            teams.forEach(t => {
+                const scoreEl = document.getElementById(`score-${t.id}`);
+                if(scoreEl) scoreEl.textContent = t.score;
+                const prog = Math.min((t.score / maxTarget) * 100, 100);
+                const pEl = document.getElementById(`progress-${t.id}`);
+                if(pEl) pEl.style.width = `${prog}%`;
             });
 
-            if (teams.length === 1) {
-                grid.style.maxWidth = '620px';
-                grid.style.margin = '0 auto';
-                grid.style.padding = '0 10px';
-            } else {
-                grid.style.maxWidth = '';
-                grid.style.margin = '';
-                grid.style.padding = '';
+            if (!window.currentSoloPlayer) {
+                updateLeaderboard();
             }
+
+            if (endMode === 'score' && me.score >= targetScore) {
+                setTimeout(() => { 
+                    if (window.currentSoloPlayer) alert(`🎉 Finished!`);
+                    else alert(`🎉 ${me.name} WINS!`);
+                    endGame(); 
+                }, 800);
+            }
+        }
+
+        function startLuckyDraw(teamId, teamIndex) {
+            const qEl = document.getElementById(`qtext-${teamId}`);
+            const optsDiv = document.getElementById(`options-${teamId}`);
+            const statusEl = document.getElementById(`status-${teamId}`);
+            
+            qEl.style.fontSize = '24px';
+            qEl.style.lineHeight = '1.3';
+            qEl.innerHTML = `<div style="text-align:center; width:100%; color:#facc15; text-shadow:0 0 10px #facc15;">🎰 MYSTERY BOX 🎰</div>`;
+            optsDiv.innerHTML = '';
+            statusEl.innerHTML = '';
+
+            const prizes = [
+                { icon: '🏴‍☠️', text: 'Steal 5 Pts', color: '#ff00aa', type: 'steal' },
+                { icon: '❄️', text: 'Freeze 1 (5s)', color: '#00f9ff', type: 'freeze1' },
+                { icon: '💎', text: '+10 Points', color: '#39ff14', type: 'add10' },
+                { icon: '⚡', text: 'Freeze All (3s)', color: '#facc15', type: 'freezeAll' },
+                { icon: '🔥', text: '3x Points Next Q', color: '#ff4500', type: 'triple' }
+            ];
+
+            let spinCount = 0;
+            const spinInterval = setInterval(() => {
+                const p = prizes[spinCount % prizes.length];
+                optsDiv.innerHTML = `<div style="font-size:16px; text-align:center; padding:18px; color:${p.color}; border:2px dashed ${p.color}; margin:10px; border-radius:8px;">${p.icon} ${p.text}</div>`;
+                spinCount++;
+            }, 50);
+
+            setTimeout(() => {
+                clearInterval(spinInterval);
+                const winIdx = Math.floor(Math.random() * prizes.length);
+                const winPrize = prizes[winIdx];
+                
+                optsDiv.innerHTML = `<div style="font-size:18px; text-align:center; padding:20px; background:#12122e; color:${winPrize.color}; border:3px solid ${winPrize.color}; box-shadow: 0 0 15px ${winPrize.color}; margin:10px; border-radius:8px; animation: pulse 0.5s infinite;">🎉 ${winPrize.icon}<br>${winPrize.text} 🎉</div>`;
+                
+                applyPrize(winPrize, teamIndex);
+
+                setTimeout(() => {
+                    currentQuestions[teamIndex] = getRandomQuestion();
+                    renderTeamQuestion(teamId, teamIndex);
+                }, 2500);
+
+            }, 1000);
         }
 
         function handleAnswer(teamId, selectedIndex, teamIndex) {
@@ -808,63 +1055,48 @@
                 if (idx === selectedIndex && !isCorrect) btn.style.borderColor = '#ff00aa';
             });
 
+            const oldScore = teams[teamIndex].score;
+            const ptsToAdd = 10 * (teams[teamIndex].multiplier || 1);
+            teams[teamIndex].multiplier = 1; 
+
             if (isCorrect) {
-                teams[teamIndex].score += 10;
-                statusEl.innerHTML = `<span style="color:#39ff14">✅ CORRECT! +10</span>`;
+                teams[teamIndex].score += ptsToAdd;
+                statusEl.innerHTML = `<span style="color:#39ff14">✅ CORRECT! +${ptsToAdd}</span>`;
             } else {
                 statusEl.innerHTML = `<span style="color:#ff00aa">❌ Wrong. Answer: ${String.fromCharCode(65 + q.ans)}</span>`;
             }
 
             document.getElementById(`score-${teamId}`).textContent = teams[teamIndex].score;
-            const progress = Math.min((teams[teamIndex].score / 300) * 100, 100);
+            const progress = Math.min((teams[teamIndex].score / (endMode=='score' ? targetScore : 300)) * 100, 100);
             document.getElementById(`progress-${teamId}`).style.width = `${progress}%`;
             
-            updateLeaderboard();
-
-            // ==================== NEW: FINISHED ALERTS FOR SOLO MODE ====================
+            if (!window.currentSoloPlayer) {
+                updateLeaderboard();
+            }
+            
             if (endMode === 'score' && teams[teamIndex].score >= targetScore) {
                 setTimeout(() => { 
-                    if (window.currentSoloPlayer) {
-                        alert(`🎉 Finished!`);
-                    } else {
-                        alert(`🎉 ${teams[teamIndex].name} WINS!`); 
-                    }
+                    if (window.currentSoloPlayer) alert(`🎉 Finished!`);
+                    else alert(`🎉 ${teams[teamIndex].name} WINS!`);
                     endGame(); 
                 }, 800);
                 return;
             }
 
+            const crossed50 = Math.floor(teams[teamIndex].score / 50) > Math.floor(oldScore / 50);
+
             pendingResultTimeouts[teamId] = setTimeout(() => {
-                currentQuestions[teamIndex] = getRandomQuestion();
-                
-                const qEl = document.getElementById(`qtext-${teamId}`);
-                const nextQText = currentQuestions[teamIndex].q;
-                const isShort = nextQText.length > 0 && nextQText.length <= 5;
-                if (qEl) {
-                    qEl.style.fontSize = isShort ? '70px' : '17px';
-                    qEl.style.lineHeight = isShort ? '1.2' : '1.55';
-                    qEl.textContent = nextQText;
+                if (isCorrect && crossed50) {
+                    startLuckyDraw(teamId, teamIndex);
+                } else {
+                    currentQuestions[teamIndex] = getRandomQuestion();
+                    renderTeamQuestion(teamId, teamIndex);
                 }
-
-                document.getElementById(`status-${teamId}`).innerHTML = '';
-                const optsDiv = document.getElementById(`options-${teamId}`);
-                optsDiv.innerHTML = '';
-                currentQuestions[teamIndex].options.forEach((opt, i) => {
-                    const btn = document.createElement('button');
-                    btn.className = 'option-btn';
-                    btn.textContent = `${String.fromCharCode(65+i)}. ${opt}`;
-                    btn.onclick = () => handleAnswer(teamId, i, teamIndex);
-                    optsDiv.appendChild(btn);
-                });
-
                 delete pendingResultTimeouts[teamId];
             }, 1600);
         }
 
         function updateLeaderboard() {
-            // 個人模式（Solo mode）不隨答題即時更新排行榜，保持顯示雲端前 5 名
-            if (window.currentSoloPlayer) return;
-
             const sorted = [...teams].sort((a,b) => b.score - a.score);
             let html = '';
             sorted.forEach((t, i) => {
@@ -888,27 +1120,18 @@
             if (wasSolo && window.currentSoloPlayer) {
                 const player = window.currentSoloPlayer;
                 const confirmSave = confirm(
-                    `Solo Mode 結束！\n\n` +
-                    `班級：${player.class}\n` +
-                    `姓名：${player.name}\n` +
-                    `分數：${finalScore} 分\n\n` +
-                    `是否要將成績儲存到 Google Sheet 雲端？`
+                    `Solo Mode 結束！\n\n班級：${player.class}\n姓名：${player.name}\n分數：${finalScore} 分\n\n是否要將成績儲存到 Google Sheet 雲端？`
                 );
-
                 if (confirmSave) {
                     const recordData = {
                         timestamp: new Date().toISOString(),
                         date: new Date().toLocaleDateString('zh-HK'),
                         time: new Date().toLocaleTimeString('zh-HK'),
-                        class: player.class,
-                        name: player.name,
-                        subject: currentSubject,
-                        level: currentLevel,
-                        score: finalScore,
-                        endMode: endMode,
+                        class: player.class, name: player.name,
+                        subject: currentSubject, level: currentLevel,
+                        score: finalScore, endMode: endMode,
                         targetOrTime: endMode === 'score' ? targetScore : (window.gameMinutes || 10)
                     };
-
                     saveSoloResultToGoogleSheet(recordData);
                 }
             }
@@ -916,10 +1139,8 @@
             isPaused = false;
             pausedRemainingTime = 0;
             const pauseBtn = document.getElementById('pause-btn');
-            if (pauseBtn) {
-                pauseBtn.style.display = 'none';
-                pauseBtn.innerHTML = '⏸️ PAUSE';
-            }
+            if (pauseBtn) { pauseBtn.style.display = 'none'; pauseBtn.innerHTML = '⏸️ PAUSE'; }
+            
             document.getElementById('game-screen').classList.remove('active');
             document.getElementById('menu-screen').classList.add('active');
             document.getElementById('csv-upload').value = '';
@@ -962,7 +1183,7 @@
             toggleEndOptions();
             toggleSoloMode();
         };
-
+        
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
             return false;
