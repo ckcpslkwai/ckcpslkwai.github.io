@@ -862,7 +862,7 @@
                 const p = prizes[spinCount % prizes.length];
                 optsDiv.innerHTML = `<div style="font-size:16px; text-align:center; padding:18px; color:${p.color}; border:2px dashed ${p.color}; margin:10px; border-radius:8px;">${p.icon} ${p.text}</div>`;
                 spinCount++;
-            }, 100);
+            }, 50);
 
             setTimeout(() => {
                 clearInterval(spinInterval);
@@ -878,7 +878,7 @@
                     renderTeamQuestion(teamId, teamIndex);
                 }, 2500);
 
-            }, 2000);
+            }, 1000);
         }
 
         function handleAnswer(teamId, selectedIndex, teamIndex) {
