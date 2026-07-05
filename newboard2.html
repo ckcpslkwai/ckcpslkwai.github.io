@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>科目輪替排行榜 🏆 P.1 ~ P.6</title>
+  <style>
+    :root {
+      --primary: #4a90e2;
+      --bg-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      --card-bg: rgba(255,255,255,0.1);
+      --card-border: rgba(255,255,255,0.15);
+      --text-light: #ffffff;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body {
+      font-family:'Segoe UI',system-ui,sans-serif;
+      background:var(--bg-gradient);
+      color:var(--text-light);
+      min-height:100vh;
+      padding:20px;
+    }
+    .container{max-width:1920px;margin:0 auto}
+  
+    header {
+      text-align:center;
+      padding:20px 0;
+      margin-bottom: 20px;
+    }
+    h1 { font-size: 2.5rem; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+    #subject-display {
+      font-size: 3rem;
+      color: #f1c40f;
+      margin-top: 10px;
+      animation: fadeIn 0.5s;
+    }
+    
+    .grid{ display:grid; grid-template-columns:repeat(6,1fr); gap:16px; }
+    .panel{
+      background:var(--card-bg);
+      border-radius:14px;
+      border:1px solid var(--card-border);
+      backdrop-filter:blur(10px);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:400px;
+    }
+    .panel-header{
+      background:rgba(0,0,0,0.2);
+      padding:15px;
+      text-align:center;
+      font-size:1.5rem;
+      font-weight:bold;
+    }
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px;text-align:center;font-size:1rem;border-bottom:1px solid rgba(255,255,255,0.05)}
+    th{background:rgba(0,0,0,0.3)}
+    
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @media (max-width:1400px){.grid{grid-template-columns:repeat(3,1fr)}}
+    @media (max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:600px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🏆 全校科目排行榜 🏆</h1>
+      <div id="subject-display">載入中...</div>
+    </header>
+    <div class="grid" id="gridPanels"></div>
+  </div>
+
+  <script>
+    const SPREADSHEET_ID = '111qBSbRYUCqd5gxLrZFst08fTKHYyTHa';
+    const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+    const SHEET_CONFIG = [
+      { name: 'P.1', gid: '1172396131' },
+      { name: 'P.2', gid: '593557676' },
+      { name: 'P.3', gid: '116819444' },
+      { name: 'P.4', gid: '264511570' },
+      { name: 'P.5', gid: '261203595' },
+      { name: 'P.6', gid: '190158040' }
+    ];
+
+    let allData = {}; // 儲存所有資料 { "P.1": [...], "P.2": [...] }
+    let uniqueSubjects = [];
+    let currentSubjectIndex = 0;
+
+    // 取得資料
+    async function fetchAllData() {
+      for (const sheet of SHEET_CONFIG) {
+        const url = `${CORS_PROXY}${encodeURIComponent(`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${sheet.gid}`)}`;
+        try {
+          const res = await fetch(url);
+          const text = await res.text();
+          allData[sheet.name] = parseCSV(text);
+        } catch (e) {
+          console.error(`Error loading ${sheet.name}`, e);
+          allData[sheet.name] = [];
+        }
+      }
+      
+      // 收集所有出現的科目
+      const subjects = new Set();
+      Object.values(allData).flat().forEach(row => {
+        if (row.Subject) subjects.add(row.Subject);
+      });
+      uniqueSubjects = Array.from(subjects).filter(s => s !== '');
+      if (uniqueSubjects.length === 0) uniqueSubjects = ['English']; // 預設
+    }
+
+    function parseCSV(csvText) {
+      const lines = csvText.trim().split('\n');
+      if (lines.length < 2) return [];
+      const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+      return lines.slice(1).map(line => {
+        const values = line.split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+        let obj = {};
+        headers.forEach((h, i) => obj[h] = values[i]);
+        return obj;
+      });
+    }
+
+    // 渲染畫面
+    function render(subjectName) {
+      document.getElementById('subject-display').textContent = `科目：${subjectName}`;
+      const grid = document.getElementById('gridPanels');
+      grid.innerHTML = '';
+
+      SHEET_CONFIG.forEach(sheet => {
+        const panel = document.createElement('div');
+        panel.className = 'panel';
+        
+        // 篩選該科目且該等級的資料
+        const filtered = (allData[sheet.name] || [])
+          .filter(row => row.Subject === subjectName)
+          .sort((a, b) => (parseFloat(b.Score) || 0) - (parseFloat(a.Score) || 0))
+          .slice(0, 10); // 只取前10名
+
+        let tableHtml = `
+          <div class="panel-header">${sheet.name}</div>
+          <table>
+            <thead><tr><th>姓名</th><th>分數</th></tr></thead>
+            <tbody>
+        `;
+        
+        if (filtered.length === 0) {
+          tableHtml += `<tr><td colspan="2">暫無資料</td></tr>`;
+        } else {
+          filtered.forEach(row => {
+            tableHtml += `<tr><td>${row.Name || '—'}</td><td>${row.Score || 0}</td></tr>`;
+          });
+        }
+        tableHtml += `</tbody></table>`;
+        panel.innerHTML = tableHtml;
+        grid.appendChild(panel);
+      });
+    }
+
+    async function init() {
+      await fetchAllData();
+      
+      // 每10秒輪替
+      render(uniqueSubjects[currentSubjectIndex]);
+      setInterval(() => {
+        currentSubjectIndex = (currentSubjectIndex + 1) % uniqueSubjects.length;
+        render(uniqueSubjects[currentSubjectIndex]);
+      }, 10000);
+    }
+
+    init();
+  </script>
+</body>
+</html>
