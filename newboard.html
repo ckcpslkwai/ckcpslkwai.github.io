@@ -1,64 +1,125 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <title>成績輪播顯示</title>
-    <style>
-        body { font-family: sans-serif; text-align: center; padding: 50px; }
-        #displayArea { font-size: 2em; border: 2px solid #333; padding: 20px; display: inline-block; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subject Leaderboard</title>
+  <style>
+    /* 沿用您提供的 CSS 樣式 */
+    :root { --primary: #4a90e2; --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); --card-bg: rgba(255,255,255,0.12); --card-border: rgba(255,255,255,0.18); --text-light: #f0f4ff; }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg-gradient); color:var(--text-light); min-height:100vh; padding:15px 10px; }
+    .container{max-width:1400px;margin:0 auto}
+    header { text-align:center; padding:20px 0; }
+    h1 { margin-bottom: 20px; text-shadow: 0 3px 10px rgba(0,0,0,0.3); }
+    .grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(350px, 1fr)); gap:20px; }
+    .panel{ background:var(--card-bg); border-radius:14px; border:1px solid var(--card-border); backdrop-filter:blur(12px); overflow:hidden; min-height:400px; }
+    .panel-header{ background:rgba(74,144,226,0.9); padding:15px; text-align:center; font-size:1.5rem; font-weight:bold; }
+    table{ width:100%; border-collapse:collapse; }
+    th,td{ padding:12px; text-align:center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .rank-1{background:linear-gradient(45deg,#ffd700,#ffea80); color:#333; font-weight:bold;}
+    .rank-2{background:linear-gradient(45deg,#b0b7c3,#fff); color:#333; font-weight:bold;}
+    .rank-3{background:linear-gradient(45deg,#cd7f32,#e0a679); color:#333; font-weight:bold;}
+  </style>
 </head>
 <body>
-    <h1>各科成績排名</h1>
-    <div id="displayArea">載入中...</div>
+  <div class="container">
+    <header>
+      <h1>🏆 Subject Leaderboard 🏆</h1>
+      <p id="status">資料載入中...</p>
+    </header>
+    <div class="grid" id="gridPanels"></div>
+  </div>
 
-    <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbyMVPcda6_YBIBXmy7iZFQjbIilACiNGVTz1CwB3yMNy7Od3VS81AE8lbKkTjABmt5f/exec';
-        let dataQueue = [];
-        let currentIndex = 0;
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbyMVPcda6_YBIBXmy7iZFQjbIilACiNGVTz1CwB3yMNy7Od3VS81AE8lbKkTjABmt5f/exec';
+    const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+    
+    // 儲存每個 Subject 的狀態
+    let subjectData = {}; 
 
-        async function fetchData() {
-            try {
-                const response = await fetch(API_URL);
-                const data = await response.json(); // 假設回傳格式為 [{subject, level, name, rank}, ...]
-                processData(data);
-            } catch (e) {
-                document.getElementById('displayArea').innerText = "無法讀取資料";
-            }
+    async function fetchData() {
+      try {
+        const response = await fetch(CORS_PROXY + encodeURIComponent(API_URL));
+        const data = await response.json();
+        processAndRender(data);
+      } catch (err) {
+        document.getElementById('status').textContent = "讀取失敗，請檢查網路或 API 權限";
+        console.error(err);
+      }
+    }
+
+    function processAndRender(data) {
+      // 1. 去重邏輯：按 Subject -> Name 分組，取最高分
+      // 假設資料格式為 [{subject, level, name, score}, ...]
+      const grouped = {};
+      data.forEach(item => {
+        const sub = item.subject || 'Uncategorized';
+        if (!grouped[sub]) grouped[sub] = {};
+        
+        // 如果該名字不存在，或現在分數更高，則更新
+        if (!grouped[sub][item.name] || parseFloat(item.score) > parseFloat(grouped[sub][item.name].score)) {
+          grouped[sub][item.name] = item;
+        }
+      });
+
+      // 2. 轉換為陣列並排序
+      for (let sub in grouped) {
+        subjectData[sub] = Object.values(grouped[sub]).sort((a, b) => b.score - a.score);
+      }
+
+      // 3. 建立面板並啟動輪播
+      renderPanels();
+    }
+
+    function renderPanels() {
+      const grid = document.getElementById('gridPanels');
+      grid.innerHTML = '';
+
+      Object.keys(subjectData).forEach(sub => {
+        const panel = document.createElement('div');
+        panel.className = 'panel';
+        panel.innerHTML = `
+          <div class="panel-header">${sub}</div>
+          <div id="content-${sub}"></div>
+        `;
+        grid.appendChild(panel);
+
+        // 每 10 秒輪播該面板
+        let page = 0;
+        const pageSize = 8; // 每頁顯示 8 筆
+        const items = subjectData[sub];
+        
+        function updateDisplay() {
+          const start = page * pageSize;
+          const end = start + pageSize;
+          const currentItems = items.slice(start, end);
+          
+          let html = `<table><thead><tr><th>名次</th><th>班別</th><th>姓名</th><th>分數</th></tr></thead><tbody>`;
+          currentItems.forEach((item, index) => {
+            const rank = start + index + 1;
+            const cls = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : '';
+            html += `<tr class="${cls}">
+              <td>${rank}</td>
+              <td>${item.level}</td>
+              <td>${item.name}</td>
+              <td>${item.score}</td>
+            </tr>`;
+          });
+          html += `</tbody></table>`;
+          document.getElementById(`content-${sub}`).innerHTML = html;
+          
+          // 下一頁
+          page = (page + 1) * pageSize >= items.length ? 0 : page + 1;
         }
 
-        function processData(data) {
-            // 邏輯：按 Subject 和 Level 分組，過濾重複姓名並保留最高名次 (假設名次數字越小越好)
-            let tempMap = {};
-            data.forEach(item => {
-                const key = `${item.subject}-${item.level}`;
-                if (!tempMap[key]) tempMap[key] = {};
-                
-                if (!tempMap[key][item.name] || item.rank < tempMap[key][item.name].rank) {
-                    tempMap[key][item.name] = item;
-                }
-            });
+        updateDisplay();
+        setInterval(updateDisplay, 10000);
+      });
+      document.getElementById('status').textContent = "資料更新完成";
+    }
 
-            // 將處理後的資料平坦化放入輪播佇列
-            dataQueue = Object.values(tempMap).flatMap(group => Object.values(group));
-            startCarousel();
-        }
-
-        function startCarousel() {
-            if (dataQueue.length === 0) return;
-            
-            setInterval(() => {
-                const item = dataQueue[currentIndex];
-                document.getElementById('displayArea').innerHTML = `
-                    <h3>${item.subject} - ${item.level}</h3>
-                    <p>學生: ${item.name}</p>
-                    <p>名次: ${item.rank}</p>
-                `;
-                currentIndex = (currentIndex + 1) % dataQueue.length;
-            }, 10000);
-        }
-
-        fetchData();
-    </script>
+    fetchData();
+  </script>
 </body>
 </html>
