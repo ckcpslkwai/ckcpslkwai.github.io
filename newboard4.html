@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>學科成績排行榜🏆v2607061217</title>
+  <style>
+    :root {
+      --primary: #4a90e2;
+      --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --card-bg: rgba(255,255,255,0.12);
+      --card-border: rgba(255,255,255,0.18);
+      --text-light: #f0f4ff;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    
+    /* 設定 body 高度為 100vh 且隱藏捲動條 */
+    body {
+      font-family:'Segoe UI',system-ui,sans-serif;
+      background:var(--bg-gradient);
+      color:var(--text-light);
+      height:100vh; 
+      overflow:hidden;
+      padding:10px;
+      display: flex;
+      flex-direction: column;
+    }
+  
+    header {
+      text-align:center;
+      padding:8px 0;
+      backdrop-filter:blur(10px);
+      margin-bottom:10px;
+      border-bottom:1px solid rgba(255,255,255,0.2);
+      flex-shrink: 0;
+    }
+    h1 {
+      font-size:clamp(1.5rem, 2.5vw, 2.2rem);
+      font-weight:800;
+      letter-spacing:1px;
+      text-shadow:0 2px 10px rgba(0,0,0,0.3);
+      margin-bottom:4px;
+    }
+    .subtitle { font-size:clamp(0.75rem, 1.2vw, 0.9rem); color:rgba(255,255,255,0.8); }
+    
+    .container { flex-grow: 1; display: flex; flex-direction: column; }
+    
+    /* 核心修改：改為 6 欄 x 1 列 */
+    .grid {
+      display:grid;
+      grid-template-columns:repeat(6, 1fr);
+      grid-template-rows: 1fr; 
+      gap:8px; /* 面板變多，間距稍微收緊 */
+      height: 100%;
+      padding:0 5px;
+    }
+    
+    .panel {
+      background:var(--card-bg);
+      border:1px solid var(--card-border);
+      border-radius:12px;
+      padding:10px 8px; /* 左右空間有限，內邊距縮小 */
+      box-shadow:0 4px 16px rgba(0,0,0,0.15);
+      backdrop-filter:blur(8px);
+      display:flex;
+      flex-direction:column;
+      height: 100%;
+      overflow: hidden;
+    }
+    .panel-header {
+      text-align:center;
+      font-size:clamp(1rem, 1.5vw, 1.3rem);
+      font-weight:bold;
+      padding-bottom:6px;
+      margin-bottom:6px;
+      border-bottom:2px solid rgba(255,255,255,0.1);
+      color:#fff;
+      text-shadow:0 2px 4px rgba(0,0,0,0.2);
+      flex-shrink: 0;
+    }
+    
+    .table-container { flex-grow:1; overflow:hidden; position:relative; }
+    .slide-container {
+      position:absolute; width:100%; height:100%;
+      animation:fadeIn 0.5s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    table { width:100%; height:100%; border-collapse:collapse; table-layout:fixed; }
+    
+    /* 配合變窄的欄位，微調字體與間距 */
+    th {
+      color:rgba(255,255,255,0.7);
+      font-size:clamp(0.6rem, 0.9vw, 0.8rem);
+      font-weight:600;
+      padding:2px;
+      border-bottom:1px solid rgba(255,255,255,0.1);
+      height: 8%;
+    }
+    td {
+      padding:2px;
+      text-align:center;
+      border-bottom:1px solid rgba(255,255,255,0.05);
+      font-size:clamp(0.7rem, 1vw, 0.95rem);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      height: 9%; /* 讓 10 筆資料平均分配高度 */
+    }
+    tr:last-child td { border-bottom:none; }
+    
+    /* 微調欄位比例，讓名字有更多空間 */
+    .rank-col { width:10%; font-weight:bold; }
+    .class-col { width:12%; }
+    .name-col { width:64%; text-align:left; padding-left:4px; }
+    .score-col { width:26%; font-weight:bold; color:#4facfe; font-family:monospace; font-size:clamp(0.8rem, 1.1vw, 1.05rem); }
+    
+    .rank-1 td { background:rgba(255,215,0,0.15); color:#ffd700; }
+    .rank-2 td { background:rgba(192,192,192,0.15); color:#e0e0e0; }
+    .rank-3 td { background:rgba(205,127,50,0.15); color:#ffaa66; }
+    .rank-1 .score-col { color:#ffd700; }
+    .rank-2 .score-col { color:#e0e0e0; }
+    .rank-3 .score-col { color:#ffaa66; }
+    
+    .empty-state { text-align:center; padding-top:20px; color:rgba(255,255,255,0.5); font-size:0.9rem; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1 id="main-title">讀取資料中...</h1>
+    <div class="subtitle" id="lastUpdate">連線至雲端系統中...</div>
+  </header>
+
+  <main class="container">
+    <div class="grid" id="gridPanels">
+      </div>
+  </main>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxqgywi-q3jfo3ENHdWkQMn0KJHTtaXISaIDqq3AQJiolRn9jge_gvCH-UkHGCFTboz/exec';
+    
+    const LEVELS = ['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6']; 
+    let allData = [];
+    let subjects = [];
+    let currentSubjIndex = 0;
+
+    function createPanels() {
+      const grid = document.getElementById('gridPanels');
+      grid.innerHTML = '';
+      LEVELS.forEach(level => {
+        grid.innerHTML += `
+          <div class="panel">
+            <div class="panel-header">${level}</div>
+            <div class="table-container" id="container-${level.replace('.', '')}"></div>
+          </div>
+        `;
+      });
+    }
+
+    async function fetchData() {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        
+        allData = data.filter(d => d.subject && d.level);
+        subjects = [...new Set(allData.map(d => d.subject.trim()))];
+        
+        if (subjects.length > 0) {
+          renderCurrentSubject();
+        } else {
+          document.getElementById('main-title').textContent = '目前無成績記錄';
+        }
+        
+        document.getElementById('lastUpdate').textContent = `最後更新：${new Date().toLocaleTimeString()} (每15秒切換科目)`;
+      } catch (err) {
+        document.getElementById('main-title').textContent = '⚠️ 資料載入失敗';
+        document.getElementById('lastUpdate').textContent = err.message;
+      }
+    }
+
+    function renderCurrentSubject() {
+      if (subjects.length === 0) return;
+      
+      const currentSubject = subjects[currentSubjIndex % subjects.length];
+      
+      const titleEl = document.getElementById('main-title');
+      titleEl.style.animation = 'none';
+      titleEl.offsetHeight; 
+      titleEl.style.animation = 'fadeIn 0.5s ease-out forwards';
+      titleEl.textContent = `(測試中)🏆${currentSubject} 榮譽榜 Leaderboard 🏆(Testing)`;
+
+      LEVELS.forEach(level => {
+        const container = document.getElementById(`container-${level.replace('.', '')}`);
+        const norm = str => String(str || '').replace(/\s|\./g, '').toUpperCase();
+        
+        let filtered = allData.filter(d => 
+          norm(d.subject) === norm(currentSubject) && 
+          norm(d.level) === norm(level)
+        );
+        
+        filtered.sort((a, b) => (parseFloat(b.score) || 0) - (parseFloat(a.score) || 0));
+        
+        // 面板變瘦高了，恢復取前 10 名以填滿空間
+        const top10 = filtered.slice(0, 10);
+
+        let html = '';
+        if (top10.length === 0) {
+          html = `<div class="empty-state">尚無資料</div>`;
+        } else {
+          html = `
+            <div class="slide-container">
+              <table>
+                <thead><tr><th class="rank-col">#</th><th class="class-col">班級</th><th class="name-col">姓名</th><th class="score-col">分數</th></tr></thead>
+                <tbody>
+                  ${top10.map((row, i) => {
+                    const rankClass = i < 3 ? `rank-${i + 1}` : '';
+                    // 名字超過 20 字截斷 (配合變窄的欄位)
+                    const displayName = (row.name && row.name.length > 20) ? row.name.substring(0, 20) + '...' : (row.name || '—');
+                    return `
+                      <tr class="${rankClass}">
+                        <td class="rank-col">${i + 1}</td>
+                        <td class="class-col">${row.class || '—'}</td>
+                        <td class="name-col">${displayName}</td>
+                        <td class="score-col">${row.score || 0}</td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          `;
+        }
+        container.innerHTML = html;
+      });
+
+      currentSubjIndex++;
+    }
+
+    createPanels();
+    fetchData(); 
+    setInterval(renderCurrentSubject, 15000); 
+    setInterval(fetchData, 60000);
+  </script>
+</body>
+</html>
