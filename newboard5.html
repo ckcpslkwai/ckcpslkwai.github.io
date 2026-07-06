@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>學科成績排行榜🏆v2607061225</title>
+  <style>
+    :root {
+      /* 深色底，文字更突出 */
+      --bg-color: #0a0a1f;
+      --panel-bg: rgba(255, 255, 255, 0.05);
+      --text-main: #ffffff;
+      --text-dim: #bbbbbb;
+      --accent: #39ff14;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    
+    body {
+      font-family: '微軟正黑體', sans-serif;
+      background: var(--bg-color);
+      color: var(--text-main);
+      height: 100vh; 
+      overflow: hidden;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+  
+    header { text-align: center; padding: 10px 0; flex-shrink: 0; }
+    h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 10px; color: var(--accent); }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      height: 100%;
+    }
+    
+    .panel {
+      background: var(--panel-bg);
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .panel-header {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #444;
+      margin-bottom: 10px;
+    }
+    
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      color: var(--text-dim);
+      font-size: 1rem; /* 表頭稍微放大 */
+      padding: 8px 0;
+    }
+    td {
+      padding: 8px 2px;
+      text-align: center;
+      font-size: 1.3rem; /* 核心調整：增大資料字體 */
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    /* 欄位比例調整：增加名字空間 */
+    .rank-col { width: 10%; }
+    .class-col { width: 15%; }
+    .name-col { width: 50%; text-align: left; padding-left: 10px; }
+    .score-col { width: 25%; font-weight: bold; color: var(--accent); }
+    
+    .rank-1 { color: #ffd700; }
+    .rank-2 { color: #c0c0c0; }
+    .rank-3 { color: #cd7f32; }
+    
+    .slide-container { animation: fadeIn 0.5s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1 id="main-title">讀取中...</h1>
+  </header>
+
+  <main class="grid" id="gridPanels"></main>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxqgywi-q3jfo3ENHdWkQMn0KJHTtaXISaIDqq3AQJiolRn9jge_gvCH-UkHGCFTboz/exec';
+    const LEVELS = ['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6']; 
+    let allData = [], subjects = [], currentSubjIndex = 0;
+
+    function createPanels() {
+      const grid = document.getElementById('gridPanels');
+      LEVELS.forEach(level => {
+        grid.innerHTML += `
+          <div class="panel">
+            <div class="panel-header">${level}</div>
+            <div id="container-${level.replace('.', '')}"></div>
+          </div>
+        `;
+      });
+    }
+
+    async function fetchData() {
+      try {
+        const response = await fetch(API_URL);
+        allData = (await response.json()).filter(d => d.subject && d.level);
+        subjects = [...new Set(allData.map(d => d.subject.trim()))];
+        render();
+      } catch (e) { document.getElementById('main-title').textContent = '⚠️ 連線錯誤'; }
+    }
+
+    function render() {
+      const currentSubject = subjects[currentSubjIndex % subjects.length];
+      document.getElementById('main-title').textContent = `(測試中)🏆${currentSubject} 榮譽榜 Leaderboard 🏆(Testing)`;
+      
+      LEVELS.forEach(level => {
+        const container = document.getElementById(`container-${level.replace('.', '')}`);
+        const norm = str => String(str || '').replace(/\s|\./g, '').toUpperCase();
+        
+        let list = allData.filter(d => norm(d.subject) === norm(currentSubject) && norm(d.level) === norm(level))
+                          .sort((a, b) => b.score - a.score).slice(0, 8); // 縮減至 8 名，讓每行更寬大
+
+        container.innerHTML = `
+          <div class="slide-container">
+            <table>
+              <thead><tr><th>#</th><th>班</th><th>姓名</th><th>分</th></tr></thead>
+              <tbody>
+                ${list.map((r, i) => `
+                  <tr class="${i<3?'rank-'+(i+1):''}">
+                    <td>${i+1}</td>
+                    <td>${r.class||'—'}</td>
+                    <td style="text-align:left;">${r.name||'—'}</td>
+                    <td class="score-col">${r.score}</td>
+                  </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      });
+      currentSubjIndex++;
+    }
+
+    createPanels();
+    fetchData();
+    setInterval(render, 15000);
+  </script>
+</body>
+</html>
