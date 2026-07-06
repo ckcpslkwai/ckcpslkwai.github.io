@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>排行榜 V2607061422 🏆</title>
+  <title>排行榜 V2607062330 🏆</title>
   <style>
     :root {
-      /* 回歸深色質感漸變背景 */
-      --bg-color: linear-gradient(135deg, #0f172a 0%, #020617 100%);
-      --panel-bg: #1e293b;        /* 深色面板底色 */
+      /* 💡 核心修改：使用皇家濃深紫(#4c1d95)到更深邃魔幻紫(#2e1065)的漸變，絕對不會看錯成黑色 */
+      --bg-color: linear-gradient(135deg, #4c1d95 0%, #2e1065 100%);
+      --panel-bg: #1e1b4b;        /* 面板底色改為極深紫藍，完美融合深紫背景 */
       --text-main: #f8fafc;       /* 普通名次使用清晰的純白/亮白字 */
-      --text-dim: #94a3b8;        /* 表頭文字使用柔和灰 */
-      --accent: #38bdf8;          /* 主標題亮藍色 */
-      --border-color: #334155;    /* 邊框顏色 */
+      --text-dim: #cbd5e1;        /* 表頭文字使用柔和淺灰 */
+      --accent: #c084fc;          /* 主標題改為亮粉紫，呼應紫色主題 */
+      --border-color: #4c1d95;    /* 邊框使用帶紫調的深藍框 */
     }
     * { margin:0; padding:0; box-sizing:border-box; }
     
@@ -29,7 +29,7 @@
     }
   
     header { text-align: center; padding: 5px 0; flex-shrink: 0; }
-    h1 { font-size: 2.2rem; font-weight: 900; color: var(--accent); text-shadow: 0 0 10px rgba(56,189,248,0.2); }
+    h1 { font-size: 2.2rem; font-weight: 900; color: var(--accent); text-shadow: 0 0 10px rgba(192,132,252,0.3); }
     
     .grid {
       display: grid;
@@ -69,7 +69,7 @@
       filter: drop-shadow(0px 2px 4px rgba(245, 176, 65, 0.3));
     }
     
-    /* 第二名：白銀金屬漸變（加入深色光影，使其與純白字有強烈區別） */
+    /* 第二名：白銀金屬漸變（加入深色光影，使其與普通純白字有顯著分別） */
     .rank-2 td {
       background: linear-gradient(135deg, #ffffff 0%, #94a3b8 50%, #e2e8f0 100%);
       -webkit-background-clip: text;
@@ -101,7 +101,7 @@
       font-size: 2.5rem;
       color: #34d399; /* 亮眼翠綠 */
       display: inline-block;
-      animation: marquee 100s linear infinite;
+      animation: marquee 100s linear infinite; /* 保留您的 100 秒慢速 */
       padding-left: 100%;
     }
     @keyframes marquee {
@@ -147,7 +147,7 @@
         
         updateMarquee(data);
 
-        // 確保不導入值為0或空白的項目
+        // 💡 核心修改：在載入時自動將分數為 0、空白或未填寫的項目過濾掉，不導入系統
         allData = data.filter(d => d.subject && d.level && d.score !== undefined && d.score !== null && d.score !== '' && Number(d.score) !== 0);
         subjects = [...new Set(allData.map(d => d.subject.trim()))];
         
@@ -171,6 +171,7 @@
     function render() {
       if (subjects.length === 0) return;
       const currentSubject = subjects[currentSubjIndex % subjects.length];
+      // 保留您原本的 (測試中) 標題文字樣式
       document.getElementById('main-title').textContent = `(測試中)🏆${currentSubject} 榮譽榜 Leaderboard 🏆(Testing)`;
       
       LEVELS.forEach(level => {
@@ -185,7 +186,7 @@
             <tbody>
               ${list.map((r, i) => {
                 const studentName = r.name || '—';
-                // 💡 判斷字數是否大於 8，成立則加入 'long-name' class
+                // 💡 核心修改：動態檢查名字長度是否 > 8，是的話套用縮小樣式
                 const isLong = studentName.length > 8 ? 'long-name' : '';
                 
                 return `
