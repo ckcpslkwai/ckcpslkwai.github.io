@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>學科成績排行榜 V2607061415 🏆</title>
+  <title>排行榜 V2607061422 🏆</title>
   <style>
     :root {
       --bg-color: #0a0a1f;
@@ -120,7 +120,7 @@
 
     function render() {
       const currentSubject = subjects[currentSubjIndex % subjects.length];
-      document.getElementById('main-title').textContent = `${currentSubject} 榮譽榜`;
+      document.getElementById('main-title').textContent = `(測試中)🏆${currentSubject} 榮譽榜 Leaderboard 🏆(Testing)`;
       
       LEVELS.forEach(level => {
         const container = document.getElementById(`container-${level.replace('.', '')}`);
