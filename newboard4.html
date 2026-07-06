@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>排行榜 V2607061422 🏆</title>
+  <title>排行榜 V2607061513 🏆</title>
   <style>
     :root {
-      --bg-color: #0f172a;        /* 深藍灰背景，較原版溫和 */
-      --panel-bg: #1e293b;        /* 面板底色，稍微突顯出來 */
-      --text-main: #f8fafc;       /* 純白文字，高對比 */
-      --text-dim: #94a3b8;        /* 柔和灰色，用於標題 */
-      --accent: #38bdf8;          /* 亮藍色，取代原有的刺眼綠色，更具現代感 */
-      --border-color: #334155;    /* 邊框顏色 */
+      --bg-color: #0f172a;
+      --panel-bg: #1e293b;
+      --text-main: #f8fafc;
+      --text-dim: #94a3b8;
+      --accent: #38bdf8;
+      --border-color: #334155;
     }
     * { margin:0; padding:0; box-sizing:border-box; }
     
@@ -24,66 +24,60 @@
       padding: 10px;
       display: flex;
       flex-direction: column;
-      font-weight: 800; /* 全局粗體 */
+      font-weight: 800;
     }
   
     header { text-align: center; padding: 5px 0; flex-shrink: 0; }
-    h1 { font-size: 2.7rem; font-weight: 900; margin-bottom: 5px; color: var(--accent); text-shadow: 0 0 10px rgba(56,189,248,0.2); }
+    h1 { font-size: 2.2rem; font-weight: 900; color: var(--accent); }
     
     .grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
       gap: 12px;
-      height: 100%;
+      flex-grow: 1;
+      margin-bottom: 10px;
     }
     
     .panel {
       background: var(--panel-bg);
       border: 2px solid var(--border-color);
       border-radius: 15px;
-      padding: 12px;
+      padding: 10px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
-    .panel-header {
-      text-align: center;
-      font-size: 2rem;
-      font-weight: 900;
-      padding-bottom: 8px;
-      border-bottom: 3px solid var(--border-color);
-      margin-bottom: 8px;
-      color: #e2e8f0;
-    }
+    .panel-header { text-align: center; font-size: 1.5rem; border-bottom: 2px solid var(--border-color); margin-bottom: 5px; }
     
     table { width: 100%; border-collapse: collapse; }
-    th {
-      color: var(--text-dim);
-      font-size: 1.2rem;
-      padding: 10px 0;
-      text-transform: uppercase;
-    }
-    td {
-      padding: 12px 4px;
-      text-align: center;
-      font-size: 1.6rem; /* 顯著加大字體 */
-      font-weight: 800;  /* 強制粗體 */
-      white-space: nowrap;
+    th { color: var(--text-dim); font-size: 1rem; padding: 5px 0; }
+    td { padding: 8px 4px; text-align: center; font-size: 1.3rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    
+    .name-col { text-align: left; }
+    .score-col { color: #fbbf24; }
+    
+    /* 走馬燈區域 */
+    #marquee-container {
+      height: 8vh;
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
       overflow: hidden;
-      text-overflow: ellipsis;
+      padding: 0 20px;
+      white-space: nowrap;
     }
-    
-    .rank-col { width: 10%; }
-    .class-col { width: 15%; }
-    .name-col { width: 50%; text-align: left; padding-left: 10px; }
-    .score-col { width: 25%; color: #fbbf24; } /* 換成柔和的琥珀色，對比深底非常清晰 */
-    
-    .rank-1 { color: #fbbf24; } /* 金色 */
-    .rank-2 { color: #cbd5e1; } /* 銀色 */
-    .rank-3 { color: #d97706; } /* 古銅色 */
-    
-    .slide-container { animation: fadeIn 0.5s ease-out; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    #marquee-text {
+      font-size: 2.5rem;
+      color: #34d399; /* 亮綠色，提升對比度 */
+      display: inline-block;
+      animation: marquee 75s linear infinite;
+      padding-left: 100%;
+    }
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
   </style>
 </head>
 <body>
@@ -93,6 +87,10 @@
   </header>
 
   <main class="grid" id="gridPanels"></main>
+
+  <div id="marquee-container">
+    <div id="marquee-text">資料載入中...</div>
+  </div>
 
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbxqgywi-q3jfo3ENHdWkQMn0KJHTtaXISaIDqq3AQJiolRn9jge_gvCH-UkHGCFTboz/exec';
@@ -114,40 +112,58 @@
     async function fetchData() {
       try {
         const response = await fetch(API_URL);
-        allData = (await response.json()).filter(d => d.subject && d.level);
+        const data = await response.json();
+        
+        // 更新走馬燈（直接從原始資料讀取，不受後續篩選影響）
+        updateMarquee(data);
+
+        // 篩選排行榜需要的資料
+        allData = data.filter(d => d.subject && d.level);
         subjects = [...new Set(allData.map(d => d.subject.trim()))];
+        
         render();
-      } catch (e) { document.getElementById('main-title').textContent = '⚠️ 連線錯誤'; }
+      } catch (e) { 
+        document.getElementById('main-title').textContent = '⚠️ 連線錯誤'; 
+        document.getElementById('marquee-text').textContent = '無法取得公告資料';
+      }
+    }
+
+    function updateMarquee(rawData) {
+      // 提取所有 info 欄位，去除空白與重複項目
+      const infos = [...new Set(rawData.map(d => d.info || d.Info || d.INFO).filter(i => i && String(i).trim() !== ""))];
+      const textEl = document.getElementById('marquee-text');
+      
+      if (infos.length > 0) {
+        textEl.textContent = infos.map(i => `✦ ${i} ✦`).join('          '); // 加入間距與裝飾
+      } else {
+        textEl.textContent = "目前無最新公告 (若持續顯示，請確認 Google Sheet 的 I1、J1 標題不可空白)";
+      }
     }
 
     function render() {
+      if (subjects.length === 0) return;
       const currentSubject = subjects[currentSubjIndex % subjects.length];
       document.getElementById('main-title').textContent = `(測試中)🏆${currentSubject} 榮譽榜 Leaderboard 🏆(Testing)`;
       
       LEVELS.forEach(level => {
         const container = document.getElementById(`container-${level.replace('.', '')}`);
         const norm = str => String(str || '').replace(/\s|\./g, '').toUpperCase();
-        
-        // 限制顯示 7 名，確保字體變大後依然不會擠出面板
         let list = allData.filter(d => norm(d.subject) === norm(currentSubject) && norm(d.level) === norm(level))
                           .sort((a, b) => b.score - a.score).slice(0, 7); 
 
         container.innerHTML = `
-          <div class="slide-container">
-            <table>
-              <thead><tr><th>#</th><th>班</th><th>姓名</th><th>分</th></tr></thead>
-              <tbody>
-                ${list.map((r, i) => `
-                  <tr class="${i<3?'rank-'+(i+1):''}">
-                    <td>${i+1}</td>
-                    <td>${r.class||'—'}</td>
-                    <td style="text-align:left;">${r.name||'—'}</td>
-                    <td class="score-col">${r.score}</td>
-                  </tr>`).join('')}
-              </tbody>
-            </table>
-          </div>
-        `;
+          <table>
+            <thead><tr><th>#</th><th>班</th><th class="name-col">姓名</th><th>分</th></tr></thead>
+            <tbody>
+              ${list.map((r, i) => `
+                <tr>
+                  <td>${i+1}</td>
+                  <td>${r.class||'—'}</td>
+                  <td class="name-col">${r.name||'—'}</td>
+                  <td class="score-col">${r.score}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>`;
       });
       currentSubjIndex++;
     }
