@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>排行榜 V2607070752 🏆</title>
+  <title>排行榜 V2607070804 🏆</title>
   <style>
     :root {
-      /* 深色質感漸變背景 */
+      /* 深色質感背景 */
       --bg-color: linear-gradient(135deg, #0f172a 0%, #020617 100%);
       --panel-bg: #1e293b;        
       --text-main: #f8fafc;       
@@ -31,7 +31,7 @@
     header { text-align: center; padding: 5px 0; flex-shrink: 0; }
     h1 { font-size: 2.2rem; font-weight: 900; color: var(--accent); text-shadow: 0 0 10px rgba(56,189,248,0.2); }
     
-    /* 排行榜網格：隨下方巴士區塊加高，此處會自動進一步縮短壓縮高度 */
+    /* 排行榜網格 */
     .grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
@@ -82,9 +82,9 @@
       filter: drop-shadow(0px 2px 4px rgba(234, 88, 12, 0.2));
     }
     
-    /* 🚌 巴士 ETA 專用區塊：加高至 13vh，改為垂直 Column 佈局以支援上下兩行 */
+    /* 🚌 巴士 ETA 專用區塊：高度從 13vh 壓縮至 9vh，極致減少上下無用空間 */
     #bus-eta-container {
-      height: 13vh;
+      height: 9vh;
       background: rgba(30, 41, 59, 0.7);
       border: 2px solid var(--border-color);
       border-radius: 12px;
@@ -92,50 +92,33 @@
       display: flex;
       flex-direction: column; 
       justify-content: center;
-      padding: 6px 45px 6px 15px; /* 右側留出 45px 給絕對定位的齒輪按鈕 */
-      gap: 8px;
+      padding: 4px 15px; /* 緊湊的上下 Padding */
+      gap: 2px;          /* 縮小上下兩行的間距 */
       flex-shrink: 0;
-      position: relative; /* 用於定位齒輪 */
     }
     
-    /* 💡 核心修改：每一個車站獨立成一條橫列，互不干擾 */
     .bus-station-row {
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 12px;
       width: 100%;
       overflow-x: auto;
       white-space: nowrap;
     }
-    .bus-station-row::-webkit-scrollbar { display: none; } /* 隱藏每行的滾動條 */
+    .bus-station-row::-webkit-scrollbar { display: none; } 
     
     .bus-station-name { 
-      font-size: 1.1rem; 
+      font-size: 1rem; /* 略微縮小站名避免佔據過多橫向空間 */
       color: var(--accent); 
       border-right: 2px solid var(--border-color); 
-      padding-right: 12px;
-      flex-shrink: 0; /* 防止名稱因路線多而被擠壓 */
+      padding-right: 8px;
+      flex-shrink: 0; 
     }
-    .bus-route-item { display: inline-flex; align-items: center; background: rgba(255,255,255,0.06); padding: 4px 10px; border-radius: 8px; gap: 8px; font-size: 1.1rem; }
+    .bus-route-item { display: inline-flex; align-items: center; background: rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 6px; gap: 6px; font-size: 1rem; }
     .bus-route-no { color: #f43f5e; font-weight: 950; } 
-    .bus-route-dest { color: var(--text-dim); font-size: 0.9rem; max-width: 90px; overflow: hidden; text-overflow: ellipsis; }
+    .bus-route-dest { color: var(--text-dim); font-size: 0.85rem; max-width: 85px; overflow: hidden; text-overflow: ellipsis; }
     .bus-eta-mins { color: #10b981; font-weight: 950; }
     .bus-eta-mins.now { color: #ef4444; }
-    
-    /* ⚙️ 齒輪按鈕改為絕對定位，完美固定在右側中央 */
-    .bus-gear-btn { 
-      background: none; 
-      border: none; 
-      color: var(--text-dim); 
-      cursor: pointer; 
-      font-size: 1.4rem; 
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 10;
-    }
-    .bus-gear-btn:hover { color: var(--accent); }
 
     /* 走馬燈區域 */
     #marquee-container {
@@ -161,24 +144,6 @@
       0% { transform: translateX(0); }
       100% { transform: translateX(-100%); }
     }
-
-    /* ⚙️ 設定彈窗樣式 */
-    .modal-backdrop { position: fixed; inset: 0; z-index: 999; display: none; align-items: center; justify-content: center; background: rgba(2, 6, 23, .7); padding: 15px; }
-    .modal-backdrop.active { display: flex; }
-    .settings-modal { width: 100%; max-width: 650px; max-height: 85vh; overflow-y: auto; border-radius: 20px; background: #1e293b; border: 2px solid var(--border-color); padding: 20px; color: #fff; }
-    .modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
-    .modal-title { font-size: 1.5rem; font-weight: 900; }
-    .close-btn { background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; }
-    .station-box { padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); margin-bottom: 12px; }
-    .station-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; color: var(--accent); }
-    .remove-station-btn { border: 1px solid #ef4444; border-radius: 6px; padding: 2px 8px; background: none; color: #ef4444; cursor: pointer; font-size: 0.85rem; }
-    .add-station-btn { width: 100%; min-height: 40px; border: 1px dashed var(--accent); border-radius: 10px; background: rgba(56,189,248,0.1); color: var(--accent); font-weight:900; cursor: pointer; margin-bottom: 12px; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1.2fr 1.2fr; gap: 10px; }
-    label { display: block; margin-bottom: 4px; color: var(--text-dim); font-size: 0.85rem; }
-    input, select { width: 100%; min-height: 38px; border: 1px solid var(--border-color); border-radius: 8px; padding: 0 10px; background: #0f172a; color: #fff; outline: none; }
-    .settings-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-    button.primary { border:0; color:#fff; background: #2563eb; min-height:42px; border-radius:10px; font-weight:900; cursor:pointer; }
-    button.secondary { border:1px solid var(--border-color); color:#fff; background:none; min-height:42px; border-radius:10px; font-weight:900; cursor:pointer; }
   </style>
 </head>
 <body>
@@ -190,38 +155,13 @@
   <main class="grid" id="gridPanels"></main>
 
   <div id="bus-eta-container">
-    <span style="color: var(--text-dim);">正在加載巴士到站時間...</span>
-    <button class="bus-gear-btn" id="openSettingsBtn" type="button">⚙</button>
+    <div class="bus-station-row"><span style="color: var(--text-dim); font-size: 0.95rem;">正在加載 學校大門 巴士時間...</span></div>
+    <div class="bus-station-row"><span style="color: var(--text-dim); font-size: 0.95rem;">正在加載 嶺南大學 巴士時間...</span></div>
   </div>
 
   <div id="marquee-container">
     <div id="marquee-text">資料載入中...</div>
   </div>
-
-  <section class="modal-backdrop" id="settingsBackdrop" aria-hidden="true">
-    <div class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
-      <div class="modal-head">
-        <div class="modal-title" id="settingsTitle">🚌 巴士到站顯示設定</div>
-        <button class="close-btn" id="closeSettingsBtn" type="button">×</button>
-      </div>
-      <div id="stationList"></div>
-      <button class="add-station-btn" id="addStationBtn" type="button">＋ 新增車站</button>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <div>
-          <label for="refreshSeconds">更新頻率</label>
-          <select id="refreshSeconds">
-            <option value="15">每 15 秒</option>
-            <option value="30" selected>每 30 秒</option>
-            <option value="60">每 60 秒</option>
-          </select>
-        </div>
-      </div>
-      <div class="settings-actions">
-        <button class="primary" id="saveSettingsBtn" type="button">儲存並更新</button>
-        <button class="secondary" id="cancelSettingsBtn" type="button">取消</button>
-      </div>
-    </div>
-  </section>
 
   <script>
     // ==========================================
@@ -249,7 +189,7 @@
         const response = await fetch(API_URL);
         const data = await response.json();
         updateMarquee(data);
-        // 嚴格排除分數為 0、空白或未填寫的項目
+        // 排除 0 分與空白項目
         allData = data.filter(d => d.subject && d.level && d.score !== undefined && d.score !== null && d.score !== '' && Number(d.score) !== 0);
         subjects = [...new Set(allData.map(d => d.subject.trim()))];
         render();
@@ -300,95 +240,19 @@
     }
 
     // ==========================================
-    // 2. 🚌 巴士 ETA 核心引擎邏輯（改為多行渲染）
+    // 2. 🚌 巴士 ETA 固定硬編碼引擎邏輯（每 30 秒自動重新獲取）
     // ==========================================
-    let busTimer = null;
-    let nextRefreshAt = 0;
+    const FIXED_STATIONS = [
+      { company: "KMB", id: "AA5DA45828958EAE", name: "學校大門" },
+      { company: "KMB", id: "E2AE7A37634C8FE5", name: "嶺南大學" }
+    ];
+    
     let stopData = {};
-    let stationSettings = [{ company: "KMB", id: "", name: "" }];
-
-    const busEls = {
-      backdrop: document.getElementById("settingsBackdrop"),
-      closeBtn: document.getElementById("closeSettingsBtn"),
-      cancelBtn: document.getElementById("cancelSettingsBtn"),
-      saveBtn: document.getElementById("saveSettingsBtn"),
-      addBtn: document.getElementById("addStationBtn"),
-      list: document.getElementById("stationList"),
-      refresh: document.getElementById("refreshSeconds"),
-      container: document.getElementById("bus-eta-container")
-    };
+    let busTimer = null;
 
     function safeText(v) { return String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c])); }
-    function normalizeStopId(v) { return String(v || "").trim().replace(/\s+/g, "").toUpperCase(); }
-    function normalizeCompany(v) { return String(v || "KMB").toUpperCase() === "CTB" ? "CTB" : "KMB"; }
     function stationKey(s) { return `${s.company}:${s.id}`; }
-    function createEmptyStation() { return { company: "KMB", id: "", name: "" }; }
-
-    function updateStationSettingsFromForm() {
-      const rows = Array.from(busEls.list.querySelectorAll(".station-box"));
-      stationSettings = rows.map(row => ({
-        company: normalizeCompany(row.querySelector(".company-input")?.value || "KMB"),
-        id: normalizeStopId(row.querySelector(".stop-id-input")?.value || ""),
-        name: String(row.querySelector(".stop-name-input")?.value || "").trim()
-      })).filter((s, idx, arr) => s.id || s.name || arr.length === 1);
-      if (!stationSettings.length) stationSettings = [createEmptyStation()];
-    }
-
-    function renderStationSettings() {
-      if (!stationSettings.length) stationSettings = [createEmptyStation()];
-      busEls.list.innerHTML = stationSettings.map((station, index) => `
-        <div class="station-box" data-index="${index}">
-          <div class="station-head">
-            <div>車站 ${index + 1}</div>
-            ${stationSettings.length > 1 ? `<button class="remove-station-btn" type="button" data-remove-index="${index}">刪除</button>` : ""}
-          </div>
-          <div class="form-grid">
-            <div>
-              <label>公司</label>
-              <select class="company-input">
-                <option value="KMB" ${normalizeCompany(station.company) === "KMB" ? "selected" : ""}>KMB/LWB</option>
-                <option value="CTB" ${normalizeCompany(station.company) === "CTB" ? "selected" : ""}>城巴 CTB</option>
-              </select>
-            </div>
-            <div>
-              <label>車站 ID</label>
-              <input class="stop-id-input" type="text" autocomplete="off" value="${safeText(station.id)}" placeholder="如: 001001" />
-            </div>
-            <div>
-              <label>顯示自訂名稱</label>
-              <input class="stop-name-input" type="text" autocomplete="off" value="${safeText(station.name)}" placeholder="如: 學校正門" />
-            </div>
-          </div>
-        </div>
-      `).join("");
-
-      busEls.list.querySelectorAll("input, select").forEach(el => {
-        el.addEventListener("input", updateStationSettingsFromForm);
-        el.addEventListener("change", updateStationSettingsFromForm);
-      });
-
-      busEls.list.querySelectorAll(".remove-station-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          updateStationSettingsFromForm();
-          stationSettings.splice(Number(btn.dataset.removeIndex), 1);
-          renderStationSettings();
-        });
-      });
-    }
-
-    function getStops() {
-      updateStationSettingsFromForm();
-      return stationSettings.map((s, idx) => ({
-        company: normalizeCompany(s.company),
-        id: normalizeStopId(s.id),
-        name: s.name.trim() || `車站 ${idx + 1}`
-      })).filter(s => s.id);
-    }
-
-    function buildApiUrl(s) {
-      if (s.company === "CTB") return `https://rt.data.gov.hk/v1/transport/batch/stop-eta/CTB/${encodeURIComponent(s.id)}?lang=zh-hant`;
-      return `https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/${encodeURIComponent(s.id)}`;
-    }
+    function buildApiUrl(s) { return `https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/${encodeURIComponent(s.id)}`; }
 
     function getMinutes(dateStr) {
       if (!dateStr) return null;
@@ -418,19 +282,10 @@
       }).sort((a,b) => String(a.route).localeCompare(String(b.route), "en", {numeric:true}));
     }
 
-    // 💡 渲染雙行車站的核心邏輯
     function renderAllStops() {
-      const stops = getStops();
-      if (!stops.length) {
-        busEls.container.innerHTML = `<span style="color:var(--text-dim); font-size:1rem;">🚌 尚未設定巴士站。請點擊右側 ⚙ 設定。</span><button class="bus-gear-btn" id="openSettingsBtn" type="button">⚙</button>`;
-        document.getElementById("openSettingsBtn")?.addEventListener("click", openSettings);
-        return;
-      }
-
       let html = "";
-      stops.forEach(stop => {
+      FIXED_STATIONS.forEach(stop => {
         const groups = groupByRoute(stopData[stationKey(stop)] || []);
-        // 將每個車站輸出為獨立的橫行（.bus-station-row）進而分出上下兩行
         html += `
           <div class="bus-station-row">
             <span class="bus-station-name">📍${safeText(stop.name)}</span>
@@ -453,21 +308,16 @@
                   <span class="bus-eta-mins ${isNow?'now':''}">${etaStr}</span>
                 </div>
               `;
-            }).join('') : '<span style="color:var(--text-dim);font-size:0.95rem;">暫無班次資料</span>'}
+            }).join('') : '<span style="color:var(--text-dim);font-size:0.9rem;">暫無班次資料</span>'}
           </div>
         `;
       });
-      
-      html += `<button class="bus-gear-btn" id="openSettingsBtn" type="button">⚙</button>`;
-      busEls.container.innerHTML = html;
-      document.getElementById("openSettingsBtn")?.addEventListener("click", openSettings);
+      document.getElementById("bus-eta-container").innerHTML = html;
     }
 
     async function fetchEta() {
-      const stops = getStops();
-      if (!stops.length) return;
       try {
-        const results = await Promise.all(stops.map(async stop => {
+        const results = await Promise.all(FIXED_STATIONS.map(async stop => {
           const res = await fetch(buildApiUrl(stop), { cache: "no-store" });
           if (!res.ok) throw new Error();
           const json = await res.json();
@@ -476,66 +326,24 @@
         stopData = {};
         for (const r of results) stopData[r.key] = r.data;
         renderAllStops();
-        nextRefreshAt = Date.now() + Number(busEls.refresh.value) * 1000;
-        saveSettings();
-        clearTimeout(busTimer);
-        busTimer = setTimeout(fetchEta, Number(busEls.refresh.value) * 1000);
       } catch (err) {
-        console.error("讀取巴士API失敗", err);
+        console.error("讀取九巴 API 失敗", err);
       }
+      clearTimeout(busTimer);
+      busTimer = setTimeout(fetchEta, 30000); // 固定設定為每 30 秒異步刷新 API
     }
-
-    function saveSettings() {
-      updateStationSettingsFromForm();
-      const data = {
-        stations: stationSettings.filter((s, idx, arr) => s.id || s.name || arr.length === 1),
-        refreshSeconds: busEls.refresh.value
-      };
-      localStorage.setItem("hkBusEtaSettings", JSON.stringify(data));
-    }
-
-    function loadSettings() {
-      let saved = {};
-      try { saved = JSON.parse(localStorage.getItem("hkBusEtaSettings") || "{}"); } catch{}
-      if (Array.isArray(saved.stations) && saved.stations.length) {
-        stationSettings = saved.stations;
-      } else {
-        stationSettings = [createEmptyStation()];
-      }
-      renderStationSettings();
-      if (["15", "30", "60"].includes(saved.refreshSeconds)) busEls.refresh.value = saved.refreshSeconds;
-      if (stationSettings.some(s => s.id)) fetchEta();
-      else renderAllStops();
-    }
-
-    function openSettings() { busEls.backdrop.classList.add("active"); }
-    function closeSettings() { busEls.backdrop.classList.remove("active"); }
-
-    document.getElementById("openSettingsBtn")?.addEventListener("click", openSettings);
-    busEls.closeBtn.addEventListener("click", closeSettings);
-    busEls.cancelBtn.addEventListener("click", closeSettings);
-    busEls.addBtn.addEventListener("click", () => {
-      updateStationSettingsFromForm();
-      stationSettings.push(createEmptyStation());
-      renderStationSettings();
-    });
-    busEls.saveBtn.addEventListener("click", () => {
-      saveSettings();
-      closeSettings();
-      fetchEta();
-    });
 
     // ==========================================
-    // 3. 初始化啟動
+    // 3. 系統初始化啟動區
     // ==========================================
     createPanels();
     updateData(); 
-    loadSettings();
+    fetchEta(); // 啟動自動抓取巴士機制
 
     // 排行榜每 15 秒重新獲取並輪替科目
     setInterval(updateData, 15000);
 
-    // 巴士 ETA 每秒校對一次倒數並渲染
+    // 巴士 ETA 時間每 1 秒校對並渲染（確保倒數分鐘與"即到"即時更新）
     setInterval(() => {
       if (Object.keys(stopData).length) renderAllStops();
     }, 1000);
