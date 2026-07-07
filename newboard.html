@@ -3,134 +3,348 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Subject Leaderboard V2607052303</title>
+  <title>排行榜 V2607071625🏆</title>
   <style>
-    /* 沿用您提供的 CSS 樣式 */
-    :root { --primary: #4a90e2; --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); --card-bg: rgba(255,255,255,0.12); --card-border: rgba(255,255,255,0.18); --text-light: #f0f4ff; }
-    *{margin:0;padding:0;box-sizing:border-box}
-    body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg-gradient); color:var(--text-light); min-height:100vh; padding:15px 10px; }
-    .container{max-width:1400px;margin:0 auto}
-    header { text-align:center; padding:20px 0; }
-    h1 { margin-bottom: 20px; text-shadow: 0 3px 10px rgba(0,0,0,0.3); }
-    .grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(350px, 1fr)); gap:20px; }
-    .panel{ background:var(--card-bg); border-radius:14px; border:1px solid var(--card-border); backdrop-filter:blur(12px); overflow:hidden; min-height:400px; }
-    .panel-header{ background:rgba(74,144,226,0.9); padding:15px; text-align:center; font-size:1.5rem; font-weight:bold; }
-    table{ width:100%; border-collapse:collapse; }
-    th,td{ padding:12px; text-align:center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-    .rank-1{background:linear-gradient(45deg,#ffd700,#ffea80); color:#333; font-weight:bold;}
-    .rank-2{background:linear-gradient(45deg,#b0b7c3,#fff); color:#333; font-weight:bold;}
-    .rank-3{background:linear-gradient(45deg,#cd7f32,#e0a679); color:#333; font-weight:bold;}
+    /* 基礎變數 (預設暗色) */
+    :root {
+      --bg-color: linear-gradient(135deg, #4c1d95 0%, #4c1d95 100%);
+      --panel-bg: #1e293b;        
+      --text-main: #f8fafc;       
+      --text-dim: #94a3b8;        
+      --accent: #38bdf8;          
+      --border-color: #334155;    
+    }
+
+    /* 粉彩風格 Class */
+    body.pastel-theme {
+      --bg-color: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+      --panel-bg: #ffffff;
+      --text-main: #4a4a4a;
+      --text-dim: #9ca3af;
+      --accent: #f472b6;
+      --border-color: #fecdd3;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, '微軟正黑體', sans-serif;
+      background: var(--bg-color);
+      color: var(--text-main);
+      height: 100vh; 
+      overflow: hidden;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      font-weight: 800;
+      transition: background 0.3s, color 0.3s;
+    }
+  
+    /* 按鈕與天氣容器 */
+    .controls { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; z-index: 100; }
+    
+    /* 天氣盒樣式調整 */
+    .weather-box { 
+      position: absolute; top: 10px; left: 10px; z-index: 100; 
+      display: flex; align-items: center; gap: 8px; 
+      background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); 
+      padding: 8px 15px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.3);
+      font-size: 1.5rem; /* Emoji 大小 */
+    }
+    
+    .btn { padding: 8px 12px; font-size: 1.2rem; cursor: pointer; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); border-radius: 50px; backdrop-filter: blur(5px); transition: transform 0.2s, background 0.2s; }
+    .btn:hover { transform: scale(1.1); background: rgba(255,255,255,0.3); }
+
+    header { text-align: center; padding: 5px 0; flex-shrink: 0; }
+    h1 { font-size: 2rem; font-weight: 900; color: var(--accent); text-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; flex-grow: 1; margin-bottom: 8px; min-height: 0; }
+    
+    .panel { background: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 15px; padding: 10px; display: flex; flex-direction: column; overflow: hidden; transition: background 0.3s, border-color 0.3s; }
+    .panel-header { text-align: center; font-size: 1.8rem; border-bottom: 2px solid var(--border-color); margin-bottom: 8px; color: var(--text-main); }
+    
+    table { width: 100%; border-collapse: collapse; }
+    th { color: var(--text-dim); font-size: 1.1rem; padding: 6px 0; }
+    td { padding: 8px 4px; text-align: center; font-size: 1.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    
+    .name-col { text-align: left; font-size: 2.2rem; padding-left: 10px; }
+    .score-col { color: var(--accent); font-size: 1.6rem; } 
+    
+    /* 金屬效果 */
+    body:not(.pastel-theme) .rank-1 td { background: linear-gradient(135deg, #ffe066 0%, #f5b041 50%, #ffd700 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    body.pastel-theme .rank-1 td { background: linear-gradient(135deg, #fcd34d 0%, #fb923c 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .rank-2 td { background: linear-gradient(135deg, #ffffff 0%, #94a3b8 50%, #e2e8f0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .rank-3 td { background: linear-gradient(135deg, #ffedd5 0%, #ea580c 50%, #b45309 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    
+    #bus-eta-container { height: 11vh; background: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 12px; margin-bottom: 8px; display: flex; flex-direction: column; justify-content: center; padding: 6px 15px; gap: 4px; flex-shrink: 0; transition: background 0.3s; }
+    .bus-station-row { display: flex; align-items: center; gap: 15px; width: 100%; overflow-x: auto; white-space: nowrap; }
+    .bus-station-row::-webkit-scrollbar { display: none; } 
+    .bus-station-name { font-size: 1.6rem; color: var(--accent); border-right: 2px solid var(--border-color); padding-right: 12px; flex-shrink: 0; font-weight: bold; }
+    .bus-route-item { display: inline-flex; align-items: center; background: rgba(128,128,128,0.1); padding: 4px 10px; border-radius: 8px; gap: 8px; font-size: 1.3rem; }
+    .bus-route-no { color: #f43f5e; font-weight: 950; } 
+    .bus-route-dest { color: var(--text-dim); max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+    .bus-eta-mins { color: #10b981; font-weight: 950; }
+    .bus-eta-mins.now { color: #ef4444; }
+
+    #marquee-container { height: 7vh; background: var(--panel-bg); border-radius: 10px; display: flex; align-items: center; overflow: hidden; padding: 0 20px; white-space: nowrap; border: 1px solid var(--border-color); flex-shrink: 0; }
+    #marquee-text { font-size: 2.2rem; color: #34d399; display: inline-block; animation: marquee 100s linear infinite; padding-left: 100%; }
+    @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>🏆 Subject Leaderboard 🏆</h1>
-      <p id="status">資料載入中...</p>
-    </header>
-    <div class="grid" id="gridPanels"></div>
+
+  <div class="weather-box" id="weather-box">
+    <span id="wx-icon">☁️</span>
+    <span id="temp-text">--°C</span>
+    <span id="warning-text"></span>
+  </div>
+
+  <div class="controls">
+    <button class="btn" onclick="setTheme('default')">🔄</button>
+    <button class="btn" onclick="setTheme('pastel')">🎨</button>
+    <button class="btn" onclick="setRandomTheme()">🎲</button>
+  </div>
+
+  <header>
+    <h1 id="main-title">載入中...</h1>
+  </header>
+
+  <main class="grid" id="gridPanels"></main>
+
+  <div id="bus-eta-container">
+    <div class="bus-station-row"><span style="color: var(--text-dim); font-size: 1.2rem;">正在加載 嶺南大學巴士站 巴士時間...</span></div>
+    <div class="bus-station-row"><span style="color: var(--text-dim); font-size: 1.2rem;">正在加載 學校大門巴士站 巴士時間...</span></div>
+  </div>
+
+  <div id="marquee-container">
+    <div id="marquee-text">資料載入中...</div>
   </div>
 
   <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbyMVPcda6_YBIBXmy7iZFQjbIilACiNGVTz1CwB3yMNy7Od3VS81AE8lbKkTjABmt5f/exec';
-    const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
-    
-    // 儲存每個 Subject 的狀態
-    let subjectData = {}; 
+    // --- 天氣功能 ---
+    const ICON_MAP = {
+      '50': '☀️', '51': '☀️', '52': '☀️', '53': '☀️', '54': '☀️',
+      '60': '☁️', '61': '☁️', '62': '☁️', '63': '☁️', '64': '☁️', '65': '☁️',
+      '70': '🌦️', '71': '🌦️', '72': '🌧️', '73': '🌧️', '74': '🌧️', '75': '🌧️', '76': '🌧️', '77': '🌧️',
+      '80': '⛈️', '81': '⛈️', '82': '⛈️', '83': '⛈️', '84': '⛈️', '85': '⛈️',
+      '90': '🌫️', '91': '🌫️', '92': '🌫️', '93': '🌫️'
+    };
 
-async function fetchData() {
-      const statusEl = document.getElementById('status');
+    const WARN_MAP = {
+      'WFIREY': '🔥', 'WFIRE': '🔥', 'WRAINY': '🌧️', 'WRAINR': '⛈️', 'WRAINB': '☔',
+      'WT1': '🌀', 'WT3': '🌀', 'WT8NE': '🌀', 'WT8SE': '🌀', 'WT8SW': '🌀', 'WT8NW': '🌀',
+      'WCOLD': '❄️', 'WHOT': '🥵'
+    };
+
+    async function updateWeather() {
       try {
-        // 嘗試直接 fetch，不要透過 allorigins (有些已失效)
-        const response = await fetch(API_URL, {
-            method: 'GET',
-            mode: 'cors' // 嘗試開啟跨域模式
-        });
+        const [res, warnRes] = await Promise.all([
+          fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc'),
+          fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=warnsum&lang=tc')
+        ]);
+        const data = await res.json();
+        const warnData = await warnRes.json();
         
-        if (!response.ok) {
-           throw new Error(`HTTP 錯誤! 狀態碼: ${response.status}`);
-        }
+        // 溫度
+        const tmTemp = data.temperature.data.find(s => s.place === '屯門');
+        if (tmTemp) document.getElementById('temp-text').textContent = tmTemp.value + '°C';
         
-        const data = await response.json();
-        processAndRender(data);
-      } catch (err) {
-        console.error("詳細錯誤:", err);
-        statusEl.innerHTML = `讀取失敗: ${err.message}<br><small style="color:red;">請確認您的 GAS 部署是否已允許跨域，或在 Console (F12) 查看詳細原因</small>`;
+        // 天氣圖示 (根據 HKO 圖片編號 mapping)
+        const iconCode = data.icon[0];
+        document.getElementById('wx-icon').textContent = ICON_MAP[iconCode] || '🌤️';
+        
+        // 警告
+        const warnText = Object.keys(warnData).map(k => warnData[k].name ? (WARN_MAP[k] || '') : '').join('');
+        document.getElementById('warning-text').textContent = warnText;
+      } catch (e) { console.error("天氣載入失敗", e); }
+    }
+
+    // --- 主題與原有邏輯 ---
+    function setTheme(type) {
+      document.body.classList.remove('pastel-theme');
+      document.body.style = '';
+      if (type === 'pastel') {
+        document.body.classList.add('pastel-theme');
+        localStorage.setItem('theme', 'pastel');
+      } else {
+        localStorage.removeItem('theme');
+        localStorage.removeItem('random-style');
       }
     }
+
+    function setRandomTheme() {
+      document.body.classList.remove('pastel-theme');
+      const hue = Math.floor(Math.random() * 360);
+      const styles = {
+        '--bg-color': `linear-gradient(135deg, hsl(${hue}, 70%, 15%) 0%, hsl(${hue}, 70%, 10%) 100%)`,
+        '--panel-bg': `hsl(${hue}, 40%, 20%)`,
+        '--text-main': '#ffffff',
+        '--text-dim': '#d1d5db',
+        '--accent': `hsl(${hue}, 90%, 70%)`,
+        '--border-color': `hsl(${hue}, 30%, 30%)`
+      };
+      for (const [prop, val] of Object.entries(styles)) document.body.style.setProperty(prop, val);
+      localStorage.setItem('random-style', JSON.stringify(styles));
     }
 
-    function processAndRender(data) {
-      // 1. 去重邏輯：按 Subject -> Name 分組，取最高分
-      // 假設資料格式為 [{subject, level, name, score}, ...]
-      const grouped = {};
-      data.forEach(item => {
-        const sub = item.subject || 'Uncategorized';
-        if (!grouped[sub]) grouped[sub] = {};
-        
-        // 如果該名字不存在，或現在分數更高，則更新
-        if (!grouped[sub][item.name] || parseFloat(item.score) > parseFloat(grouped[sub][item.name].score)) {
-          grouped[sub][item.name] = item;
-        }
-      });
-
-      // 2. 轉換為陣列並排序
-      for (let sub in grouped) {
-        subjectData[sub] = Object.values(grouped[sub]).sort((a, b) => b.score - a.score);
-      }
-
-      // 3. 建立面板並啟動輪播
-      renderPanels();
+    const savedTheme = localStorage.getItem('theme');
+    const savedRandom = localStorage.getItem('random-style');
+    if (savedTheme === 'pastel') setTheme('pastel');
+    else if (savedRandom) {
+      const styles = JSON.parse(savedRandom);
+      for (const [prop, val] of Object.entries(styles)) document.body.style.setProperty(prop, val);
     }
 
-    function renderPanels() {
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxqgywi-q3jfo3ENHdWkQMn0KJHTtaXISaIDqq3AQJiolRn9jge_gvCH-UkHGCFTboz/exec';
+    const LEVELS = ['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6']; 
+    let allData = [], subjects = [], currentSubjIndex = 0;
+    let currentLevelPage = 0; 
+
+    function createPanels() {
       const grid = document.getElementById('gridPanels');
-      grid.innerHTML = '';
-
-      Object.keys(subjectData).forEach(sub => {
-        const panel = document.createElement('div');
-        panel.className = 'panel';
-        panel.innerHTML = `
-          <div class="panel-header">${sub}</div>
-          <div id="content-${sub}"></div>
+      grid.innerHTML = ''; 
+      for(let i=0; i<3; i++) {
+        grid.innerHTML += `
+          <div class="panel">
+            <div class="panel-header" id="header-${i}">Level</div>
+            <div id="container-${i}"></div>
+          </div>
         `;
-        grid.appendChild(panel);
-
-        // 每 10 秒輪播該面板
-        let page = 0;
-        const pageSize = 8; // 每頁顯示 8 筆
-        const items = subjectData[sub];
-        
-        function updateDisplay() {
-          const start = page * pageSize;
-          const end = start + pageSize;
-          const currentItems = items.slice(start, end);
-          
-          let html = `<table><thead><tr><th>名次</th><th>班別</th><th>姓名</th><th>分數</th></tr></thead><tbody>`;
-          currentItems.forEach((item, index) => {
-            const rank = start + index + 1;
-            const cls = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : '';
-            html += `<tr class="${cls}">
-              <td>${rank}</td>
-              <td>${item.level}</td>
-              <td>${item.name}</td>
-              <td>${item.score}</td>
-            </tr>`;
-          });
-          html += `</tbody></table>`;
-          document.getElementById(`content-${sub}`).innerHTML = html;
-          
-          // 下一頁
-          page = (page + 1) * pageSize >= items.length ? 0 : page + 1;
-        }
-
-        updateDisplay();
-        setInterval(updateDisplay, 10000);
-      });
-      document.getElementById('status').textContent = "資料更新完成";
+      }
     }
 
-    fetchData();
+    async function updateData() {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        updateMarquee(data);
+        allData = data.filter(d => d.subject && d.level && d.score !== undefined && d.score !== null && d.score !== '' && Number(d.score) !== 0);
+        subjects = [...new Set(allData.map(d => d.subject.trim()))];
+        render();
+      } catch (e) { console.error("更新排行榜失敗:", e); }
+    }
+
+    function updateMarquee(rawData) {
+      const infos = [...new Set(rawData.map(d => d.info || d.Info || d.INFO).filter(i => i && String(i).trim() !== ""))];
+      const textEl = document.getElementById('marquee-text');
+      if (infos.length > 0) textEl.textContent = infos.map(i => `✦ ${i} ✦`).join('          ');
+      else textEl.textContent = "目前無最新公告";
+    }
+
+    function render() {
+      if (subjects.length === 0) return;
+      const currentSubject = subjects[currentSubjIndex % subjects.length];
+      document.getElementById('main-title').textContent = `(測試中)🏆${currentSubject} 榮譽榜 Leaderboard 🏆(Testing)`;
+      
+      const start = currentLevelPage * 3;
+      const displayLevels = LEVELS.slice(start, start + 3);
+      
+      displayLevels.forEach((level, idx) => {
+        document.getElementById(`header-${idx}`).textContent = level;
+        const container = document.getElementById(`container-${idx}`);
+        const norm = str => String(str || '').replace(/\s|\./g, '').toUpperCase();
+        let list = allData.filter(d => norm(d.subject) === norm(currentSubject) && norm(d.level) === norm(level))
+                          .sort((a, b) => b.score - a.score).slice(0, 8); 
+
+        container.innerHTML = `
+          <table>
+            <thead><tr><th>#</th><th>班</th><th>姓名</th><th>分</th></tr></thead>
+            <tbody>
+              ${list.map((r, i) => `
+                <tr class="${i < 3 ? 'rank-' + (i + 1) : ''}">
+                  <td>${i+1}</td>
+                  <td>${r.class||'—'}</td>
+                  <td class="name-col">${r.name || '—'}</td>
+                  <td class="score-col">${r.score}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>`;
+      });
+      
+      currentSubjIndex++;
+      currentLevelPage = currentLevelPage === 0 ? 1 : 0; 
+    }
+
+    const FIXED_STATIONS = [
+      { company: "KMB", id: "AA5DA45828958EAE", name: "嶺南大學巴士站" },
+      { company: "KMB", id: "E2AE7A37634C8FE5", name: "學校大門巴士站" }
+    ];
+    
+    let stopData = {};
+    function safeText(v) { return String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c])); }
+    function stationKey(s) { return `${s.company}:${s.id}`; }
+    function getMinutes(dateStr) {
+      if (!dateStr) return null;
+      const d = new Date(dateStr);
+      return Number.isNaN(d.getTime()) ? null : Math.max(0, Math.ceil((d.getTime() - Date.now()) / 60000));
+    }
+
+    function groupByRoute(items) {
+      const groups = new Map();
+      for (const item of items) {
+        const route = String(item.route || "").toUpperCase();
+        if (!route || !item.eta) continue;
+        const dest = String(item.dest_tc || item.dest || "").trim();
+        const key = `${route}|${dest}`;
+        if (!groups.has(key)) groups.set(key, { route, dest, rows: [] });
+        groups.get(key).rows.push({ eta: item.eta, seq: Number(item.eta_seq || item.seq || 0) });
+      }
+      return Array.from(groups.values()).map(g => {
+        g.rows.sort((a, b) => new Date(a.eta) - new Date(b.eta) || a.seq - b.seq);
+        const uniq = []; const used = new Set();
+        for (const r of g.rows) {
+          const k = new Date(r.eta).getTime();
+          if (used.has(k)) continue; used.add(k); uniq.push(r);
+          if (uniq.length >= 3) break;
+        }
+        return { ...g, rows: uniq };
+      }).sort((a,b) => String(a.route).localeCompare(String(b.route), "en", {numeric:true}));
+    }
+
+    function renderAllStops() {
+      let html = "";
+      FIXED_STATIONS.forEach(stop => {
+        const groups = groupByRoute(stopData[stationKey(stop)] || []);
+        html += `
+          <div class="bus-station-row">
+            <span class="bus-station-name">📍${safeText(stop.name)}</span>
+            ${groups.length ? groups.map(g => {
+              const first = g.rows[0];
+              const mins = first ? getMinutes(first.eta) : null;
+              const isNow = mins !== null && mins <= 1;
+              let etaStr = mins === null ? "--" : (isNow ? "即到" : `${mins}分`);
+              let nextPills = g.rows.slice(1, 3).map(r => { const m = getMinutes(r.eta); return m <= 1 ? "即到" : `${m}分`; }).join(",");
+              if (nextPills) etaStr += ` (${nextPills})`;
+              return `<div class="bus-route-item"><span class="bus-route-no">${safeText(g.route)}</span><span class="bus-route-dest">${safeText(g.dest)}</span><span class="bus-eta-mins ${isNow?'now':''}">${etaStr}</span></div>`;
+            }).join('') : '<span style="color:var(--text-dim);font-size:1.2rem;">暫無班次資料</span>'}
+          </div>
+        `;
+      });
+      document.getElementById("bus-eta-container").innerHTML = html;
+    }
+
+    async function fetchEta() {
+      try {
+        const results = await Promise.all(FIXED_STATIONS.map(async stop => {
+          const res = await fetch(`https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/${encodeURIComponent(stop.id)}`, { cache: "no-store" });
+          const json = await res.json();
+          return { key: stationKey(stop), data: json.data || [] };
+        }));
+        stopData = {};
+        for (const r of results) stopData[r.key] = r.data;
+        renderAllStops();
+      } catch (err) { console.error("讀取九巴 API 失敗", err); }
+      setTimeout(fetchEta, 30000);
+    }
+
+    // 初始化執行
+    createPanels();
+    updateData(); 
+    fetchEta();
+    updateWeather();
+    setInterval(updateData, 15000);
+    setInterval(fetchEta, 30000);
+    setInterval(updateWeather, 300000); 
   </script>
 </body>
 </html>
