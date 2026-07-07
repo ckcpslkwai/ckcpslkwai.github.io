@@ -277,105 +277,108 @@ Chinese,P4,275,以下哪個成語意思是多次命令？,三令五申,守株待
 Chinese,P4,276,以下哪個成語意思是學多樣但無一精？,梧鼠學技,狐假虎威,屠龍之技,死裏求生,10,1
 Chinese,P4,277,以下哪個成語意思是極美麗？,沉魚落雁,塞翁失馬,遊刃有餘,點石成金,10,1
 Chinese,P4,278,以下哪個成語意思是很高深但無用技巧？,屠龍之技,掩耳盜鈴,至死不悟,得不償失,10,1
-English,P3,279,be,是/存在,做,來,去,10,1
-English,P3,280,have,有/擁有,是/存在,去,得到/變成,10,1
-English,P3,281,do,做,有/擁有,來,製作/製造,10,1
-English,P3,282,go,去,做,得到/變成,知道,10,1
-English,P3,283,come,來,去,製作/製造,想/認為,10,1
-English,P3,284,get,得到/變成,來,知道,拿/帶/花費,10,1
-English,P3,285,make,製作/製造,得到/變成,想/認為,看見,10,1
-English,P3,286,know,知道,製作/製造,拿/帶/花費,看,10,1
-English,P3,287,think,想/認為,知道,看見,想要,10,1
-English,P3,288,take,拿/帶/花費,想/認為,看,使用,10,1
-English,P3,289,see,看見,拿/帶/花費,想要,找到,10,1
-English,P3,290,look,看,看見,使用,給,10,1
-English,P3,291,want,想要,看,找到,告訴,10,1
-English,P3,292,use,使用,想要,給,工作,10,1
-English,P3,293,find,找到,使用,告訴,叫/打電話,10,1
-English,P3,294,give,給,找到,工作,嘗試,10,1
-English,P3,295,tell,告訴,給,叫/打電話,問,10,1
-English,P3,296,work,工作,告訴,嘗試,需要,10,1
-English,P3,297,call,叫/打電話,工作,問,感覺,10,1
-English,P3,298,try,嘗試,叫/打電話,需要,變成,10,1
-English,P3,299,ask,問,嘗試,感覺,離開,10,1
-English,P3,300,need,需要,問,變成,放,10,1
-English,P3,301,feel,感覺,需要,離開,意思是,10,1
-English,P3,302,become,變成,感覺,放,保持,10,1
-English,P3,303,leave,離開,變成,意思是,讓/允許,10,1
-English,P3,304,put,放,離開,保持,開始,10,1
-English,P3,305,mean,意思是,放,讓/允許,幫助,10,1
-English,P3,306,keep,保持,意思是,開始,說話/談話,10,1
-English,P3,307,let,让/允許,保持,幫助,轉/變成,10,1
-English,P3,308,begin,開始,让/允許,說話/談話,展示,10,1
-English,P3,309,help,幫助,開始,轉/變成,聽見,10,1
-English,P3,310,talk,說話/談話,幫助,展示,玩/播放,10,1
-English,P3,311,turn,轉/變成,說話/談話,聽見,跑,10,1
-English,P3,312,show,展示,轉/變成,玩/播放,移動,10,1
-English,P3,313,hear,聽見,展示,跑,喜歡,10,1
-English,P3,314,play,玩/播放,聽見,移動,居住,10,1
-English,P3,315,run,跑,玩/播放,喜歡,相信,10,1
-English,P3,316,move,移動,跑,居住,握/持有,10,1
-English,P3,317,like,喜歡,移動,相信,帶來,10,1
-English,P3,318,live,居住,喜歡,握/持有,發生,10,1
-English,P3,319,believe,相信,居住,帶來,寫,10,1
-English,P3,320,hold,握/持有,相信,發生,讀,10,1
-English,P3,321,bring,帶來,握/持有,寫,走路,10,1
-English,P3,322,happen,發生,帶來,讀,觀看,10,1
-English,P3,323,write,寫,發生,走路,跟隨,10,1
-English,P3,324,read,讀,寫,觀看,停止,10,1
-English,P3,325,walk,走路,讀,跟隨,打開,10,1
-English,P3,326,watch,觀看,走路,停止,關閉,10,1
-English,P3,327,follow,跟隨,觀看,打開,買,10,1
-English,P3,328,stop,停止,跟隨,關閉,賣,10,1
-English,P3,329,open,打開,停止,買,吃,10,1
-English,P3,330,close,關閉,打開,賣,喝,10,1
-English,P3,331,buy,買,關閉,吃,煮/烹飪,10,1
-English,P3,332,sell,賣,買,喝,清潔,10,1
-English,P3,333,eat,吃,賣,煮/烹飪,洗,10,1
-English,P3,334,drink,喝,吃,清潔,穿,10,1
-English,P3,335,cook,煮/烹飪,喝,洗,參觀/拜訪,10,1
-English,P3,336,clean,清潔,煮/烹飪,穿,旅行,10,1
-English,P3,337,wash,洗,清潔,參觀/拜訪,學習,10,1
-English,P3,338,wear,穿,洗,旅行,學習/研究,10,1
-English,P3,339,visit,參觀/拜訪,穿,學習,教,10,1
-English,P3,340,travel,旅行,參觀/拜訪,學習/研究,享受,10,1
-English,P3,341,learn,學習,旅行,教,愛,10,1
-English,P3,342,study,學習/研究,學習,享受,討厭,10,1
-English,P3,343,teach,教,學習/研究,愛,等待,10,1
-English,P3,344,enjoy,享受,教,討厭,遇見,10,1
-English,P3,345,love,愛,享受,等待,加入,10,1
-English,P3,346,hate,討厭,愛,遇見,贏,10,1
-English,P3,347,wait,等待,討厭,加入,輸/失去,10,1
-English,P3,348,meet,遇見,等待,贏,改變,10,1
-English,P3,349,join,加入,遇見,輸/失去,完成,10,1
-English,P3,350,win,贏,加入,改變,記得,10,1
-English,P3,351,lose,輸/失去,贏,完成,忘記,10,1
-English,P3,352,change,改變,輸/失去,記得,選擇,10,1
-English,P3,353,finish,完成,改變,忘記,決定,10,1
-English,P3,354,remember,記得,完成,選擇,計劃,10,1
-English,P3,355,forget,忘記,記得,決定,希望,10,1
-English,P3,356,choose,選擇,忘記,計劃,希望/許願,10,1
-English,P3,357,decide,決定,選擇,希望,承諾,10,1
-English,P3,358,plan,計劃,決定,希望/許願,同意,10,1
-English,P3,359,hope,希望,計劃,承諾,不同意,10,1
-English,P3,360,wish,希望/許願,希望,同意,解釋,10,1
-English,P3,361,promise,承諾,希望/許願,不同意,明白/理解,10,1
-English,P3,362,agree,同意,承諾,解釋,想/想像,10,1
-English,P3,363,disagree,不同意,同意,明白/理解,畫,10,1
-English,P3,364,explain,解釋,不同意,想/想像,唱歌,10,1
-English,P3,365,understand,明白/理解,解釋,畫,跳舞,10,1
-English,P3,366,imagine,想/想像,明白/理解,唱歌,游泳,10,1
-English,P3,367,draw,畫,想/想像,跳舞,騎,10,1
-English,P3,368,sing,唱歌,畫,游泳,駕駛,10,1
-English,P3,369,dance,跳舞,唱歌,騎,飛,10,1
-English,P3,370,swim,游泳,跳舞,駕駛,到達,10,1
-English,P3,371,ride,騎,游泳,飛,返回,10,1
-English,P3,372,drive,駕駛,騎,到達,寄/送,10,1
-English,P3,373,fly,飛,駕駛,返回,收到,10,1
-English,P3,374,arrive,到達,飛,寄/送,是/存在,10,1
-English,P3,375,return,返回,到達,收到,有/擁有,10,1
-English,P3,376,send,寄/送,返回,是/存在,做,10,1
-English,P3,377,receive,收到,寄/送,有/擁有,去,10,1
+English-C,P3,279,be,是/存在,做,來,去,10,1
+English-C,P3,280,have,有/擁有,是/存在,去,得到/變成,10,1
+English-C,P3,281,do,做,有/擁有,來,製作/製造,10,1
+English-C,P3,282,go,去,做,得到/變成,知道,10,1
+English-C,P3,283,come,來,去,製作/製造,想/認為,10,1
+English-C,P3,284,get,得到/變成,來,知道,拿/帶/花費,10,1
+English-C,P3,285,make,製作/製造,得到/變成,想/認為,看見,10,1
+English-C,P3,286,know,知道,製作/製造,拿/帶/花費,看,10,1
+English-C,P3,287,think,想/認為,知道,看見,想要,10,1
+English-C,P3,288,take,拿/帶/花費,想/認為,看,使用,10,1
+English-C,P3,289,see,看見,拿/帶/花費,想要,找到,10,1
+English-C,P3,290,look,看,看見,使用,給,10,1
+English-C,P3,291,want,想要,看,找到,告訴,10,1
+English-C,P3,292,use,使用,想要,給,工作,10,1
+English-C,P3,293,find,找到,使用,告訴,叫/打電話,10,1
+English-C,P3,294,give,給,找到,工作,嘗試,10,1
+English-C,P3,295,tell,告訴,給,叫/打電話,問,10,1
+English-C,P3,296,work,工作,告訴,嘗試,需要,10,1
+English-C,P3,297,call,叫/打電話,工作,問,感覺,10,1
+English-C,P3,298,try,嘗試,叫/打電話,需要,變成,10,1
+English-C,P3,299,ask,問,嘗試,感覺,離開,10,1
+English-C,P3,300,need,需要,問,變成,放,10,1
+English-C,P3,301,feel,感覺,需要,離開,意思是,10,1
+English-C,P3,302,become,變成,感覺,放,保持,10,1
+English-C,P3,303,leave,離開,變成,意思是,讓/允許,10,1
+English-C,P3,304,put,放,離開,保持,開始,10,1
+English-C,P3,305,mean,意思是,放,讓/允許,幫助,10,1
+English-C,P3,306,keep,保持,意思是,開始,說話/談話,10,1
+English-C,P3,307,let,让/允許,保持,幫助,轉/變成,10,1
+English-C,P3,308,begin,開始,让/允許,說話/談話,展示,10,1
+English-C,P3,309,help,幫助,開始,轉/變成,聽見,10,1
+English-C,P3,310,talk,說話/談話,幫助,展示,玩/播放,10,1
+English-C,P3,311,turn,轉/變成,說話/談話,聽見,跑,10,1
+English-C,P3,312,show,展示,轉/變成,玩/播放,移動,10,1
+English-C,P3,313,hear,聽見,展示,跑,喜歡,10,1
+English-C,P3,314,play,玩/播放,聽見,移動,居住,10,1
+English-C,P3,315,run,跑,玩/播放,喜歡,相信,10,1
+English-C,P3,316,move,移動,跑,居住,握/持有,10,1
+English-C,P3,317,like,喜歡,移動,相信,帶來,10,1
+English-C,P3,318,live,居住,喜歡,握/持有,發生,10,1
+English-C,P3,319,believe,相信,居住,帶來,寫,10,1
+English-C,P3,320,hold,握/持有,相信,發生,讀,10,1
+English-C,P3,321,bring,帶來,握/持有,寫,走路,10,1
+English-C,P3,322,happen,發生,帶來,讀,觀看,10,1
+English-C,P3,323,write,寫,發生,走路,跟隨,10,1
+English-C,P3,324,read,讀,寫,觀看,停止,10,1
+English-C,P3,325,walk,走路,讀,跟隨,打開,10,1
+English-C,P3,326,watch,觀看,走路,停止,關閉,10,1
+English-C,P3,327,follow,跟隨,觀看,打開,買,10,1
+English-C,P3,328,stop,停止,跟隨,關閉,賣,10,1
+English-C,P3,329,open,打開,停止,買,吃,10,1
+English-C,P3,330,close,關閉,打開,賣,喝,10,1
+English-C,P3,331,buy,買,關閉,吃,煮/烹飪,10,1
+English-C,P3,332,sell,賣,買,喝,清潔,10,1
+English-C,P3,333,eat,吃,賣,煮/烹飪,洗,10,1
+English-C,P3,334,drink,喝,吃,清潔,穿,10,1
+English-C,P3,335,cook,煮/烹飪,喝,洗,參觀/拜訪,10,1
+English-C,P3,336,clean,清潔,煮/烹飪,穿,旅行,10,1
+English-C,P3,337,wash,洗,清潔,參觀/拜訪,學習,10,1
+English-C,P3,338,wear,穿,洗,旅行,學習/研究,10,1
+English-C,P3,339,visit,參觀/拜訪,穿,學習,教,10,1
+English-C,P3,340,travel,旅行,參觀/拜訪,學習/研究,享受,10,1
+English-C,P3,341,learn,學習,旅行,教,愛,10,1
+English-C,P3,342,study,學習/研究,學習,享受,討厭,10,1
+English-C,P3,343,teach,教,學習/研究,愛,等待,10,1
+English-C,P3,344,enjoy,享受,教,討厭,遇見,10,1
+English-C,P3,345,love,愛,享受,等待,加入,10,1
+English-C,P3,346,hate,討厭,愛,遇見,贏,10,1
+English-C,P3,347,wait,等待,討厭,加入,輸/失去,10,1
+English-C,P3,347,wait,等待,討厭,加入,輸/失去,10,1
+English-C,P3,347,wait,等待,討厭,加入,輸/失去,10,1
+English-C,P3,348,meet,遇見,等待,贏,改變,10,1
+English-C,P3,347,wait,等待,討厭,加入,輸/失去,10,1
+English-C,P3,349,join,加入,遇見,輸/失去,完成,10,1
+English-C,P3,350,win,贏,加入,改變,記得,10,1
+English-C,P3,351,lose,輸/失去,贏,完成,忘記,10,1
+English-C,P3,352,change,改變,輸/失去,記得,選擇,10,1
+English-C,P3,353,finish,完成,改變,忘記,決定,10,1
+English-C,P3,354,remember,記得,完成,選擇,計劃,10,1
+English-C,P3,355,forget,忘記,記得,決定,希望,10,1
+English-C,P3,356,choose,選擇,忘記,計劃,希望/許願,10,1
+English-C,P3,357,decide,決定,選擇,希望,承諾,10,1
+English-C,P3,358,plan,計劃,決定,希望/許願,同意,10,1
+English-C,P3,359,hope,希望,計劃,承諾,不同意,10,1
+English-C,P3,360,wish,希望/許願,希望,同意,解釋,10,1
+English-C,P3,361,promise,承諾,希望/許願,不同意,明白/理解,10,1
+English-C,P3,362,agree,同意,承諾,解釋,想/想像,10,1
+English-C,P3,363,disagree,不同意,同意,明白/理解,畫,10,1
+English-C,P3,364,explain,解釋,不同意,想/想像,唱歌,10,1
+English-C,P3,365,understand,明白/理解,解釋,畫,跳舞,10,1
+English-C,P3,366,imagine,想/想像,明白/理解,唱歌,游泳,10,1
+English-C,P3,367,draw,畫,想/想像,跳舞,騎,10,1
+English-C,P3,368,sing,唱歌,畫,游泳,駕駛,10,1
+English-C,P3,369,dance,跳舞,唱歌,騎,飛,10,1
+English-C,P3,370,swim,游泳,跳舞,駕駛,到達,10,1
+English-C,P3,371,ride,騎,游泳,飛,返回,10,1
+English-C,P3,372,drive,駕駛,騎,到達,寄/送,10,1
+English-C,P3,373,fly,飛,駕駛,返回,收到,10,1
+English-C,P3,374,arrive,到達,飛,寄/送,是/存在,10,1
+English-C,P3,375,return,返回,到達,收到,有/擁有,10,1
+English-C,P3,376,send,寄/送,返回,是/存在,做,10,1
+English-C,P3,377,receive,收到,寄/送,有/擁有,去,10,1
 Maths,P1,378,17 + 50 = ?,67,57,66,68,10,1
 Maths,P1,379,60 + 85 = ?,145,144,146,155,10,1
 Maths,P1,380,53 + 58 = ?,111,112,121,101,10,1
@@ -3889,3 +3892,201 @@ Chinese,P6,97,這段歷史____，我們不能忘記，要以史為鑑。,刻骨�
 Chinese,P6,98,他是一位____的老師，深受學生愛戴。,循循善誘,嚴厲刻薄,冷漠疏離,不負責任,10,1
 Chinese,P6,99,面對困境，我們不能____，要勇於面對，積極尋找解決方法。,自暴自棄,奮發圖強,勇往直前,堅持不懈,10,1
 Chinese,P6,100,這份方案____，考慮得很周詳，沒有任何遺漏。,面面俱到,漏洞百出,一團糟,亂七八糟,10,1
+Chinese-E,P3,279,是/存在,be,do,come,go,10,1
+Chinese-E,P3,280,有/擁有,have,be,go,get,10,1
+Chinese-E,P3,281,做,do,have,come,make,10,1
+Chinese-E,P3,282,去,go,do,get,know,10,1
+Chinese-E,P3,283,來,come,go,make,think,10,1
+Chinese-E,P3,284,得到/變成,get,come,know,take,10,1
+Chinese-E,P3,285,製作/製造,make,get,think,see,10,1
+Chinese-E,P3,286,知道,know,make,take,look,10,1
+Chinese-E,P3,287,想/認為,think,know,see,want,10,1
+Chinese-E,P3,288,拿/帶/花費,take,think,look,use,10,1
+Chinese-E,P3,289,看見,see,take,want,find,10,1
+Chinese-E,P3,290,看,look,see,use,give,10,1
+Chinese-E,P3,291,想要,want,look,find,tell,10,1
+Chinese-E,P3,292,使用,use,want,give,work,10,1
+Chinese-E,P3,293,找到,find,use,tell,call,10,1
+Chinese-E,P3,294,給,give,find,work,try,10,1
+Chinese-E,P3,295,告訴,tell,give,call,ask,10,1
+Chinese-E,P3,296,工作,work,tell,try,need,10,1
+Chinese-E,P3,297,叫/打電話,call,work,ask,feel,10,1
+Chinese-E,P3,298,嘗試,try,call,need,become,10,1
+Chinese-E,P3,299,問,ask,try,feel,leave,10,1
+Chinese-E,P3,300,需要,need,ask,become,put,10,1
+Chinese-E,P3,301,感覺,feel,need,leave,mean,10,1
+Chinese-E,P3,302,變成,become,feel,put,keep,10,1
+Chinese-E,P3,303,離開,leave,become,mean,let,10,1
+Chinese-E,P3,304,放,put,leave,keep,begin,10,1
+Chinese-E,P3,305,意思是,mean,put,let,help,10,1
+Chinese-E,P3,306,保持,keep,mean,begin,talk,10,1
+Chinese-E,P3,307,让/允許,let,keep,help,turn,10,1
+Chinese-E,P3,308,開始,begin,let,talk,show,10,1
+Chinese-E,P3,309,幫助,help,begin,turn,hear,10,1
+Chinese-E,P3,310,說話/談話,talk,help,show,play,10,1
+Chinese-E,P3,311,轉/變成,turn,talk,hear,run,10,1
+Chinese-E,P3,312,展示,show,turn,play,move,10,1
+Chinese-E,P3,313,聽見,hear,show,run,like,10,1
+Chinese-E,P3,314,玩/播放,play,hear,move,live,10,1
+Chinese-E,P3,315,跑,run,play,like,believe,10,1
+Chinese-E,P3,316,移動,move,run,live,hold,10,1
+Chinese-E,P3,317,喜歡,like,move,believe,bring,10,1
+Chinese-E,P3,318,居住,live,like,hold,happen,10,1
+Chinese-E,P3,319,相信,believe,live,bring,write,10,1
+Chinese-E,P3,320,握/持有,hold,believe,happen,read,10,1
+Chinese-E,P3,321,帶來,bring,hold,write,walk,10,1
+Chinese-E,P3,322,發生,happen,bring,read,watch,10,1
+Chinese-E,P3,323,寫,write,happen,walk,follow,10,1
+Chinese-E,P3,324,讀,read,write,watch,stop,10,1
+Chinese-E,P3,325,走路,walk,read,follow,open,10,1
+Chinese-E,P3,326,觀看,watch,walk,stop,close,10,1
+Chinese-E,P3,327,跟隨,follow,watch,open,buy,10,1
+Chinese-E,P3,328,停止,stop,follow,close,sell,10,1
+Chinese-E,P3,329,打開,open,stop,buy,eat,10,1
+Chinese-E,P3,330,關閉,close,open,sell,drink,10,1
+Chinese-E,P3,331,買,buy,close,eat,cook,10,1
+Chinese-E,P3,332,賣,sell,buy,drink,clean,10,1
+Chinese-E,P3,333,吃,eat,sell,cook,wash,10,1
+Chinese-E,P3,334,喝,drink,eat,clean,wear,10,1
+Chinese-E,P3,335,煮/烹飪,cook,drink,wash,visit,10,1
+Chinese-E,P3,336,清潔,clean,cook,wear,travel,10,1
+Chinese-E,P3,337,洗,wash,clean,visit,learn,10,1
+Chinese-E,P3,338,穿,wear,洗,travel,study,10,1
+Chinese-E,P3,339,參觀/拜訪,visit,wear,learn,teach,10,1
+Chinese-E,P3,340,旅行,travel,visit,study,enjoy,10,1
+Chinese-E,P3,341,學習,learn,travel,teach,love,10,1
+Chinese-E,P3,342,學習/研究,study,learn,enjoy,hate,10,1
+Chinese-E,P3,343,教,teach,study,love,wait,10,1
+Chinese-E,P3,344,享受,enjoy,teach,hate,meet,10,1
+Chinese-E,P3,345,愛,love,enjoy,wait,join,10,1
+Chinese-E,P3,346,討厭,hate,love,meet,win,10,1
+Chinese-E,P3,347,等待,wait,hate,join,lose,10,1
+Chinese-E,P3,348,遇見,meet,wait,win,change,10,1
+Chinese-E,P3,349,加入,join,meet,lose,finish,10,1
+Chinese-E,P3,350,贏,win,join,change,remember,10,1
+Chinese-E,P3,351,輸/失去,lose,win,finish,forget,10,1
+Chinese-E,P3,352,改變,change,lose,remember,choose,10,1
+Chinese-E,P3,353,完成,finish,change,forget,decide,10,1
+Chinese-E,P3,354,記得,remember,finish,choose,plan,10,1
+Chinese-E,P3,355,忘記,forget,remember,decide,hope,10,1
+Chinese-E,P3,356,選擇,choose,forget,plan,wish,10,1
+Chinese-E,P3,357,決定,decide,choose,hope,promise,10,1
+Chinese-E,P3,358,計劃,plan,decide,wish,agree,10,1
+Chinese-E,P3,359,希望,hope,plan,promise,disagree,10,1
+Chinese-E,P3,360,希望/許願,wish,hope,agree,explain,10,1
+Chinese-E,P3,361,承諾,promise,wish,disagree,understand,10,1
+Chinese-E,P3,362,同意,agree,promise,explain,imagine,10,1
+Chinese-E,P3,363,不同意,disagree,agree,understand,draw,10,1
+Chinese-E,P3,364,解釋,explain,disagree,imagine,sing,10,1
+Chinese-E,P3,365,明白/理解,understand,explain,draw,dance,10,1
+Chinese-E,P3,366,想/想像,imagine,understand,sing,swim,10,1
+Chinese-E,P3,367,畫,draw,imagine,dance,ride,10,1
+Chinese-E,P3,368,唱歌,sing,draw,swim,drive,10,1
+Chinese-E,P3,369,跳舞,dance,sing,ride,fly,10,1
+Chinese-E,P3,370,游泳,swim,dance,drive,arrive,10,1
+Chinese-E,P3,371,騎,ride,swim,fly,return,10,1
+Chinese-E,P3,372,駕駛,drive,ride,arrive,send,10,1
+Chinese-E,P3,373,飛,fly,drive,return,receive,10,1
+Chinese-E,P3,374,到達,arrive,fly,send,be,10,1
+Chinese-E,P3,375,返回,return,arrive,receive,have,10,1
+Chinese-E,P3,376,寄/送,send,return,be,do,10,1
+Chinese-E,P3,377,收到,receive,send,have,go,10,1
+Urdu-E,P3,279,ہونا,be,do,come,go,10,1
+Urdu-E,P3,280,رکھنا,have,be,go,get,10,1
+Urdu-E,P3,281,کرنا,do,have,come,make,10,1
+Urdu-E,P3,282,جانا,go,do,get,know,10,1
+Urdu-E,P3,283,آنا,come,go,make,think,10,1
+Urdu-E,P3,284,حاصل کرنا,get,come,know,take,10,1
+Urdu-E,P3,285,بنانا,make,get,think,see,10,1
+Urdu-E,P3,286,جاننا,know,make,take,look,10,1
+Urdu-E,P3,287,سوچنا,think,know,see,want,10,1
+Urdu-E,P3,288,لینا,take,think,look,use,10,1
+Urdu-E,P3,289,دیکھنا,see,take,want,find,10,1
+Urdu-E,P3,290,دیکھنا,look,see,use,give,10,1
+Urdu-E,P3,291,چاہنا,want,look,find,tell,10,1
+Urdu-E,P3,292,استعمال کرنا,use,want,give,work,10,1
+Urdu-E,P3,293,تلاش کرنا,find,use,tell,call,10,1
+Urdu-E,P3,294,دینا,give,find,work,try,10,1
+Urdu-E,P3,295,بتانا,tell,give,call,ask,10,1
+Urdu-E,P3,296,کام کرنا,work,tell,try,need,10,1
+Urdu-E,P3,297,بلانا,call,work,ask,feel,10,1
+Urdu-E,P3,298,کوشش کرنا,try,call,need,become,10,1
+Urdu-E,P3,299,پوچھنا,ask,try,feel,leave,10,1
+Urdu-E,P3,300,ضرورت ہونا,need,ask,become,put,10,1
+Urdu-E,P3,301,محسوس کرنا,feel,need,leave,mean,10,1
+Urdu-E,P3,302,بننا,become,feel,put,keep,10,1
+Urdu-E,P3,303,چھوڑنا,leave,become,mean,let,10,1
+Urdu-E,P3,304,رکھنا,put,leave,keep,begin,10,1
+Urdu-E,P3,305,مطلب ہونا,mean,put,let,help,10,1
+Urdu-E,P3,306,برقرار رکھنا,keep,mean,begin,talk,10,1
+Urdu-E,P3,307,اجازت دینا,let,keep,help,turn,10,1
+Urdu-E,P3,308,شروع کرنا,begin,let,talk,show,10,1
+Urdu-E,P3,309,مدد کرنا,help,begin,turn,hear,10,1
+Urdu-E,P3,310,بات کرنا,talk,help,show,play,10,1
+Urdu-E,P3,311,مڑنا,turn,talk,hear,run,10,1
+Urdu-E,P3,312,دکھانا,show,turn,play,move,10,1
+Urdu-E,P3,313,سننا,hear,show,run,like,10,1
+Urdu-E,P3,314,کھیلنا,play,hear,move,live,10,1
+Urdu-E,P3,315,دوڑنا,run,play,like,believe,10,1
+Urdu-E,P3,316,حرکت کرنا,move,run,live,hold,10,1
+Urdu-E,P3,317,پسند کرنا,like,move,believe,bring,10,1
+Urdu-E,P3,318,رہنا,live,like,hold,happen,10,1
+Urdu-E,P3,319,یقین کرنا,believe,live,bring,write,10,1
+Urdu-E,P3,320,پکڑنا,hold,believe,happen,read,10,1
+Urdu-E,P3,321,لانا,bring,hold,write,walk,10,1
+Urdu-E,P3,322,واقع ہونا,happen,bring,read,watch,10,1
+Urdu-E,P3,323,لکھنا,write,happen,walk,follow,10,1
+Urdu-E,P3,324,پڑھنا,read,write,watch,stop,10,1
+Urdu-E,P3,325,چلنا,walk,read,follow,open,10,1
+Urdu-E,P3,326,دیکھنا,watch,walk,stop,close,10,1
+Urdu-E,P3,327,پیروی کرنا,follow,watch,open,buy,10,1
+Urdu-E,P3,328,رکنا,stop,follow,close,sell,10,1
+Urdu-E,P3,329,کھولنا,open,stop,buy,eat,10,1
+Urdu-E,P3,330,بند کرنا,close,open,sell,drink,10,1
+Urdu-E,P3,331,خریدنا,buy,close,eat,cook,10,1
+Urdu-E,P3,332,بیچنا,sell,buy,drink,clean,10,1
+Urdu-E,P3,333,کھانا,eat,sell,cook,wash,10,1
+Urdu-E,P3,334,پینا,drink,eat,clean,wear,10,1
+Urdu-E,P3,335,پکانا,cook,drink,wash,visit,10,1
+Urdu-E,P3,336,صاف کرنا,clean,cook,wear,travel,10,1
+Urdu-E,P3,337,دھونا,wash,clean,visit,learn,10,1
+Urdu-E,P3,338,پہننا,wear,wash,travel,study,10,1
+Urdu-E,P3,339,دورہ کرنا,visit,wear,learn,teach,10,1
+Urdu-E,P3,340,سفر کرنا,travel,visit,study,enjoy,10,1
+Urdu-E,P3,341,سیکھنا,learn,travel,teach,love,10,1
+Urdu-E,P3,342,مطالعہ کرنا,study,learn,enjoy,hate,10,1
+Urdu-E,P3,343,سکھانا,teach,study,love,wait,10,1
+Urdu-E,P3,344,لطف اٹھانا,enjoy,teach,hate,meet,10,1
+Urdu-E,P3,345,محبت کرنا,love,enjoy,wait,join,10,1
+Urdu-E,P3,346,نفرت کرنا,hate,love,meet,win,10,1
+Urdu-E,P3,347,انتظار کرنا,wait,hate,join,lose,10,1
+Urdu-E,P3,348,ملنا,meet,wait,win,change,10,1
+Urdu-E,P3,349,شامل ہونا,join,meet,lose,finish,10,1
+Urdu-E,P3,350,جیتنا,win,join,change,remember,10,1
+Urdu-E,P3,351,ہارنا,lose,win,finish,forget,10,1
+Urdu-E,P3,352,تبدیل کرنا,change,lose,remember,choose,10,1
+Urdu-E,P3,353,ختم کرنا,finish,change,forget,decide,10,1
+Urdu-E,P3,354,یاد رکھنا,remember,finish,choose,plan,10,1
+Urdu-E,P3,355,بھولنا,forget,remember,decide,hope,10,1
+Urdu-E,P3,356,چننا,choose,forget,plan,wish,10,1
+Urdu-E,P3,357,فیصلہ کرنا,decide,choose,hope,promise,10,1
+Urdu-E,P3,358,منصوبہ بنانا,plan,decide,wish,agree,10,1
+Urdu-E,P3,359,امید کرنا,hope,plan,promise,disagree,10,1
+Urdu-E,P3,360,خواہش کرنا,wish,hope,agree,explain,10,1
+Urdu-E,P3,361,وعدہ کرنا,promise,wish,disagree,understand,10,1
+Urdu-E,P3,362,متفق ہونا,agree,promise,explain,imagine,10,1
+Urdu-E,P3,363,اختلاف کرنا,disagree,agree,understand,draw,10,1
+Urdu-E,P3,364,وضاحت کرنا,explain,disagree,imagine,sing,10,1
+Urdu-E,P3,365,سمجھنا,understand,explain,draw,dance,10,1
+Urdu-E,P3,366,تصور کرنا,imagine,understand,sing,swim,10,1
+Urdu-E,P3,367,ڈرائنگ کرنا,draw,imagine,dance,ride,10,1
+Urdu-E,P3,368,گانا,sing,draw,swim,drive,10,1
+Urdu-E,P3,369,ناچنا,dance,sing,ride,fly,10,1
+Urdu-E,P3,370,تیرنا,swim,dance,drive,arrive,10,1
+Urdu-E,P3,371,سواری کرنا,ride,swim,fly,return,10,1
+Urdu-E,P3,372,گاڑی چلانا,drive,ride,arrive,send,10,1
+Urdu-E,P3,373,اڑنا,fly,drive,return,receive,10,1
+Urdu-E,P3,374,پہنچنا,arrive,fly,send,be,10,1
+Urdu-E,P3,375,واپس آنا,return,arrive,receive,have,10,1
+Urdu-E,P3,376,بھیجنا,send,return,be,do,10,1
+Urdu-E,P3,377,موصول کرنا,receive,send,have,go,10,1
