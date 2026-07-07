@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>排行榜 V2607070804 🏆</title>
+  <title>排行榜 V2607070822 🏆</title>
   <style>
     :root {
       /* 深色質感背景 */
@@ -155,8 +155,8 @@
   <main class="grid" id="gridPanels"></main>
 
   <div id="bus-eta-container">
+    <div class="bus-station-row"><span style="color: var(--text-dim); font-size: 0.95rem;">正在加載 嶺南大學學校大門 巴士時間...</span></div>
     <div class="bus-station-row"><span style="color: var(--text-dim); font-size: 0.95rem;">正在加載 學校大門 巴士時間...</span></div>
-    <div class="bus-station-row"><span style="color: var(--text-dim); font-size: 0.95rem;">正在加載 嶺南大學 巴士時間...</span></div>
   </div>
 
   <div id="marquee-container">
@@ -243,8 +243,8 @@
     // 2. 🚌 巴士 ETA 固定硬編碼引擎邏輯（每 30 秒自動重新獲取）
     // ==========================================
     const FIXED_STATIONS = [
-      { company: "KMB", id: "AA5DA45828958EAE", name: "學校大門" },
-      { company: "KMB", id: "E2AE7A37634C8FE5", name: "嶺南大學" }
+      { company: "KMB", id: "AA5DA45828958EAE", name: "嶺南大學" },
+      { company: "KMB", id: "E2AE7A37634C8FE5", name: "學校大門" }
     ];
     
     let stopData = {};
