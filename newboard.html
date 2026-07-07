@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>排行榜 V2607071625🏆</title>
+  <title>排行榜 V2607072327🏆</title>
   <style>
     /* 基礎變數 (預設暗色) */
     :root {
@@ -43,13 +43,29 @@
     /* 按鈕與天氣容器 */
     .controls { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; z-index: 100; }
     
-    /* 天氣盒樣式調整 */
+    /* 天氣盒 */
     .weather-box { 
       position: absolute; top: 10px; left: 10px; z-index: 100; 
-      display: flex; align-items: center; gap: 8px; 
+      display: flex; align-items: center; gap: 10px; 
       background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); 
-      padding: 8px 15px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.3);
-      font-size: 1.5rem; /* Emoji 大小 */
+      padding: 8px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    /* 天氣圖示、溫度、警告一行展示 */
+    .weather-info-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.4rem;
+    }
+
+    /* 警告信號樣式 */
+    #warning-text {
+      font-size: 1.4rem;
+      color: #ff4d4f;
+      display: flex;
+      gap: 6px;
+      align-items: center;
     }
     
     .btn { padding: 8px 12px; font-size: 1.2rem; cursor: pointer; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); border-radius: 50px; backdrop-filter: blur(5px); transition: transform 0.2s, background 0.2s; }
@@ -58,17 +74,19 @@
     header { text-align: center; padding: 5px 0; flex-shrink: 0; }
     h1 { font-size: 2rem; font-weight: 900; color: var(--accent); text-shadow: 0 0 10px rgba(0,0,0,0.1); }
     
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; flex-grow: 1; margin-bottom: 8px; min-height: 0; }
+    /* 排行榜網格 */
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; flex-grow: 1; margin-top: 4px; margin-bottom: 10px; min-height: 0; }
     
-    .panel { background: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 15px; padding: 10px; display: flex; flex-direction: column; overflow: hidden; transition: background 0.3s, border-color 0.3s; }
-    .panel-header { text-align: center; font-size: 1.8rem; border-bottom: 2px solid var(--border-color); margin-bottom: 8px; color: var(--text-main); }
+    /* 排行榜面板內部與行距 */
+    .panel { background: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 15px; padding: 6px 10px; display: flex; flex-direction: column; overflow: hidden; transition: background 0.3s, border-color 0.3s; }
+    .panel-header { text-align: center; font-size: 1.6rem; border-bottom: 2px solid var(--border-color); margin-bottom: 4px; color: var(--text-main); }
     
     table { width: 100%; border-collapse: collapse; }
-    th { color: var(--text-dim); font-size: 1.1rem; padding: 6px 0; }
-    td { padding: 8px 4px; text-align: center; font-size: 1.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    th { color: var(--text-dim); font-size: 1.0rem; padding: 4px 0; }
+    td { padding: 4px 4px; text-align: center; font-size: 1.35rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     
-    .name-col { text-align: left; font-size: 2.2rem; padding-left: 10px; }
-    .score-col { color: var(--accent); font-size: 1.6rem; } 
+    .name-col { text-align: left; font-size: 1.8rem; padding-left: 8px; }
+    .score-col { color: var(--accent); font-size: 1.4rem; } 
     
     /* 金屬效果 */
     body:not(.pastel-theme) .rank-1 td { background: linear-gradient(135deg, #ffe066 0%, #f5b041 50%, #ffd700 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -94,9 +112,11 @@
 <body>
 
   <div class="weather-box" id="weather-box">
-    <span id="wx-icon">☁️</span>
-    <span id="temp-text">--°C</span>
-    <span id="warning-text"></span>
+    <div class="weather-info-row">
+      <span id="wx-icon">☁️</span>
+      <span id="temp-text">--°C</span>
+      <span id="warning-text"></span>
+    </div>
   </div>
 
   <div class="controls">
@@ -121,7 +141,7 @@
   </div>
 
   <script>
-    // --- 天氣功能 ---
+    // --- 天氣及警告功能 ---
     const ICON_MAP = {
       '50': '☀️', '51': '☀️', '52': '☀️', '53': '☀️', '54': '☀️',
       '60': '☁️', '61': '☁️', '62': '☁️', '63': '☁️', '64': '☁️', '65': '☁️',
@@ -131,9 +151,14 @@
     };
 
     const WARN_MAP = {
-      'WFIREY': '🔥', 'WFIRE': '🔥', 'WRAINY': '🌧️', 'WRAINR': '⛈️', 'WRAINB': '☔',
-      'WT1': '🌀', 'WT3': '🌀', 'WT8NE': '🌀', 'WT8SE': '🌀', 'WT8SW': '🌀', 'WT8NW': '🌀',
-      'WCOLD': '❄️', 'WHOT': '🥵'
+      'WFIREY': '🔥黃色火災', 'WFIRER': '🔥紅色火災', 
+      'WRAINA': '🌧️黃雨', 'WRAINR': '⛈️紅雨', 'WRAINB': '☔黑雨',
+      'WT1': '🌀一號戒備', 'WT3': '🌀三號強風', 
+      'WT8NE': '🌀八號(東北)', 'WT8SE': '🌀八號(東南)', 'WT8SW': '🌀八號(西南)', 'WT8NW': '🌀八號(西北)',
+      'WT9': '🌀九號烈風', 'WT10': '🌀十號颶風',
+      'WCOLD': '❄️寒冷', 'WHOT': '🥵酷熱',
+      'WTS': '⚡雷暴', 'WMSGNL': '🌊強烈季候風',
+      'WFROST': '❄️霜凍', 'WTMW': '🌊海嘯'
     };
 
     async function updateWeather() {
@@ -149,13 +174,16 @@
         const tmTemp = data.temperature.data.find(s => s.place === '屯門');
         if (tmTemp) document.getElementById('temp-text').textContent = tmTemp.value + '°C';
         
-        // 天氣圖示 (根據 HKO 圖片編號 mapping)
+        // 天氣圖示
         const iconCode = data.icon[0];
         document.getElementById('wx-icon').textContent = ICON_MAP[iconCode] || '🌤️';
         
-        // 警告
-        const warnText = Object.keys(warnData).map(k => warnData[k].name ? (WARN_MAP[k] || '') : '').join('');
-        document.getElementById('warning-text').textContent = warnText;
+        // 處理並顯示警告 (已修復：過濾掉 actionCode 為 'CANCEL' 的已取消警告)
+        const activeWarnings = Object.keys(warnData)
+          .filter(k => warnData[k] && warnData[k].name && warnData[k].actionCode !== 'CANCEL')
+          .map(k => `<span>${WARN_MAP[k] || warnData[k].name}</span>`)
+          .join('');
+        document.getElementById('warning-text').innerHTML = activeWarnings;
       } catch (e) { console.error("天氣載入失敗", e); }
     }
 
@@ -334,7 +362,6 @@
         for (const r of results) stopData[r.key] = r.data;
         renderAllStops();
       } catch (err) { console.error("讀取九巴 API 失敗", err); }
-      setTimeout(fetchEta, 30000);
     }
 
     // 初始化執行
@@ -342,9 +369,11 @@
     updateData(); 
     fetchEta();
     updateWeather();
+    
+    // 定時器
     setInterval(updateData, 15000);
     setInterval(fetchEta, 30000);
-    setInterval(updateWeather, 300000); 
+    setInterval(updateWeather, 60000); // 每分鐘更新天文台資訊
   </script>
 </body>
 </html>
