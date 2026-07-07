@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>排行榜 V2607070822 🏆</title>
+  <title>排行榜 V2607071100 🏆</title>
   <style>
     :root {
       /* 深色質感背景 */
@@ -29,7 +29,7 @@
     }
   
     header { text-align: center; padding: 5px 0; flex-shrink: 0; }
-    h1 { font-size: 2.2rem; font-weight: 900; color: var(--accent); text-shadow: 0 0 10px rgba(56,189,248,0.2); }
+    h1 { font-size: 2.1rem; font-weight: 900; color: var(--accent); text-shadow: 0 0 10px rgba(56,189,248,0.2); }
     
     /* 排行榜網格 */
     .grid {
@@ -225,7 +225,7 @@
             <tbody>
               ${list.map((r, i) => {
                 const sName = r.name || '—';
-                const isLong = sName.length > 8 ? 'long-name' : '';
+                const isLong = sName.length > 6 ? 'long-name' : '';
                 return `
                 <tr class="${i < 3 ? 'rank-' + (i + 1) : ''}">
                   <td>${i+1}</td>
