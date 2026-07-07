@@ -1575,7 +1575,7 @@ English,P1,1129,What do we use to wear gloves?,Hands,Feet,Head,Ears,10,1
 科學,P3,27,以下哪個是可以回收的物品？,塑膠樽,用過的紙巾,剩菜,電池,10,1
 科學,P3,28,為什麼冬天香港比較冷？,因為太陽斜射，接收到的熱量較少,因為地球離太陽較遠,因為風比較少,因為下雪,10,1
 科學,P3,29,以下哪個是不可再生能源？,煤,太陽能,風能,水力,10,1
-科學,P3,30,為什麼香港有時候會有大霧？,因為空氣中水汽很多， visibility 降低,因為風太大,因為下雨,因為天氣太熱,10,1
+科學,P3,30,為什麼香港有時候會有大霧？,因為空氣中水汽很多,因為風太大,因為下雨,因為天氣太熱,10,1
 科學,P3,31,為什麼用鐵鍋煮食比用塑膠鍋快？,鐵是良好的導熱體，熱可以快速傳到食物,鐵比較便宜,塑膠鍋比較重,鐵鍋比較漂亮,10,1
 科學,P3,32,為什麼尼龍風衣適合在雨天穿？,尼龍不吸水，可以防止雨水滲透,因為尼龍比較漂亮,因為尼龍比較貴,因為尼龍比較輕,10,1
 科學,P3,33,為什麼香港的房屋問題需要解決？,因為居住環境擠迫會影響生活質素,因為房屋比較醜,因為房屋比較舊,因為房屋比較小,10,1
@@ -1700,7 +1700,7 @@ English,P1,1129,What do we use to wear gloves?,Hands,Feet,Head,Ears,10,1
 科學,P4,40,為什麼生態系統中需要有捕食者？,可以控制草食動物等被捕食者的數量以維持整體的生態平衡,因為捕食者如獅子和老虎的毛皮花紋斑斕看起來非常漂亮,因為捕食者需要佔領極其遼闊的領地才能讓其生存空間比較大,因為捕食者位於食物鏈的頂端所以面對其他動物時比較凶
 科學,P4,41,為什麼生病時不要上學？,可以留在家中休息並避免將病原體傳染給同學以保護他人健康,因為生病時脸色蒼白且缺乏血色去學校上學看起來不夠漂亮,因為生病會讓人頭痛欲裂上學時容易因為情緒失控而想攻擊人,因為學校的課桌椅不夠舒服生病待在家裡單純是因為想休息
 科學,P4,42,為什麼濕地環境適合候鳥？,因為濕地擁有豐富的水生生物和茂密的植物能提供食物和棲息地,因為濕地上的落日餘暉與水鳥飛翔的畫面搭配起來非常漂亮,因為濕地是國家級的自然保護區周圍的房地產價格通常比較貴,因為濕地的泥炭土含有大量水分會讓踩在上面的候鳥感覺比較重
-科學,P4,43,影子在一天中會怎樣變化？,影子在地面的位置和長短會隨著太陽在天空中的位置不斷改變, shadow影子的朝向會固定在同一個羅盤方位上位置完全不變, shadow影子的長度會從早到晚保持相同的英吋大小長短完全不變,無論太陽如何移動影子在一天之中都保持原狀完全不變
+科學,P4,43,影子在一天中會怎樣變化？,影子在地面的位置和長短會隨著太陽在天空中的位置不斷改變,影子的朝向會固定在同一個羅盤方位上位置完全不變,影子的長度會從早到晚保持相同的英吋大小長短完全不變,無論太陽如何移動影子在一天之中都保持原狀完全不變
 科學,P4,44,種子是怎麼散播的？,可以通過風力、水流、動物攜帶或是果實自身的彈力來散播,大自然中所有的種子都只有依賴風力吹拂這一種唯一的方法,種子在成熟後會牢牢黏在母體植物上在自然界中完全不散播,種子長大後會像昆蟲一樣利用細小的根部在地面上自己搬家
 科學,P4,45,為什麼分解者對生態系統很重要？,因為它們能將死亡的生物遺體分解使養分在環境中循環利用,因為它們的體型可以長得像大樹一樣巨大讓森林看起來比較大,因為它們在黑暗的土壤或腐木中活動時身體會發出綠色的光,因為它們不喜歡陽光的直接照射是因為身體構造極其怕熱
 科學,P4,46,為什麼人類的眼睛顏色是遺傳的？,因為眼睛虹膜的顏色是由父母傳給子女的基因組合所決定的,因為擁有特殊顏色的眼睛可以讓一個人的面容看起來更加漂亮,因為某些眼睛顏色的人在古代被認為具有戰鬥力容易想攻擊人,眼睛顏色是由出生後看到的環境光線決定的在科學上沒有原因
@@ -3093,12 +3093,12 @@ English,P4,98,The work is ____.,more helpful,helpful,most helpful,helpfully,10,1
 English,P4,99,The boy is ____.,more playful,playful,most playful,playfully,10,1
 English,P4,100,The cat is ____.,more peaceful,peaceful,most peaceful,peacefully,10,1
 English,P5,1,I stayed home ____ it was raining.,because,although,however,so,10,1
-English,P5,2,____ he was tired, he finished his work.,Although,Because,However,So,10,1
-English,P5,3,It was late, ____ I went to bed.,so,because,although,however,10,1
-English,P5,4,She is smart; ____, she is shy.,however,because,although,so,10,1
-English,P5,5,____ it is sunny, we will go out.,Since,Although,However,So,10,1
-English,P5,6,____ you hurry, you will be late.,Unless,If,Although,However,10,1
-English,P5,7,I like apples, ____ I hate pears.,but,so,although,because,10,1
+English,P5,2,"____ he was tired, he finished his work.",Although,Because,However,So,10,1
+English,P5,3,"It was late, ____ I went to bed.",so,because,although,however,10,1
+English,P5,4,"She is smart; ____, she is shy.",however,because,although,so,10,1
+English,P5,5,"____ it is sunny, we will go out.",Since,Although,However,So,10,1
+English,P5,6,"____ you hurry, you will be late.",Unless,If,Although,However,10,1
+English,P5,7,"I like apples, ____ I hate pears.",but,so,although,because,10,1
 English,P5,8,____ you or I must go there.,Either,Neither,Although,Because,10,1
 English,P5,9,Neither John ____ Mary is here.,nor,or,but,and,10,1
 English,P5,10,Both Tom ____ Jerry are nice.,and,or,nor,but,10,1
@@ -3132,15 +3132,15 @@ English,P5,37,The school ____ I study is big.,where,which,who,whose,10,1
 English,P5,38,The lady ____ is speaking is my aunt.,who,which,where,whose,10,1
 English,P5,39,The bag ____ I bought is red.,which,who,where,whose,10,1
 English,P5,40,The boy ____ car broke is sad.,whose,who,which,where,10,1
-English,P5,41,If it ____, we will stay inside.,rains,rain,rained,raining,10,1
+English,P5,41,"If it ____, we will stay inside.",rains,rain,rained,raining,10,1
 English,P5,42,The cake was ____ by my mum.,made,make,makes,making,10,1
-English,P5,43,If he ____, he will pass.,studies,study,studied,studying,10,1
+English,P5,43,"If he ____, he will pass.",studies,study,studied,studying,10,1
 English,P5,44,The door was ____ by him.,opened,open,opens,opening,10,1
-English,P5,45,If we ____, we will be on time.,hurry,hurries,hurried,hurrying,10,1
+English,P5,45,"If we ____, we will be on time.",hurry,hurries,hurried,hurrying,10,1
 English,P5,46,The windows were ____ by them.,cleaned,clean,cleans,cleaning,10,1
-English,P5,47,If she ____, I will tell her.,calls,call,called,calling,10,1
+English,P5,47,"If she ____, I will tell her.",calls,call,called,calling,10,1
 English,P5,48,The letter was ____ by Tom.,written,write,wrote,writes,10,1
-English,P5,49,If they ____, we will start.,arrive,arrives,arrived,arriving,10,1
+English,P5,49,"If they ____, we will start.",arrive,arrives,arrived,arriving,10,1
 English,P5,50,The song was ____ by her.,sung,sing,sang,sings,10,1
 English,P5,51,She runs ____ fast ____ her brother.,as...as,so...as,than...as,more...as,10,1
 English,P5,52,He is the ____ famous singer here.,most,more,very,much,10,1
@@ -3165,7 +3165,7 @@ English,P5,70,They imagine ____ on Mars.,living,live,to live,lives,10,1
 English,P5,71,We ____ be careful.,must,can,will,shall,10,1
 English,P5,72,You ____ listen to the teacher.,should,must,may,might,10,1
 English,P5,73,He ____ swim very well.,can,must,should,might,10,1
-English,P5,74,____ I come in, please?,May,Must,Should,Will,10,1
+English,P5,74,"____ I come in, please?",May,Must,Should,Will,10,1
 English,P5,75,It ____ rain later today.,might,must,should,can,10,1
 English,P5,76,We ____ to respect others.,ought,must,should,may,10,1
 English,P5,77,I ____ like a coffee.,would,will,shall,can,10,1
@@ -3187,8 +3187,8 @@ English,P5,92,I like coffee ____ tea.,as well as,either,neither,both,10,1
 English,P5,93,He is ____ a nice boy.,such,so,very,much,10,1
 English,P5,94,It is ____ cold that I cannot go.,so,such,very,too,10,1
 English,P5,95,They talk ____ they know it.,as if,even if,so that,in case,10,1
-English,P5,96,____ it rains, take an umbrella.,In case,Even if,So that,As if,10,1
-English,P5,97,____ it is hard, I will try.,Even if,In case,So that,As if,10,1
+English,P5,96,"____ it rains, take an umbrella.",In case,Even if,So that,As if,10,1
+English,P5,97,"____ it is hard, I will try.",Even if,In case,So that,As if,10,1
 English,P5,98,I studied hard ____ I could pass.,so that,in case,even if,as if,10,1
 English,P5,99,No sooner ____ I arrived than it rained.,had,have,did,do,10,1
 English,P5,100,Hardly had I slept ____ he called.,when,than,as,if,10,1
@@ -3212,36 +3212,36 @@ English,P6,17,The song ____ being sung when I entered.,was,is,are,were,10,1
 English,P6,18,The room ____ been cleaned before I arrived.,had,have,has,did,10,1
 English,P6,19,The problem can ____ solved by him.,be,is,are,was,10,1
 English,P6,20,The dinner is ____ prepared now.,being,be,is,are,10,1
-English,P6,21,If I ____ you, I would go.,were,was,am,are,10,1
-English,P6,22,If he ____ known, he would have come.,had,have,has,did,10,1
-English,P6,23,If it ____, we will stay home.,rains,rain,rained,raining,10,1
-English,P6,24,If I ____ more time, I would study.,had,have,has,having,10,1
+English,P6,21,"If I ____ you, I would go.",were,was,am,are,10,1
+English,P6,22,"If he ____ known, he would have come.",had,have,has,did,10,1
+English,P6,23,"If it ____, we will stay home.",rains,rain,rained,raining,10,1
+English,P6,24,"If I ____ more time, I would study.",had,have,has,having,10,1
 English,P6,25,He would have succeeded if he ____ tried.,had,have,has,did,10,1
-English,P6,26,If she had seen him, she ____ have told him.,would,will,shall,may,10,1
-English,P6,27,If they ____ here, they would help.,were,are,is,was,10,1
-English,P6,28,If I had studied, I ____ have passed.,would,will,shall,may,10,1
-English,P6,29,If he ____, we will leave.,arrives,arrive,arrived,arriving,10,1
-English,P6,30,If I ____ rich, I would travel more.,were,was,am,are,10,1
+English,P6,26,"If she had seen him, she ____ have told him.",would,will,shall,may,10,1
+English,P6,27,"If they ____ here, they would help.",were,are,is,was,10,1
+English,P6,28,"If I had studied, I ____ have passed.",would,will,shall,may,10,1
+English,P6,29,"If he ____, we will leave.",arrives,arrive,arrived,arriving,10,1
+English,P6,30,"If I ____ rich, I would travel more.",were,was,am,are,10,1
 English,P6,31,The boy ____ is wearing the hat is my brother.,who,which,that,whose,10,1
 English,P6,32,The car ____ he drives is very fast.,which,who,whose,where,10,1
 English,P6,33,This is the house ____ I was born.,where,which,who,that,10,1
 English,P6,34,The girl ____ book was stolen is crying.,whose,who,which,that,10,1
 English,P6,35,The man ____ I saw is a teacher.,whom,who,which,whose,10,1
 English,P6,36,The dog ____ is barking is mine.,that,which,who,whose,10,1
-English,P6,37,London, ____ is the capital, is big.,which,that,who,where,10,1
+English,P6,37,"London, ____ is the capital, is big.",which,that,who,where,10,1
 English,P6,38,The woman ____ lives next door is nice.,who,which,whose,where,10,1
 English,P6,39,The bag ____ I bought is broken.,that,who,which,whose,10,1
 English,P6,40,This is the day ____ we met.,when,which,who,whose,10,1
-English,P6,41,____ it was raining, we played.,Although,Despite,However,But,10,1
-English,P6,42,____ the rain, we went out.,Despite,Although,However,But,10,1
-English,P6,43,He is rich; ____, he is unhappy.,however,although,despite,but,10,1
-English,P6,44,____ his age, he is active.,In spite of,Although,However,But,10,1
-English,P6,45,She studied hard, ____ she failed.,yet,so,but,although,10,1
-English,P6,46,____ he is quiet, his sister is loud.,Whereas,Although,However,Despite,10,1
-English,P6,47,____, he continued the work.,Nevertheless,Although,However,But,10,1
-English,P6,48,____ though he was tired, he ran.,Even,Despite,However,In spite of,10,1
+English,P6,41,"____ it was raining, we played.",Although,Despite,However,But,10,1
+English,P6,42,"____ the rain, we went out.",Despite,Although,However,But,10,1
+English,P6,43,"He is rich; ____, he is unhappy.",however,although,despite,but,10,1
+English,P6,44,"____ his age, he is active.",In spite of,Although,However,But,10,1
+English,P6,45,"She studied hard, ____ she failed.",yet,so,but,although,10,1
+English,P6,46,"____ he is quiet, his sister is loud.",Whereas,Although,However,Despite,10,1
+English,P6,47,"____, he continued the work.,Nevertheless,Although,However,But,10,1
+English,P6,48,"____ though he was tired, he ran.",Even,Despite,However,In spite of,10,1
 English,P6,49,He is tall ____ his brother is short.,while,although,despite,however,10,1
-English,P6,50,____ of the cost, we will buy it.,Regardless,Although,However,But,10,1
+English,P6,50,"____ of the cost, we will buy it.",Regardless,Although,However,But,10,1
 English,P6,51,He should ____ told me the truth.,have,had,has,did,10,1
 English,P6,52,She must ____ forgotten her keys.,have,had,has,did,10,1
 English,P6,53,They could ____ won the game.,have,had,has,did,10,1
@@ -3252,16 +3252,16 @@ English,P6,57,She cannot ____ seen him.,have,had,has,did,10,1
 English,P6,58,They would ____ come if invited.,have,had,has,did,10,1
 English,P6,59,It must ____ been a great party.,have,had,has,did,10,1
 English,P6,60,You should ____ listened to me.,have,had,has,did,10,1
-English,P6,61,He is a good boy, ____ he?,isn't,is,does,doesn't,10,1
-English,P6,62,They don't like fish, ____ they?,do,don't,are,aren't,10,1
-English,P6,63,She will come, ____ she?,won't,will,is,isn't,10,1
-English,P6,64,I am right, ____ I?,aren't,am,am not,isn't,10,1
-English,P6,65,Let's go, ____ we?,shall,do,let,won't,10,1
-English,P6,66,He has finished, ____ he?,hasn't,has,did,didn't,10,1
-English,P6,67,You could do it, ____ you?,couldn't,could,can,can't,10,1
-English,P6,68,They were there, ____ they?,weren't,were,did,didn't,10,1
-English,P6,69,She rarely smiles, ____ she?,does,doesn't,is,isn't,10,1
-English,P6,70,Nothing is wrong, ____ it?,is,isn't,does,doesn't,10,1
+English,P6,61,"He is a good boy, ____ he?",isn't,is,does,doesn't,10,1
+English,P6,62,"They don't like fish, ____ they?",do,don't,are,aren't,10,1
+English,P6,63,"She will come, ____ she?",won't,will,is,isn't,10,1
+English,P6,64,"I am right, ____ I?",aren't,am,am not,isn't,10,1
+English,P6,65,"Let's go, ____ we?",shall,do,let,won't,10,1
+English,P6,66,"He has finished, ____ he?",hasn't,has,did,didn't,10,1
+English,P6,67,"You could do it, ____ you?",couldn't,could,can,can't,10,1
+English,P6,68,"They were there, ____ they?",weren't,were,did,didn't,10,1
+English,P6,69,"She rarely smiles, ____ she?",does,doesn't,is,isn't,10,1
+English,P6,70,"Nothing is wrong, ____ it?",is,isn't,does,doesn't,10,1
 English,P6,71,I suggested ____ to the cinema.,going,go,to,goes,10,1
 English,P6,72,She enjoys ____ to music.,listening,listen,to,listens,10,1
 English,P6,73,He managed ____ finish the work.,to,finish,finishing,finishes,10,1
@@ -3272,12 +3272,12 @@ English,P6,77,He avoided ____ the question.,answering,answer,to,answers,10,1
 English,P6,78,They promised ____ help us.,to,help,helping,helps,10,1
 English,P6,79,I don't mind ____.,waiting,wait,to,waits,10,1
 English,P6,80,She failed ____ pass the exam.,to,pass,passing,passes,10,1
-English,P6,81,By the time I arrived, he ____ left.,had,left,has,leaves,10,1
-English,P6,82,After he ____ eaten, he slept.,had,ate,has,eats,10,1
+English,P6,81,"By the time I arrived, he ____ left.",had,left,has,leaves,10,1
+English,P6,82,"After he ____ eaten, he slept.",had,ate,has,eats,10,1
 English,P6,83,I ____ been reading for an hour.,had,have,was,read,10,1
 English,P6,84,They ____ finished work before 5 pm.,had,finished,has,finishes,10,1
 English,P6,85,She ____ been waiting for a long time.,had,has,was,waits,10,1
-English,P6,86,Before I saw him, he ____ gone.,had,went,has,goes,10,1
+English,P6,86,"Before I saw him, he ____ gone.",had,went,has,goes,10,1
 English,P6,87,I ____ already done my homework.,had,have,did,do,10,1
 English,P6,88,He ____ lived there for ten years.,had,lived,has,lives,10,1
 English,P6,89,We ____ never seen such a thing.,had,never,have,see,10,1
@@ -3991,102 +3991,3 @@ Chinese-E,P3,374,到達,arrive,fly,send,be,10,1
 Chinese-E,P3,375,返回,return,arrive,receive,have,10,1
 Chinese-E,P3,376,寄/送,send,return,be,do,10,1
 Chinese-E,P3,377,收到,receive,send,have,go,10,1
-Urdu-E,P3,279,ہونا,be,do,come,go,10,1
-Urdu-E,P3,280,رکھنا,have,be,go,get,10,1
-Urdu-E,P3,281,کرنا,do,have,come,make,10,1
-Urdu-E,P3,282,جانا,go,do,get,know,10,1
-Urdu-E,P3,283,آنا,come,go,make,think,10,1
-Urdu-E,P3,284,حاصل کرنا,get,come,know,take,10,1
-Urdu-E,P3,285,بنانا,make,get,think,see,10,1
-Urdu-E,P3,286,جاننا,know,make,take,look,10,1
-Urdu-E,P3,287,سوچنا,think,know,see,want,10,1
-Urdu-E,P3,288,لینا,take,think,look,use,10,1
-Urdu-E,P3,289,دیکھنا,see,take,want,find,10,1
-Urdu-E,P3,290,دیکھنا,look,see,use,give,10,1
-Urdu-E,P3,291,چاہنا,want,look,find,tell,10,1
-Urdu-E,P3,292,استعمال کرنا,use,want,give,work,10,1
-Urdu-E,P3,293,تلاش کرنا,find,use,tell,call,10,1
-Urdu-E,P3,294,دینا,give,find,work,try,10,1
-Urdu-E,P3,295,بتانا,tell,give,call,ask,10,1
-Urdu-E,P3,296,کام کرنا,work,tell,try,need,10,1
-Urdu-E,P3,297,بلانا,call,work,ask,feel,10,1
-Urdu-E,P3,298,کوشش کرنا,try,call,need,become,10,1
-Urdu-E,P3,299,پوچھنا,ask,try,feel,leave,10,1
-Urdu-E,P3,300,ضرورت ہونا,need,ask,become,put,10,1
-Urdu-E,P3,301,محسوس کرنا,feel,need,leave,mean,10,1
-Urdu-E,P3,302,بننا,become,feel,put,keep,10,1
-Urdu-E,P3,303,چھوڑنا,leave,become,mean,let,10,1
-Urdu-E,P3,304,رکھنا,put,leave,keep,begin,10,1
-Urdu-E,P3,305,مطلب ہونا,mean,put,let,help,10,1
-Urdu-E,P3,306,برقرار رکھنا,keep,mean,begin,talk,10,1
-Urdu-E,P3,307,اجازت دینا,let,keep,help,turn,10,1
-Urdu-E,P3,308,شروع کرنا,begin,let,talk,show,10,1
-Urdu-E,P3,309,مدد کرنا,help,begin,turn,hear,10,1
-Urdu-E,P3,310,بات کرنا,talk,help,show,play,10,1
-Urdu-E,P3,311,مڑنا,turn,talk,hear,run,10,1
-Urdu-E,P3,312,دکھانا,show,turn,play,move,10,1
-Urdu-E,P3,313,سننا,hear,show,run,like,10,1
-Urdu-E,P3,314,کھیلنا,play,hear,move,live,10,1
-Urdu-E,P3,315,دوڑنا,run,play,like,believe,10,1
-Urdu-E,P3,316,حرکت کرنا,move,run,live,hold,10,1
-Urdu-E,P3,317,پسند کرنا,like,move,believe,bring,10,1
-Urdu-E,P3,318,رہنا,live,like,hold,happen,10,1
-Urdu-E,P3,319,یقین کرنا,believe,live,bring,write,10,1
-Urdu-E,P3,320,پکڑنا,hold,believe,happen,read,10,1
-Urdu-E,P3,321,لانا,bring,hold,write,walk,10,1
-Urdu-E,P3,322,واقع ہونا,happen,bring,read,watch,10,1
-Urdu-E,P3,323,لکھنا,write,happen,walk,follow,10,1
-Urdu-E,P3,324,پڑھنا,read,write,watch,stop,10,1
-Urdu-E,P3,325,چلنا,walk,read,follow,open,10,1
-Urdu-E,P3,326,دیکھنا,watch,walk,stop,close,10,1
-Urdu-E,P3,327,پیروی کرنا,follow,watch,open,buy,10,1
-Urdu-E,P3,328,رکنا,stop,follow,close,sell,10,1
-Urdu-E,P3,329,کھولنا,open,stop,buy,eat,10,1
-Urdu-E,P3,330,بند کرنا,close,open,sell,drink,10,1
-Urdu-E,P3,331,خریدنا,buy,close,eat,cook,10,1
-Urdu-E,P3,332,بیچنا,sell,buy,drink,clean,10,1
-Urdu-E,P3,333,کھانا,eat,sell,cook,wash,10,1
-Urdu-E,P3,334,پینا,drink,eat,clean,wear,10,1
-Urdu-E,P3,335,پکانا,cook,drink,wash,visit,10,1
-Urdu-E,P3,336,صاف کرنا,clean,cook,wear,travel,10,1
-Urdu-E,P3,337,دھونا,wash,clean,visit,learn,10,1
-Urdu-E,P3,338,پہننا,wear,wash,travel,study,10,1
-Urdu-E,P3,339,دورہ کرنا,visit,wear,learn,teach,10,1
-Urdu-E,P3,340,سفر کرنا,travel,visit,study,enjoy,10,1
-Urdu-E,P3,341,سیکھنا,learn,travel,teach,love,10,1
-Urdu-E,P3,342,مطالعہ کرنا,study,learn,enjoy,hate,10,1
-Urdu-E,P3,343,سکھانا,teach,study,love,wait,10,1
-Urdu-E,P3,344,لطف اٹھانا,enjoy,teach,hate,meet,10,1
-Urdu-E,P3,345,محبت کرنا,love,enjoy,wait,join,10,1
-Urdu-E,P3,346,نفرت کرنا,hate,love,meet,win,10,1
-Urdu-E,P3,347,انتظار کرنا,wait,hate,join,lose,10,1
-Urdu-E,P3,348,ملنا,meet,wait,win,change,10,1
-Urdu-E,P3,349,شامل ہونا,join,meet,lose,finish,10,1
-Urdu-E,P3,350,جیتنا,win,join,change,remember,10,1
-Urdu-E,P3,351,ہارنا,lose,win,finish,forget,10,1
-Urdu-E,P3,352,تبدیل کرنا,change,lose,remember,choose,10,1
-Urdu-E,P3,353,ختم کرنا,finish,change,forget,decide,10,1
-Urdu-E,P3,354,یاد رکھنا,remember,finish,choose,plan,10,1
-Urdu-E,P3,355,بھولنا,forget,remember,decide,hope,10,1
-Urdu-E,P3,356,چننا,choose,forget,plan,wish,10,1
-Urdu-E,P3,357,فیصلہ کرنا,decide,choose,hope,promise,10,1
-Urdu-E,P3,358,منصوبہ بنانا,plan,decide,wish,agree,10,1
-Urdu-E,P3,359,امید کرنا,hope,plan,promise,disagree,10,1
-Urdu-E,P3,360,خواہش کرنا,wish,hope,agree,explain,10,1
-Urdu-E,P3,361,وعدہ کرنا,promise,wish,disagree,understand,10,1
-Urdu-E,P3,362,متفق ہونا,agree,promise,explain,imagine,10,1
-Urdu-E,P3,363,اختلاف کرنا,disagree,agree,understand,draw,10,1
-Urdu-E,P3,364,وضاحت کرنا,explain,disagree,imagine,sing,10,1
-Urdu-E,P3,365,سمجھنا,understand,explain,draw,dance,10,1
-Urdu-E,P3,366,تصور کرنا,imagine,understand,sing,swim,10,1
-Urdu-E,P3,367,ڈرائنگ کرنا,draw,imagine,dance,ride,10,1
-Urdu-E,P3,368,گانا,sing,draw,swim,drive,10,1
-Urdu-E,P3,369,ناچنا,dance,sing,ride,fly,10,1
-Urdu-E,P3,370,تیرنا,swim,dance,drive,arrive,10,1
-Urdu-E,P3,371,سواری کرنا,ride,swim,fly,return,10,1
-Urdu-E,P3,372,گاڑی چلانا,drive,ride,arrive,send,10,1
-Urdu-E,P3,373,اڑنا,fly,drive,return,receive,10,1
-Urdu-E,P3,374,پہنچنا,arrive,fly,send,be,10,1
-Urdu-E,P3,375,واپس آنا,return,arrive,receive,have,10,1
-Urdu-E,P3,376,بھیجنا,send,return,be,do,10,1
-Urdu-E,P3,377,موصول کرنا,receive,send,have,go,10,1
