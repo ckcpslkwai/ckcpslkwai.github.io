@@ -1117,8 +1117,9 @@
             const crossed50 = Math.floor(teams[teamIndex].score / 50) > Math.floor(oldScore / 50);
 
             pendingResultTimeouts[teamId] = setTimeout(() => {
-                if (isCorrect && crossed50) {
-                    startLuckyDraw(teamId, teamIndex);
+        if (isCorrect && crossed50 && !window.currentSoloPlayer) {
+    startLuckyDraw(teamId, teamIndex);
+}
                 } else {
                     currentQuestions[teamIndex] = getRandomQuestion();
                     renderTeamQuestion(teamId, teamIndex);
