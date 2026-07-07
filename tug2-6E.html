@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS V2607052244b</title>
+    <title>CKCPS WARS V2607061228</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
       
@@ -351,8 +351,8 @@
                     <div class="end-left">
                         <label style="color:#ff00aa;">GAME END CONDITION</label>
                         <select id="end-mode" onchange="toggleEndOptions()" style="width:100%;">
-                            <option value="score">First to Score</option>
                             <option value="time">Timed Game</option>
+                            <option value="score">First to Score</option>
                         </select>
                     </div>
                     <div class="end-right">
@@ -362,7 +362,7 @@
                         </div>
                         <div id="time-options" style="display:none;">
                             <label style="color:#ff00aa;">DURATION (minutes)</label>
-                            <input type="number" id="game-time" value="10" min="1" max="60" style="width:100%;">
+                            <input type="number" id="game-time" value="1" min="1" max="60" style="width:100%;">
                         </div>
                     </div>
                 </div>
@@ -1039,7 +1039,7 @@
                 setTimeout(() => {
                     currentQuestions[teamIndex] = getRandomQuestion();
                     renderTeamQuestion(teamId, teamIndex);
-                }, 2500);
+                }, 2000);
 
             }, 1000);
         }
