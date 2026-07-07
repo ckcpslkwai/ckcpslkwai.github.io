@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>排行榜 V2607071100 🏆</title>
+  <title>排行榜 V2607071146🏆</title>
   <style>
     :root {
       /* 深色質感背景 */
@@ -108,7 +108,7 @@
     .bus-station-row::-webkit-scrollbar { display: none; } 
     
     .bus-station-name { 
-      font-size: 1rem; /* 略微縮小站名避免佔據過多橫向空間 */
+      font-size: 1.4rem; /* 略微縮小站名避免佔據過多橫向空間 */
       color: var(--accent); 
       border-right: 2px solid var(--border-color); 
       padding-right: 8px;
@@ -116,13 +116,13 @@
     }
     .bus-route-item { display: inline-flex; align-items: center; background: rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 6px; gap: 6px; font-size: 1rem; }
     .bus-route-no { color: #f43f5e; font-weight: 950; } 
-    .bus-route-dest { color: var(--text-dim); font-size: 0.85rem; max-width: 85px; overflow: hidden; text-overflow: ellipsis; }
+    .bus-route-dest { color: var(--text-dim); font-size: 1rem; max-width: 85px; overflow: hidden; text-overflow: ellipsis; }
     .bus-eta-mins { color: #10b981; font-weight: 950; }
     .bus-eta-mins.now { color: #ef4444; }
 
     /* 走馬燈區域 */
     #marquee-container {
-      height: 8vh;
+      height: 7vh;
       background: rgba(255, 255, 255, 0.05); 
       border-radius: 10px;
       display: flex;
@@ -134,7 +134,7 @@
       flex-shrink: 0;
     }
     #marquee-text {
-      font-size: 2.5rem;
+      font-size: 2.2rem;
       color: #34d399; 
       display: inline-block;
       animation: marquee 100s linear infinite;
@@ -243,8 +243,8 @@
     // 2. 🚌 巴士 ETA 固定硬編碼引擎邏輯（每 30 秒自動重新獲取）
     // ==========================================
     const FIXED_STATIONS = [
-      { company: "KMB", id: "AA5DA45828958EAE", name: "嶺南大學" },
-      { company: "KMB", id: "E2AE7A37634C8FE5", name: "學校大門" }
+      { company: "KMB", id: "AA5DA45828958EAE", name: "嶺南大學巴士到站時間" },
+      { company: "KMB", id: "E2AE7A37634C8FE5", name: "學校大門巴士到站時間" }
     ];
     
     let stopData = {};
