@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS V2607071607</title>
+    <title>CKCPS WARS V2607080849</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
       
@@ -505,12 +505,14 @@
             }
         }
 
-        // ==================== 雲端精準下載排行 (Solo Mode) ====================
+        // ==================== 雲端精準下載排行 (Solo Mode 雙欄佈局) ====================
         async function fetchCloudLeaderboard(playerClass, subject, level) {
             const leaderboardEl = document.getElementById('leaderboard');
             if (!leaderboardEl) return;
 
-            leaderboardEl.innerHTML = '<div style="text-align:center; color:#00f9ff; font-size:11px; animation:pulse 1s infinite;">📥 正在連線並載入班級成績...</div>';
+            // 初始化為載入狀態，重置為單欄
+            leaderboardEl.style.display = 'block';
+            leaderboardEl.innerHTML = '<div style="text-align:center; color:#00f9ff; font-size:11px; animation:pulse 1s infinite;">📥 正在連線並載入排行與個人成績...</div>';
 
             if (!GOOGLE_SHEET_WEBAPP_URL || GOOGLE_SHEET_WEBAPP_URL.includes('你的部署ID')) {
                 leaderboardEl.innerHTML = '<div style="color:#ff00aa;text-align:center;font-size:11px;">⚠️ 未設定雲端網址</div>';
@@ -528,22 +530,22 @@
                     return;
                 }
                 if (!Array.isArray(allRecords) || allRecords.length === 0) {
-                    leaderboardEl.innerHTML = `<div style="text-align:center;color:#94a3b8;font-size:12px;margin-top:10px;">目前 ${playerClass} 班暫無紀錄，快來搶下第一名！</div>`;
+                    leaderboardEl.innerHTML = `<div style="text-align:center;color:#94a3b8;font-size:12px;margin-top:10px;">目前暫無紀錄，快來搶下第一個名次！</div>`;
                     return;
                 }
 
-                // 1. 嚴格過濾：同班、同科、同 LEVEL
+                // 基礎標準化處理與比對變數
                 const norm = (str) => (str || '').toString().toLowerCase().replace(/\.|\s|grade|form|年級|級/g, '').trim();
                 const targetClass = norm(playerClass);
                 const targetSub = norm(subject);
                 const targetLvl = norm(level);
+                const currentPlayerName = window.currentSoloPlayer ? window.currentSoloPlayer.name.trim() : "";
 
-                let filtered = allRecords.filter(r => {
-                    const rClass = norm(r.class);
+                // 1. 嚴格過濾：同科、同 LEVEL 的所有歷史紀錄
+                let subjectLevelFiltered = allRecords.filter(r => {
                     const rSub = norm(r.subject);
                     const rLvl = norm(r.level);
 
-                    const classMatch = (rClass === targetClass);
                     const subMatch = rSub === targetSub || 
                                      (targetSub === 'maths' && (rSub === 'math' || rSub === '數學')) ||
                                      (targetSub === '科學' && (rSub === '科學')) ||
@@ -551,12 +553,13 @@
                                      (targetSub === 'chinese' && (rSub === '中文' || rSub === 'chinese'));
                     const lvlMatch = rLvl === targetLvl || rLvl === targetLvl.replace('p','');
                     
-                    return classMatch && subMatch && lvlMatch;
+                    return subMatch && lvlMatch;
                 });
 
-                // 2. 去重複名字：同一個名字只取最高分
+                // 2. 左半邊計算：同班級內排行 (去重複名字：同一個名字只取最高分)
+                let classFiltered = subjectLevelFiltered.filter(r => norm(r.class) === targetClass);
                 let uniquePlayers = {};
-                filtered.forEach(r => {
+                classFiltered.forEach(r => {
                     const nameKey = r.name ? r.name.trim() : 'Unknown';
                     const scoreVal = parseInt(r.score) || 0;
                     if (!uniquePlayers[nameKey] || scoreVal > uniquePlayers[nameKey].score) {
@@ -566,27 +569,53 @@
                         };
                     }
                 });
-
-                // 3. 排序與取前 5 名
                 let top5 = Object.values(uniquePlayers).sort((a, b) => b.score - a.score).slice(0, 5);
 
-                // 4. 畫面渲染 (只顯示名次、名字、分數，不顯示時間)
-                if (top5.length === 0) {
-                    leaderboardEl.innerHTML = `<div style="text-align:center;color:#94a3b8;font-size:12px;margin-top:10px;">目前 ${playerClass} 班暫無此科目的紀錄，快來搶下第一名！</div>`;
-                    return;
-                }
+                // 3. 右半邊計算：撈取自己玩同一科目和 level 時的 5 個歷史最佳成績 (免去重)
+                let personalFiltered = subjectLevelFiltered.filter(r => r.name && r.name.trim().toLowerCase() === currentPlayerName.toLowerCase());
+                let personalTop5 = personalFiltered
+                    .map(r => ({ score: parseInt(r.score) || 0, date: r.date || '' }))
+                    .sort((a, b) => b.score - a.score)
+                    .slice(0, 5);
 
-                let html = '';
-                top5.forEach((t, i) => {
-                    html += `<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #334155;font-size:14px;">
-                        <span><strong style="color:#ff00aa;">#${i+1}</strong> <span style="margin-left:8px;">${t.name}</span></span>
-                        <span style="color:#39ff14;font-weight:bold;">${t.score} pts</span>
-                    </div>`;
-                });
-                leaderboardEl.innerHTML = html;
+                // 4. 啟用 Grid 雙欄佈局 (左半與右半各佔 50% 寬度)
+                leaderboardEl.style.display = 'grid';
+                leaderboardEl.style.gridTemplateColumns = '1fr 1fr';
+                leaderboardEl.style.gap = '20px';
+
+                // 建立左側 HTML (班級 TOP 5)
+                let leftHtml = '<div style="border-right: 1px solid #334155; padding-right: 15px; text-align: left;"><h4 style="color:#ff00aa; margin: 0 0 10px 0; font-size:12px; text-align:center;">CLASS TOP 5</h4>';
+                if (top5.length === 0) {
+                    leftHtml += `<div style="text-align:center;color:#94a3b8;font-size:11px;margin-top:15px;">暫無紀錄</div>`;
+                } else {
+                    top5.forEach((t, i) => {
+                        leftHtml += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #334155;font-size:12px;">
+                            <span><strong style="color:#ff00aa;">#${i+1}</strong> <span style="margin-left:6px;">${t.name}</span></span>
+                            <span style="color:#39ff14;font-weight:bold;">${t.score} pts</span>
+                        </div>`;
+                    });
+                }
+                leftHtml += '</div>';
+
+                // 建立右側 HTML (個人最佳 5 個成績)
+                let rightHtml = '<div style="text-align: left;"><h4 style="color:#00f9ff; margin: 0 0 10px 0; font-size:12px; text-align:center;">MY BEST 5</h4>';
+                if (personalTop5.length === 0) {
+                    rightHtml += `<div style="text-align:center;color:#94a3b8;font-size:11px;margin-top:15px;">暫無紀錄</div>`;
+                } else {
+                    personalTop5.forEach((t, i) => {
+                        rightHtml += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #334155;font-size:12px;">
+                            <span><strong style="color:#00f9ff;">#${i+1}</strong> <span style="margin-left:6px;color:#94a3b8;font-size:11px;">${t.date || 'Best'}</span></span>
+                            <span style="color:#39ff14;font-weight:bold;">${t.score} pts</span>
+                        </div>`;
+                    });
+                }
+                rightHtml += '</div>';
+
+                leaderboardEl.innerHTML = leftHtml + rightHtml;
 
             } catch (err) {
                 console.error(err);
+                leaderboardEl.style.display = 'block';
                 leaderboardEl.innerHTML = '<div style="color:#ff00aa;text-align:center;font-size:11px;">❌ 無法下載雲端排行</div>';
             }
         }
@@ -734,8 +763,7 @@
 
             if (numTeamsValue === 'solo' && window.currentSoloPlayer) {
                 infoEl.innerHTML = `${currentSubject} • ${currentLevel} &nbsp;|&nbsp; <span style="color:#39ff14;">${window.currentSoloPlayer.class} ${window.currentSoloPlayer.name}</span>`;
-                // 變更標題並下載雲端成績 (傳入班級、科目、年級參數)
-                document.getElementById('leaderboard-title').textContent = `🏆 ${window.currentSoloPlayer.class.toUpperCase()} TOP 5 🏆`;
+                document.getElementById('leaderboard-title').textContent = "🏆 LEADERBOARD 🏆";
                 fetchCloudLeaderboard(window.currentSoloPlayer.class, currentSubject, currentLevel);
             } else {
                 infoEl.innerHTML = `${currentSubject} • ${currentLevel} <span style="color:#94a3b8; font-size:12px;">(${customQuestions.length} Qs)</span>`;
@@ -1089,7 +1117,7 @@
             const crossed50 = Math.floor(teams[teamIndex].score / 50) > Math.floor(oldScore / 50);
 
             pendingResultTimeouts[teamId] = setTimeout(() => {
-                if (isCorrect && crossed50) {
+                if (isCorrect && crossed50 && !window.currentSoloPlayer) {
                     startLuckyDraw(teamId, teamIndex);
                 } else {
                     currentQuestions[teamIndex] = getRandomQuestion();
@@ -1100,6 +1128,9 @@
         }
 
         function updateLeaderboard() {
+            const leaderboardEl = document.getElementById('leaderboard');
+            if (leaderboardEl) leaderboardEl.style.display = 'block';
+
             const sorted = [...teams].sort((a,b) => b.score - a.score);
             let html = '';
             sorted.forEach((t, i) => {
@@ -1108,7 +1139,7 @@
                     <span style="color:#39ff14;font-weight:bold;">${t.score} pts</span>
                 </div>`;
             });
-            document.getElementById('leaderboard').innerHTML = html;
+            if (leaderboardEl) leaderboardEl.innerHTML = html;
         }
 
         function endGame() {
