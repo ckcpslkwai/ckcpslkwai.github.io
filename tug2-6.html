@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS V2607071607</title>
+    <title>CKCPS WARS V2607080849</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
       
@@ -1117,9 +1117,8 @@
             const crossed50 = Math.floor(teams[teamIndex].score / 50) > Math.floor(oldScore / 50);
 
             pendingResultTimeouts[teamId] = setTimeout(() => {
-        if (isCorrect && crossed50 && !window.currentSoloPlayer) {
-    startLuckyDraw(teamId, teamIndex);
-}
+                if (isCorrect && crossed50 && !window.currentSoloPlayer) {
+                    startLuckyDraw(teamId, teamIndex);
                 } else {
                     currentQuestions[teamIndex] = getRandomQuestion();
                     renderTeamQuestion(teamId, teamIndex);
@@ -1130,7 +1129,7 @@
 
         function updateLeaderboard() {
             const leaderboardEl = document.getElementById('leaderboard');
-            if (leaderboardEl) leaderboardEl.style.display = 'block'; // 重置為多人模式的標準單欄
+            if (leaderboardEl) leaderboardEl.style.display = 'block';
 
             const sorted = [...teams].sort((a,b) => b.score - a.score);
             let html = '';
