@@ -83,7 +83,7 @@
     
     table { width: 100%; border-collapse: collapse; }
     th { color: var(--text-dim); font-size: 1.0rem; padding: 4px 0; }
-    td { padding: 4px 4px; text-align: center; font-size: 1.35rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    td { padding: 3px 4px; text-align: center; font-size: 1.35rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     
     .name-col { text-align: left; font-size: 1.8rem; padding-left: 8px; }
     .score-col { color: var(--accent); font-size: 1.4rem; } 
@@ -287,7 +287,7 @@
         }
 
         // 3. 排序並取前 8 名
-        list = list.sort((a, b) => b.score - a.score).slice(0, 8); 
+        list = list.sort((a, b) => b.score - a.score).slice(0, 10); 
 
         container.innerHTML = `
           <table>
