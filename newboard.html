@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>排行榜 V2607072327🏆</title>
+  <title>排行榜 V26070080934🏆</title>
   <style>
     /* 基礎變數 (預設暗色) */
     :root {
@@ -271,8 +271,23 @@
         document.getElementById(`header-${idx}`).textContent = level;
         const container = document.getElementById(`container-${idx}`);
         const norm = str => String(str || '').replace(/\s|\./g, '').toUpperCase();
-        let list = allData.filter(d => norm(d.subject) === norm(currentSubject) && norm(d.level) === norm(level))
-                          .sort((a, b) => b.score - a.score).slice(0, 8); 
+        
+        // 1. 基本篩選：科目與年級
+        let list = allData.filter(d => norm(d.subject) === norm(currentSubject) && norm(d.level) === norm(level));
+
+        // 2. 班別開頭數字動態過濾 (P.1 只能 ≤ 1, P.2 只能 ≤ 2, 依此類推)
+        const levelNum = parseInt(level.replace(/[^0-9]/g, ''), 10);
+        if (!isNaN(levelNum)) {
+          list = list.filter(d => {
+            const classStr = String(d.class || '').trim();
+            if (!classStr) return false; 
+            const classNum = parseInt(classStr.charAt(0), 10);
+            return !isNaN(classNum) && classNum <= levelNum;
+          });
+        }
+
+        // 3. 排序並取前 8 名
+        list = list.sort((a, b) => b.score - a.score).slice(0, 8); 
 
         container.innerHTML = `
           <table>
@@ -289,8 +304,13 @@
           </table>`;
       });
       
-      currentSubjIndex++;
-      currentLevelPage = currentLevelPage === 0 ? 1 : 0; 
+      // 改進後的輪替邏輯：先切換同科目的頁碼，第二頁播完後再換下一科
+      if (currentLevelPage === 0) {
+        currentLevelPage = 1; // 15秒後顯示同科目的 P.4-P.6
+      } else {
+        currentLevelPage = 0; // 15秒後回到 P.1-P.3
+        currentSubjIndex++;   // 並切換到下一科
+      }
     }
 
     const FIXED_STATIONS = [
