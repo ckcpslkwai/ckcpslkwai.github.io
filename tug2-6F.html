@@ -447,8 +447,9 @@
             }
 
             try {
-                const response = await fetch('./password.csv');
-                if (!response.ok) throw new Error('找不到 password.csv 檔案');
+                const hiddenPath = atob('Li9wYXNzd29yZC5jc3Y='); 
+                const response = await fetch(hiddenPath);
+                if (!response.ok) throw new Error('找不到檔案');
                 
                 let text = await response.text();
                 if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
