@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS V2607091053</title>
+    <title>CKCPS WARS V2607091648</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
       
@@ -151,7 +151,7 @@
             padding: 16px;
             border-radius: 10px;
             border: 2px solid var(--secondary);
-            margin-bottom: 15px; /* Adjust spacing */
+            margin-bottom: 20px;
             overflow-x: hidden;
         }
        
@@ -293,17 +293,17 @@
             min-width: 150px;
         }
 
+        /* 改良後：排行榜格子設定 */
         .solo-leaderboard-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
-        .solo-left-col {
-            border-right: 1px solid #334155;
-            padding-right: 15px;
-            text-align: left;
-        }
-        .solo-right-col {
+        .solo-left-col, .solo-right-col {
+            border: 2px solid #334155;
+            padding: 15px;
+            border-radius: 10px;
+            background: #12122e;
             text-align: left;
         }
 
@@ -332,12 +332,6 @@
             }
             .solo-leaderboard-grid {
                 grid-template-columns: 1fr;
-            }
-            .solo-left-col {
-                border-right: none;
-                border-bottom: 1px solid #334155;
-                padding-right: 0;
-                padding-bottom: 15px;
             }
             .team-grid {
                 grid-template-columns: 1fr;
@@ -476,11 +470,6 @@
         </div>
 
         <div id="game-screen" class="screen">
-            <div class="leaderboard">
-                <h3 id="leaderboard-title" style="color:#ff00aa; margin-top:0;">🏆 LEADERBOARD 🏆</h3>
-                <div id="leaderboard" style="text-align:left;"></div>
-            </div>
-
             <div class="game-controls">
                 <div class="game-controls-info">
                     <strong id="game-info" style="color:#00f9ff;"></strong>
@@ -492,6 +481,11 @@
                 <div class="game-controls-right">
                     <button onclick="endGame()" style="padding:10px 20px; font-size:13px; margin: 0;">END GAME</button>
                 </div>
+            </div>
+            
+            <div class="leaderboard">
+                <h3 id="leaderboard-title" style="color:#ff00aa; margin-top:0;">🏆 LEADERBOARD 🏆</h3>
+                <div id="leaderboard" style="text-align:left;"></div>
             </div>
             
             <div id="team-grid" class="team-grid"></div>
@@ -842,7 +836,6 @@
                 fetchCloudLeaderboard(window.currentSoloPlayer.class, currentSubject, currentLevel);
             } else {
                 infoEl.innerHTML = `${currentSubject} • ${currentLevel} <span style="color:#94a3b8; font-size:12px;">(${customQuestions.length} Qs)</span>`;
-                document.getElementById('leaderboard').innerHTML = ''; // Clear for team mode if needed
             }
 
             initTeams(numTeams);
@@ -1163,6 +1156,7 @@
             const statusEl = document.getElementById(`status-${teamId}`);
             const buttons = document.querySelectorAll(`#options-${teamId} .option-btn`);
            
+            // 停用所有按鈕以防止連點
             buttons.forEach((btn, idx) => {
                 btn.disabled = true;
             });
@@ -1172,7 +1166,8 @@
             teams[teamIndex].multiplier = 1; 
 
             if (isCorrect) {
-                buttons[q.ans].style.borderColor = '#39ff14';
+                // 正確的情況
+                buttons[q.ans].style.borderColor = '#39ff14'; // 保持綠色邊框
                 teams[teamIndex].score += ptsToAdd;
                 statusEl.innerHTML = `<span style="color:#39ff14">✅ CORRECT! +${ptsToAdd}</span>`;
                 
@@ -1182,6 +1177,7 @@
                 
                 if (!window.currentSoloPlayer) updateLeaderboard();
                 
+                // 檢查是否結束遊戲
                 if (endMode === 'score' && teams[teamIndex].score >= targetScore) {
                     setTimeout(() => { 
                         if (window.currentSoloPlayer) alert(`🎉 Finished!`);
@@ -1191,6 +1187,7 @@
                     return;
                 }
 
+                // 處理連鎖獎勵 (Lucky Draw)
                 const crossed50 = Math.floor(teams[teamIndex].score / 50) > Math.floor(oldScore / 50);
                 pendingResultTimeouts[teamId] = setTimeout(() => {
                     if (isCorrect && crossed50 && !window.currentSoloPlayer) {
@@ -1203,14 +1200,19 @@
                 }, 1600);
 
             } else {
+                // 錯誤的情況：螢光強調 + 3秒暫停
                 const wrongBtn = buttons[selectedIndex];
+                
+                // 設定螢光色強調 (Neon Red/Pink)
                 wrongBtn.style.background = '#ff0055'; 
                 wrongBtn.style.boxShadow = '0 0 20px #ff0055';
                 wrongBtn.style.border = '2px solid #fff';
                 wrongBtn.style.color = '#fff';
                 
+                // 顯示錯誤訊息
                 statusEl.innerHTML = `<span style="color:#ff00aa">❌ Wrong! 凍結 3 秒!</span>`;
 
+                // 設定 3000ms (3秒) 的延遲懲罰
                 pendingResultTimeouts[teamId] = setTimeout(() => {
                     currentQuestions[teamIndex] = getRandomQuestion();
                     renderTeamQuestion(teamId, teamIndex);
@@ -1227,7 +1229,7 @@
             }
 
             const sorted = [...teams].sort((a,b) => b.score - a.score);
-            let html = '<div style="padding: 10px;">';
+            let html = '';
             let currentRank = 1;
             let previousScore = null;
 
@@ -1241,7 +1243,6 @@
                 </div>`;
                 previousScore = t.score;
             });
-            html += '</div>';
             if (leaderboardEl) leaderboardEl.innerHTML = html;
         }
 
