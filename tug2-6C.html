@@ -295,10 +295,19 @@
 
         /* 改良後：排行榜格子設定 */
         .solo-leaderboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
+display: grid !important; /* 使用 !important 確保樣式優先 */
+    grid-template-columns: 1fr 1fr; /* 強制分為兩欄 */
+    gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 10px;
+}
+        /* 確保手機版時恢復為單欄 */
+@media (max-width: 600px) {
+    .solo-leaderboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
         .solo-left-col, .solo-right-col {
             border: 2px solid #334155;
             padding: 15px;
