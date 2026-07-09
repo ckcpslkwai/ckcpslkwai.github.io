@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS V2607091740</title>
+    <title>CKCPS WARS V2607091751</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
       
@@ -378,18 +378,18 @@ display: grid !important; /* 使用 !important 確保樣式優先 */
         <div id="menu-screen" class="screen">
             <div class="compact-grid">
                 <div class="section">
-                    <label style="color:#00f9ff;">NUMBER OF TEAMS</label>
+                    <label style="color:#00f9ff;">NUMBER OF TEAMS 隊伍數目</label>
                     <select id="num-teams" onchange="toggleSoloMode()">
                         <option value="solo" selected>🧑 SOLO (個人模式)</option>
-                        <option value="2">2 Teams</option>
-                        <option value="3">3 Teams</option>
-                        <option value="4">4 Teams</option>
-                        <option value="5">5 Teams</option>
-                        <option value="6">6 Teams</option>
+                        <option value="2">2 Teams/2隊</option>
+                        <option value="3">3 Teams/3隊</option>
+                        <option value="4">4 Teams/4隊</option>
+                        <option value="5">5 Teams/5隊</option>
+                        <option value="6">6 Teams/6隊</option>
                     </select>
                 </div>
                 <div class="section">
-                    <label style="color:#00f9ff;">&nbsp;&nbsp;&nbsp;&nbsp;SUBJECT&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                    <label style="color:#00f9ff;">&nbsp;&nbsp;&nbsp;&nbsp;SUBJECT科目&nbsp;&nbsp;&nbsp;&nbsp;</label>
                     <select id="subject">
                         <option value="Chinese">Chinese中文</option>
                         <option value="English">English</option>
@@ -401,7 +401,7 @@ display: grid !important; /* 使用 !important 確保樣式優先 */
                     </select>
                 </div>
                 <div class="section">
-                    <label style="color:#00f9ff;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LEVEL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                    <label style="color:#00f9ff;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LEVEL級別&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
                     <select id="level">
                         <option value="K">K</option>
                         <option value="P1" selected>P.1</option>
@@ -418,11 +418,11 @@ display: grid !important; /* 使用 !important 確保樣式優先 */
                 <label style="color:#39ff14;">PLAYER INFORMATION 玩家資料</label>
                 <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:8px;">
                     <div style="flex:1; min-width:130px;">
-                        <label style="font-size:12px; color:#94a3b8;">Class</label>
+                        <label style="font-size:12px; color:#94a3b8;">Class班別</label>
                         <input type="text" id="solo-class" placeholder="e.g. 3A" style="width:100%; font-size:15px; padding:8px;" readonly>
                     </div>
                     <div style="flex:2; min-width:180px;">
-                        <label style="font-size:12px; color:#94a3b8;">Name</label>
+                        <label style="font-size:12px; color:#94a3b8;">Name姓名</label>
                         <input type="text" id="solo-name" placeholder="Full name please 請輸入全名" style="width:100%; font-size:15px; padding:8px;" readonly>
                     </div>
                 </div>
@@ -431,19 +431,19 @@ display: grid !important; /* 使用 !important 確保樣式優先 */
             <div class="section">
                 <div class="end-condition">
                     <div class="end-left">
-                        <label style="color:#ff00aa;">GAME END CONDITION</label>
+                        <label style="color:#ff00aa;">GAME MODE遊戲模式</label>
                         <select id="end-mode" onchange="toggleEndOptions()" style="width:100%;">
-                            <option value="time">Timed Game</option>
-                            <option value="score">First to Score</option>
+                            <option value="time">Timed Game限時模式</option>
+                            <option value="score">First to Score到達分數</option>
                         </select>
                     </div>
                     <div class="end-right">
                         <div id="score-options">
-                            <label style="color:#ff00aa;">TARGET SCORE</label>
+                            <label style="color:#ff00aa;">TARGET SCORE目標分數</label>
                             <input type="number" id="target-score" value="300" min="50" step="50" style="width:100%;">
                         </div>
                         <div id="time-options" style="display:none;">
-                            <label style="color:#ff00aa;">DURATION (minutes)</label>
+                            <label style="color:#ff00aa;">DURATION(minutes)時長(分鐘)</label>
                             <input type="number" id="game-time" value="1" min="1" max="60" style="width:100%;">
                         </div>
                     </div>
@@ -451,7 +451,7 @@ display: grid !important; /* 使用 !important 確保樣式優先 */
             </div>
 
             <div class="section">
-                <label style="color:#00f9ff;">BACKGROUND MUSIC</label>
+                <label style="color:#00f9ff;">BACKGROUND MUSIC背景音樂</label>
                 <div style="display:flex; align-items:center; gap:12px; margin-top:8px; flex-wrap:wrap;">
                     <div style="flex:1; min-width:100%;">
                         <select id="music-track" style="width:100%; font-size:13px;">
@@ -465,10 +465,10 @@ display: grid !important; /* 使用 !important 確保樣式優先 */
             </div>
 
             <div class="section">
-                <label style="color:#39ff14;">QUESTION SOURCE</label>
+                <label style="color:#39ff14;">QUESTION SOURCE題庫來源</label>
                 <div class="csv-buttons">
                     <button onclick="document.getElementById('csv-upload').click()">
-                        📁 UPLOAD CSV
+                        📁 UPLOAD CSV 上載
                     </button>
                     <button onclick="loadDefaultCSV()" style="border-color:#39ff14;">
                         📋 Default 預設
