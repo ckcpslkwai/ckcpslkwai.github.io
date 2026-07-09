@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS V2607091040</title>
+    <title>CKCPS WARS V2607091053</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
       
@@ -816,6 +816,8 @@
             const questions = [];
             const findIdx = (keywords) => header.findIndex(h => keywords.some(k => h.includes(k)));
 
+            // 尋找 Question # 或是 ID 欄位，找不到則預設用第一欄 (即左方第一項數值)
+            const idxId      = findIdx(['question #', 'question no', 'id', '編號', '題號']);
             const idxSubject = findIdx(['subject']);
             const idxLevel   = findIdx(['level']);
             const idxQ       = findIdx(['question text']);
@@ -831,7 +833,7 @@
                 const row = parseCSVLine(lines[i]);
                 if (row.length < 4) continue;
 
-                const qText = (idxQ !== -1 ? row[idxQ] : row[3] || '').trim();
+                const qText = (idxQ !== -1 && row[idxQ]) ? row[idxQ].trim() : (row[3] || '').trim();
                 const opts = [];
                 [idxAnswer1, idxAnswer2, idxAnswer3, idxAnswer4].forEach(idx => {
                     if (idx !== -1 && row[idx] && row[idx].trim()) opts.push(row[idx].trim());
@@ -841,12 +843,15 @@
                 if (idxCorrect !== -1 && row[idxCorrect]) correctIdx = parseInt(row[idxCorrect].trim()) - 1;
                 else correctIdx = parseInt(row[row.length - 1]) - 1;
 
-                const subj = (idxSubject !== -1 ? row[idxSubject] : '').trim();
-                const lvl  = (idxLevel   !== -1 ? row[idxLevel]   : '').trim();
+                const subj = (idxSubject !== -1 && row[idxSubject]) ? row[idxSubject].trim() : '';
+                const lvl  = (idxLevel   !== -1 && row[idxLevel]) ? row[idxLevel].trim() : '';
+                
+                // 優先抓取指定 ID 欄位，若無則抓取最左邊第 0 欄，若連第 0 欄都空則用備用數字
+                let rowId = (idxId !== -1 && row[idxId]) ? row[idxId].trim() : (row[0] ? row[0].trim() : (validQuestionCount + 1));
 
                 if (qText && opts.length >= 2 && !isNaN(correctIdx) && correctIdx >= 0 && correctIdx < opts.length) {
                     validQuestionCount++;
-                    questions.push({ id: validQuestionCount, q: qText, options: opts, ans: correctIdx, subject: subj, level: lvl });
+                    questions.push({ id: rowId, q: qText, options: opts, ans: correctIdx, subject: subj, level: lvl });
                 }
             }
             return questions;
