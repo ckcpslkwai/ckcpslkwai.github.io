@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>排行榜 V26070091217🏆</title>
+  <title>排行榜 V26070091231🏆</title>
   <style>
+    /* 基礎變數 (預設暗色) */
     :root {
       --bg-color: linear-gradient(135deg, #4c1d95 0%, #4c1d95 100%);
       --panel-bg: #1e293b;        
@@ -13,6 +14,8 @@
       --accent: #38bdf8;          
       --border-color: #334155;    
     }
+
+    /* 粉彩風格 Class */
     body.pastel-theme {
       --bg-color: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
       --panel-bg: #ffffff;
@@ -21,28 +24,76 @@
       --accent: #f472b6;
       --border-color: #fecdd3;
     }
+
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, '微軟正黑體', sans-serif; background: var(--bg-color); color: var(--text-main); height: 100vh; overflow: hidden; padding: 10px; display: flex; flex-direction: column; font-weight: 800; transition: background 0.3s, color 0.3s; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, '微軟正黑體', sans-serif;
+      background: var(--bg-color);
+      color: var(--text-main);
+      height: 100vh; 
+      overflow: hidden;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      font-weight: 800;
+      transition: background 0.3s, color 0.3s;
+    }
+  
+    /* 按鈕與天氣容器 */
     .controls { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; z-index: 100; }
-    .weather-box { position: absolute; top: 10px; left: 10px; z-index: 100; display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); padding: 8px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.3); }
-    .weather-info-row { display: flex; align-items: center; gap: 10px; font-size: 1.4rem; }
-    #warning-text { font-size: 1.4rem; color: #ff4d4f; display: flex; gap: 6px; align-items: center; }
+    
+    /* 天氣盒 */
+    .weather-box { 
+      position: absolute; top: 10px; left: 10px; z-index: 100; 
+      display: flex; align-items: center; gap: 10px; 
+      background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); 
+      padding: 8px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    /* 天氣圖示、溫度、警告一行展示 */
+    .weather-info-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.4rem;
+    }
+
+    /* 警告信號樣式 */
+    #warning-text {
+      font-size: 1.4rem;
+      color: #ff4d4f;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    
     .btn { padding: 8px 12px; font-size: 1.2rem; cursor: pointer; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); border-radius: 50px; backdrop-filter: blur(5px); transition: transform 0.2s, background 0.2s; }
     .btn:hover { transform: scale(1.1); background: rgba(255,255,255,0.3); }
+
     header { text-align: center; padding: 5px 0; flex-shrink: 0; }
     h1 { font-size: 2rem; font-weight: 900; color: var(--accent); text-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    
+    /* 排行榜網格 */
     .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; flex-grow: 1; margin-top: 4px; margin-bottom: 10px; min-height: 0; }
+    
+    /* 排行榜面板內部與行距 */
     .panel { background: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 15px; padding: 6px 10px; display: flex; flex-direction: column; overflow: hidden; transition: background 0.3s, border-color 0.3s; }
     .panel-header { text-align: center; font-size: 1.6rem; border-bottom: 2px solid var(--border-color); margin-bottom: 4px; color: var(--text-main); }
+    
     table { width: 100%; border-collapse: collapse; }
     th { color: var(--text-dim); font-size: 1.0rem; padding: 4px 0; }
     td { padding: 1px 4px; text-align: center; font-size: 1.35rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    
     .name-col { text-align: left; font-size: 1.8rem; padding-left: 8px; }
     .score-col { color: var(--accent); font-size: 1.4rem; } 
+    
+    /* 金屬效果 */
     body:not(.pastel-theme) .rank-1 td { background: linear-gradient(135deg, #ffe066 0%, #f5b041 50%, #ffd700 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     body.pastel-theme .rank-1 td { background: linear-gradient(135deg, #fcd34d 0%, #fb923c 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .rank-2 td { background: linear-gradient(135deg, #ffffff 0%, #94a3b8 50%, #e2e8f0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .rank-3 td { background: linear-gradient(135deg, #ffedd5 0%, #ea580c 50%, #b45309 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    
     #bus-eta-container { height: 11vh; background: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 12px; margin-bottom: 8px; display: flex; flex-direction: column; justify-content: center; padding: 6px 15px; gap: 4px; flex-shrink: 0; transition: background 0.3s; }
     .bus-station-row { display: flex; align-items: center; gap: 15px; width: 100%; overflow-x: auto; white-space: nowrap; }
     .bus-station-row::-webkit-scrollbar { display: none; } 
@@ -52,85 +103,324 @@
     .bus-route-dest { color: var(--text-dim); max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
     .bus-eta-mins { color: #10b981; font-weight: 950; }
     .bus-eta-mins.now { color: #ef4444; }
+
     #marquee-container { height: 7vh; background: var(--panel-bg); border-radius: 10px; display: flex; align-items: center; overflow: hidden; padding: 0 20px; white-space: nowrap; border: 1px solid var(--border-color); flex-shrink: 0; }
     #marquee-text { font-size: 2.2rem; color: #34d399; display: inline-block; animation: marquee 100s linear infinite; padding-left: 100%; }
     @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
   </style>
 </head>
 <body>
-  <div class="weather-box" id="weather-box"><div class="weather-info-row"><span id="wx-icon">☁️</span><span id="temp-text">--°C</span><span id="warning-text"></span></div></div>
-  <div class="controls"><button class="btn" onclick="setTheme('default')">🔄</button><button class="btn" onclick="setTheme('pastel')">🎨</button><button class="btn" onclick="setRandomTheme()">🎲</button></div>
-  <header><h1 id="main-title">載入中...</h1></header>
+
+  <div class="weather-box" id="weather-box">
+    <div class="weather-info-row">
+      <span id="wx-icon">☁️</span>
+      <span id="temp-text">--°C</span>
+      <span id="warning-text"></span>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn" onclick="setTheme('default')">🔄</button>
+    <button class="btn" onclick="setTheme('pastel')">🎨</button>
+    <button class="btn" onclick="setRandomTheme()">🎲</button>
+  </div>
+
+  <header>
+    <h1 id="main-title">載入中...</h1>
+  </header>
+
   <main class="grid" id="gridPanels"></main>
+
   <div id="bus-eta-container">
     <div class="bus-station-row"><span style="color: var(--text-dim); font-size: 1.2rem;">正在加載 嶺南大學 巴士時間...</span></div>
     <div class="bus-station-row"><span style="color: var(--text-dim); font-size: 1.2rem;">正在加載 學校大門 巴士時間...</span></div>
   </div>
-  <div id="marquee-container"><div id="marquee-text">資料載入中...</div></div>
+
+  <div id="marquee-container">
+    <div id="marquee-text">資料載入中...</div>
+  </div>
+
   <script>
-    const ICON_MAP = {'50': '☀️', '51': '☀️', '52': '☀️', '53': '☀️', '54': '☀️', '60': '☁️', '61': '☁️', '62': '☁️', '63': '☁️', '64': '☁️', '65': '☁️', '70': '🌦️', '71': '🌦️', '72': '🌧️', '73': '🌧️', '74': '🌧️', '75': '🌧️', '76': '🌧️', '77': '🌧️', '80': '⛈️', '81': '⛈️', '82': '⛈️', '83': '⛈️', '84': '⛈️', '85': '⛈️', '90': '🌫️', '91': '🌫️', '92': '🌫️', '93': '🌫️'};
-    const WARN_MAP = {'WFIREY': '🔥黃色火災', 'WFIRER': '🔥紅色火災', 'WRAINA': '🌧️黃雨', 'WRAINR': '⛈️紅雨', 'WRAINB': '☔黑雨', 'WT1': '🌀一號戒備', 'WT3': '🌀三號強風', 'WT8NE': '🌀八號(東北)', 'WT8SE': '🌀八號(東南)', 'WT8SW': '🌀八號(西南)', 'WT8NW': '🌀八號(西北)', 'WT9': '🌀九號烈風', 'WT10': '🌀十號颶風', 'WCOLD': '❄️寒冷', 'WHOT': '🥵酷熱', 'WTS': '⚡雷暴', 'WMSGNL': '🌊強烈季候風', 'WFROST': '❄️霜凍', 'WTMW': '🌊海嘯'};
+    // --- 天氣及警告功能 ---
+    const ICON_MAP = {
+      '50': '☀️', '51': '☀️', '52': '☀️', '53': '☀️', '54': '☀️',
+      '60': '☁️', '61': '☁️', '62': '☁️', '63': '☁️', '64': '☁️', '65': '☁️',
+      '70': '🌦️', '71': '🌦️', '72': '🌧️', '73': '🌧️', '74': '🌧️', '75': '🌧️', '76': '🌧️', '77': '🌧️',
+      '80': '⛈️', '81': '⛈️', '82': '⛈️', '83': '⛈️', '84': '⛈️', '85': '⛈️',
+      '90': '🌫️', '91': '🌫️', '92': '🌫️', '93': '🌫️'
+    };
+
+    const WARN_MAP = {
+      'WFIREY': '🔥黃色火災', 'WFIRER': '🔥紅色火災', 
+      'WRAINA': '🌧️黃雨', 'WRAINR': '⛈️紅雨', 'WRAINB': '☔黑雨',
+      'WT1': '🌀一號戒備', 'WT3': '🌀三號強風', 
+      'WT8NE': '🌀八號(東北)', 'WT8SE': '🌀八號(東南)', 'WT8SW': '🌀八號(西南)', 'WT8NW': '🌀八號(西北)',
+      'WT9': '🌀九號烈風', 'WT10': '🌀十號颶風',
+      'WCOLD': '❄️寒冷', 'WHOT': '🥵酷熱',
+      'WTS': '⚡雷暴', 'WMSGNL': '🌊強烈季候風',
+      'WFROST': '❄️霜凍', 'WTMW': '🌊海嘯'
+    };
+
     async function updateWeather() {
       try {
-        const [res, warnRes] = await Promise.all([fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc'), fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=warnsum&lang=tc')]);
-        const data = await res.json(); const warnData = await warnRes.json();
+        const [res, warnRes] = await Promise.all([
+          fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc'),
+          fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=warnsum&lang=tc')
+        ]);
+        const data = await res.json();
+        const warnData = await warnRes.json();
+        
+        // 溫度
         const tmTemp = data.temperature.data.find(s => s.place === '屯門');
         if (tmTemp) document.getElementById('temp-text').textContent = tmTemp.value + '°C';
-        document.getElementById('wx-icon').textContent = ICON_MAP[data.icon[0]] || '🌤️';
-        const activeWarnings = Object.keys(warnData).filter(k => warnData[k] && warnData[k].name && warnData[k].actionCode !== 'CANCEL').map(k => `<span>${WARN_MAP[k] || warnData[k].name}</span>`).join('');
+        
+        // 天氣圖示
+        const iconCode = data.icon[0];
+        document.getElementById('wx-icon').textContent = ICON_MAP[iconCode] || '🌤️';
+        
+        // 處理並顯示警告
+        const activeWarnings = Object.keys(warnData)
+          .filter(k => warnData[k] && warnData[k].name && warnData[k].actionCode !== 'CANCEL')
+          .map(k => `<span>${WARN_MAP[k] || warnData[k].name}</span>`)
+          .join('');
         document.getElementById('warning-text').innerHTML = activeWarnings;
       } catch (e) { console.error("天氣載入失敗", e); }
     }
-    function setTheme(type) { document.body.classList.remove('pastel-theme'); document.body.style = ''; if (type === 'pastel') { document.body.classList.add('pastel-theme'); localStorage.setItem('theme', 'pastel'); } else { localStorage.removeItem('theme'); localStorage.removeItem('random-style'); } }
-    function setRandomTheme() { document.body.classList.remove('pastel-theme'); const hue = Math.floor(Math.random() * 360); const styles = {'--bg-color': `linear-gradient(135deg, hsl(${hue}, 70%, 15%) 0%, hsl(${hue}, 70%, 10%) 100%)', '--panel-bg': `hsl(${hue}, 40%, 20%)', '--text-main': '#ffffff', '--text-dim': '#d1d5db', '--accent': `hsl(${hue}, 90%, 70%)', '--border-color': `hsl(${hue}, 30%, 30%)'}; for (const [prop, val] of Object.entries(styles)) document.body.style.setProperty(prop, val); localStorage.setItem('random-style', JSON.stringify(styles)); }
+
+    // --- 主題與原有邏輯 ---
+    function setTheme(type) {
+      document.body.classList.remove('pastel-theme');
+      document.body.style = '';
+      if (type === 'pastel') {
+        document.body.classList.add('pastel-theme');
+        localStorage.setItem('theme', 'pastel');
+      } else {
+        localStorage.removeItem('theme');
+        localStorage.removeItem('random-style');
+      }
+    }
+
+    function setRandomTheme() {
+      document.body.classList.remove('pastel-theme');
+      const hue = Math.floor(Math.random() * 360);
+      const styles = {
+        '--bg-color': `linear-gradient(135deg, hsl(${hue}, 70%, 15%) 0%, hsl(${hue}, 70%, 10%) 100%)`,
+        '--panel-bg': `hsl(${hue}, 40%, 20%)`,
+        '--text-main': '#ffffff',
+        '--text-dim': '#d1d5db',
+        '--accent': `hsl(${hue}, 90%, 70%)`,
+        '--border-color': `hsl(${hue}, 30%, 30%)`
+      };
+      for (const [prop, val] of Object.entries(styles)) document.body.style.setProperty(prop, val);
+      localStorage.setItem('random-style', JSON.stringify(styles));
+    }
+
+    const savedTheme = localStorage.getItem('theme');
+    const savedRandom = localStorage.getItem('random-style');
+    if (savedTheme === 'pastel') setTheme('pastel');
+    else if (savedRandom) {
+      const styles = JSON.parse(savedRandom);
+      for (const [prop, val] of Object.entries(styles)) document.body.style.setProperty(prop, val);
+    }
+
     const API_URL = 'https://script.google.com/macros/s/AKfycbxqgywi-q3jfo3ENHdWkQMn0KJHTtaXISaIDqq3AQJiolRn9jge_gvCH-UkHGCFTboz/exec';
     const LEVELS = ['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6']; 
-    let allData = [], subjects = [], currentSubjIndex = 0, currentLevelPage = 0; 
-    function createPanels() { const grid = document.getElementById('gridPanels'); grid.innerHTML = ''; for(let i=0; i<3; i++) { grid.innerHTML += `<div class="panel"><div class="panel-header" id="header-${i}">Level</div><div id="container-${i}"></div></div>`; } }
-    async function updateData() { try { const response = await fetch(API_URL); const data = await response.json(); updateMarquee(data); allData = data.filter(d => d.subject && d.level && d.score !== undefined && d.score !== null && d.score !== '' && Number(d.score) !== 0); subjects = [...new Set(allData.map(d => d.subject.trim()))]; render(); } catch (e) { console.error("更新排行榜失敗:", e); } }
-    function updateMarquee(rawData) { const infos = [...new Set(rawData.map(d => d.info || d.Info || d.INFO).filter(i => i && String(i).trim() !== ""))]; const textEl = document.getElementById('marquee-text'); textEl.textContent = infos.length > 0 ? infos.map(i => `✦ ${i} ✦`).join('          ') : "目前無最新公告"; }
+    let allData = [], subjects = [], currentSubjIndex = 0;
+    let currentLevelPage = 0; 
+
+    function createPanels() {
+      const grid = document.getElementById('gridPanels');
+      grid.innerHTML = ''; 
+      for(let i=0; i<3; i++) {
+        grid.innerHTML += `
+          <div class="panel">
+            <div class="panel-header" id="header-${i}">Level</div>
+            <div id="container-${i}"></div>
+          </div>
+        `;
+      }
+    }
+
+    async function updateData() {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        updateMarquee(data);
+        allData = data.filter(d => d.subject && d.level && d.score !== undefined && d.score !== null && d.score !== '' && Number(d.score) !== 0);
+        subjects = [...new Set(allData.map(d => d.subject.trim()))];
+        render();
+      } catch (e) { console.error("更新排行榜失敗:", e); }
+    }
+
+    function updateMarquee(rawData) {
+      const infos = [...new Set(rawData.map(d => d.info || d.Info || d.INFO).filter(i => i && String(i).trim() !== ""))];
+      const textEl = document.getElementById('marquee-text');
+      if (infos.length > 0) textEl.textContent = infos.map(i => `✦ ${i} ✦`).join('          ');
+      else textEl.textContent = "目前無最新公告";
+    }
+
     function render() {
       if (subjects.length === 0) return;
       const currentSubject = subjects[currentSubjIndex % subjects.length];
       document.getElementById('main-title').textContent = `(測試中)🏆${currentSubject} 榮譽榜 Leaderboard 🏆(Testing)`;
-      const displayLevels = LEVELS.slice(currentLevelPage * 3, currentLevelPage * 3 + 3);
+      
+      const start = currentLevelPage * 3;
+      const displayLevels = LEVELS.slice(start, start + 3);
+      
       displayLevels.forEach((level, idx) => {
         document.getElementById(`header-${idx}`).textContent = level;
         const container = document.getElementById(`container-${idx}`);
         const norm = str => String(str || '').replace(/\s|\./g, '').toUpperCase();
+        
+        // 1. 基本篩選：科目與年級
         let list = allData.filter(d => norm(d.subject) === norm(currentSubject) && norm(d.level) === norm(level));
+
+        // 2. 班別開頭數字動態過濾
         const levelNum = parseInt(level.replace(/[^0-9]/g, ''), 10);
-        if (!isNaN(levelNum)) list = list.filter(d => { const c = parseInt(String(d.class||'').trim().charAt(0), 10); return !isNaN(c) && c <= levelNum; });
+        if (!isNaN(levelNum)) {
+          list = list.filter(d => {
+            const classStr = String(d.class || '').trim();
+            if (!classStr) return false; 
+            const classNum = parseInt(classStr.charAt(0), 10);
+            return !isNaN(classNum) && classNum <= levelNum;
+          });
+        }
+
+        // 3. 同名去重：只保留最高分
         const uniqueMap = new Map();
-        list.forEach(item => { const name = String(item.name || '').trim(); if (!name) return; if (!uniqueMap.has(name) || Number(item.score) > Number(uniqueMap.get(name).score)) uniqueMap.set(name, item); });
-        const sortedList = Array.from(uniqueMap.values()).sort((a, b) => b.score - a.score);
-        const rankedList = sortedList.map((item, i) => { let rank = i + 1; if (i > 0 && item.score === sortedList[i - 1].score) rank = sortedList.find(x => x.score === item.score)._rank || sortedList.filter((x, idx) => idx < i && x.score > item.score).length + 1; item._rank = rank; return item; });
-        const displayList = rankedList.slice(0, 10);
-        container.innerHTML = `<table><thead><tr><th>#</th><th>班</th><th>姓名</th><th>分</th></tr></thead><tbody>${displayList.map(r => `<tr class="${r._rank <= 3 ? 'rank-' + r._rank : ''}"><td>${r._rank}</td><td>${r.class||'—'}</td><td class="name-col">${r.name || '—'}</td><td class="score-col">${r.score}</td></tr>`).join('')}</tbody></table>`;
+        list.forEach(item => {
+          const name = String(item.name || '').trim();
+          if (!name) return;
+          const score = Number(item.score);
+          if (!uniqueMap.has(name) || score > Number(uniqueMap.get(name).score)) {
+            uniqueMap.set(name, item);
+          }
+        });
+
+        // 4. 排序並計算名次 (並列同名次)
+        let sortedList = Array.from(uniqueMap.values()).sort((a, b) => b.score - a.score);
+        
+        sortedList.forEach((item, index) => {
+          if (index === 0) {
+            item.displayRank = 1;
+          } else {
+            const prevItem = sortedList[index - 1];
+            // 若分數相同，名次與前一名相同；否則為 index + 1
+            if (Number(item.score) === Number(prevItem.score)) {
+              item.displayRank = prevItem.displayRank;
+            } else {
+              item.displayRank = index + 1;
+            }
+          }
+        });
+
+        // 取前 10 名
+        list = sortedList.slice(0, 10);
+
+        container.innerHTML = `
+          <table>
+            <thead><tr><th>#</th><th>班</th><th>姓名</th><th>分</th></tr></thead>
+            <tbody>
+              ${list.map((r) => `
+                <tr class="${r.displayRank <= 3 ? 'rank-' + r.displayRank : ''}">
+                  <td>${r.displayRank}</td>
+                  <td>${r.class||'—'}</td>
+                  <td class="name-col">${r.name || '—'}</td>
+                  <td class="score-col">${r.score}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>`;
       });
-      currentLevelPage = (currentLevelPage === 0) ? 1 : 0;
-      if (currentLevelPage === 0) currentSubjIndex++;
+      
+      if (currentLevelPage === 0) {
+        currentLevelPage = 1; 
+      } else {
+        currentLevelPage = 0; 
+        currentSubjIndex++;   
+      }
     }
-    const FIXED_STATIONS = [{ company: "KMB", id: "AA5DA45828958EAE", name: "嶺南大學" }, { company: "KMB", id: "E2AE7A37634C8FE5", name: "學校大門" }];
+
+    const FIXED_STATIONS = [
+      { company: "KMB", id: "AA5DA45828958EAE", name: "嶺南大學" },
+      { company: "KMB", id: "E2AE7A37634C8FE5", name: "學校大門" }
+    ];
+    
     let stopData = {};
     function safeText(v) { return String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c])); }
-    function getMinutes(dateStr) { if (!dateStr) return null; const d = new Date(dateStr); return Math.max(0, Math.ceil((d.getTime() - Date.now()) / 60000)); }
+    function stationKey(s) { return `${s.company}:${s.id}`; }
+    function getMinutes(dateStr) {
+      if (!dateStr) return null;
+      const d = new Date(dateStr);
+      return Number.isNaN(d.getTime()) ? null : Math.max(0, Math.ceil((d.getTime() - Date.now()) / 60000));
+    }
+
     function groupByRoute(items) {
       const groups = new Map();
-      items.forEach(item => { const route = String(item.route||"").toUpperCase(); const key = `${route}|${String(item.dest_tc||item.dest||"").trim()}`; if (!groups.has(key)) groups.set(key, { route: route, dest: String(item.dest_tc||item.dest||"").trim(), rows: [] }); groups.get(key).rows.push({ eta: item.eta, seq: Number(item.eta_seq || item.seq || 0) }); });
-      return Array.from(groups.values()).map(g => { g.rows.sort((a, b) => new Date(a.eta) - new Date(b.eta) || a.seq - b.seq); const uniq = [], used = new Set(); g.rows.forEach(r => { const t = new Date(r.eta).getTime(); if (!used.has(t)) { used.add(t); uniq.push(r); } }); return {...g, rows: uniq.slice(0, 3)}; }).sort((a,b) => String(a.route).localeCompare(String(b.route), "en", {numeric:true}));
+      for (const item of items) {
+        const route = String(item.route || "").toUpperCase();
+        if (!route || !item.eta) continue;
+        const dest = String(item.dest_tc || item.dest || "").trim();
+        const key = `${route}|${dest}`;
+        if (!groups.has(key)) groups.set(key, { route, dest, rows: [] });
+        groups.get(key).rows.push({ eta: item.eta, seq: Number(item.eta_seq || item.seq || 0) });
+      }
+      return Array.from(groups.values()).map(g => {
+        g.rows.sort((a, b) => new Date(a.eta) - new Date(b.eta) || a.seq - b.seq);
+        const uniq = []; const used = new Set();
+        for (const r of g.rows) {
+          const k = new Date(r.eta).getTime();
+          if (used.has(k)) continue; used.add(k); uniq.push(r);
+          if (uniq.length >= 3) break;
+        }
+        return { ...g, rows: uniq };
+      }).sort((a,b) => String(a.route).localeCompare(String(b.route), "en", {numeric:true}));
     }
+
     function renderAllStops() {
       let html = "";
       FIXED_STATIONS.forEach(stop => {
-        const groups = groupByRoute(stopData[`${stop.company}:${stop.id}`] || []);
-        html += `<div class="bus-station-row"><span class="bus-station-name">📍${safeText(stop.name)}</span>${groups.length ? groups.map(g => { const mins = getMinutes(g.rows[0].eta); const isNow = mins <= 1; return `<div class="bus-route-item"><span class="bus-route-no">${safeText(g.route)}</span><span class="bus-route-dest">${safeText(g.dest)}</span><span class="bus-eta-mins ${isNow?'now':''}">${isNow?"即到":mins+"分"}</span></div>`; }).join('') : '<span style="color:var(--text-dim);font-size:1.2rem;">暫無班次資料</span>'}</div>`;
+        const groups = groupByRoute(stopData[stationKey(stop)] || []);
+        html += `
+          <div class="bus-station-row">
+            <span class="bus-station-name">📍${safeText(stop.name)}</span>
+            ${groups.length ? groups.map(g => {
+              const first = g.rows[0];
+              const mins = first ? getMinutes(first.eta) : null;
+              const isNow = mins !== null && mins <= 1;
+              let etaStr = mins === null ? "--" : (isNow ? "即到" : `${mins}分`);
+              let nextPills = g.rows.slice(1, 3).map(r => { const m = getMinutes(r.eta); return m <= 1 ? "即到" : `${m}分`; }).join(",");
+              if (nextPills) etaStr += ` (${nextPills})`;
+              return `<div class="bus-route-item"><span class="bus-route-no">${safeText(g.route)}</span><span class="bus-route-dest">${safeText(g.dest)}</span><span class="bus-eta-mins ${isNow?'now':''}">${etaStr}</span></div>`;
+            }).join('') : '<span style="color:var(--text-dim);font-size:1.2rem;">暫無班次資料</span>'}
+          </div>
+        `;
       });
       document.getElementById("bus-eta-container").innerHTML = html;
     }
-    async function fetchEta() { try { const results = await Promise.all(FIXED_STATIONS.map(async s => ({ key: `${s.company}:${s.id}`, data: (await (await fetch(`https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/${encodeURIComponent(s.id)}`, { cache: "no-store" })).json()).data || [] }))); results.forEach(r => stopData[r.key] = r.data); renderAllStops(); } catch (e) { console.error("ETA載入失敗", e); } }
-    createPanels(); updateData(); fetchEta(); updateWeather();
-    setInterval(updateData, 15000); setInterval(fetchEta, 30000); setInterval(updateWeather, 60000);
+
+    async function fetchEta() {
+      try {
+        const results = await Promise.all(FIXED_STATIONS.map(async stop => {
+          const res = await fetch(`https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/${encodeURIComponent(stop.id)}`, { cache: "no-store" });
+          const json = await res.json();
+          return { key: stationKey(stop), data: json.data || [] };
+        }));
+        stopData = {};
+        for (const r of results) stopData[r.key] = r.data;
+        renderAllStops();
+      } catch (err) { console.error("讀取九巴 API 失敗", err); }
+    }
+
+    // 初始化執行
+    createPanels();
+    updateData(); 
+    fetchEta();
+    updateWeather();
+    
+    // 定時器
+    setInterval(updateData, 15000);
+    setInterval(fetchEta, 30000);
+    setInterval(updateWeather, 60000); 
   </script>
 </body>
 </html>
