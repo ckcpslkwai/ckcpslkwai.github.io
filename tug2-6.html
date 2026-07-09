@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS V2607081031</title>
+    <title>CKCPS WARS V2607091040</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
       
@@ -33,833 +33,1129 @@
       
         h1 {
             margin: 0;
-            font-size: clamp(16px, 4vw, 28px);
-            color: var(--primary);
+            font-size: clamp(22px, 5vw, 30px);
             text-shadow: 0 0 10px var(--primary);
-            letter-spacing: 2px;
         }
       
         .container {
-            max-width: 1200px;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 20px;
+            padding: 15px;
         }
       
-        .screen {
-            display: none;
-        }
-        .screen.active {
-            display: block;
-        }
+        .screen { display: none; }
+        .screen.active { display: block; }
       
-        .panel {
-            background: rgba(10, 10, 31, 0.8);
-            border: 4px solid var(--primary);
-            box-shadow: 0 0 20px rgba(0, 249, 255, 0.3);
-            padding: 25px;
-            margin-bottom: 25px;
-            border-radius: 8px;
-        }
-      
-        .panel-title {
-            color: var(--secondary);
-            font-size: clamp(12px, 3vw, 20px);
-            margin-top: 0;
-            margin-bottom: 20px;
-            text-shadow: 0 0 8px var(--secondary);
-        }
-      
-        button, .file-label {
+        button {
             font-family: 'Press Start 2P', system-ui;
-            background: #000;
+            padding: 14px 28px; margin: 8px;
+            background: #12122e;
             color: #fff;
-            border: 3px solid #fff;
-            padding: 12px 24px;
+            border: 3px solid var(--primary);
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 12px;
-            display: inline-block;
-            margin: 8px;
-            text-transform: uppercase;
+            box-shadow: 0 0 12px rgba(0, 249, 255, 0.4);
+            font-size: 15px;
         }
-        button:hover, .file-label:hover {
+        button:hover {
             background: var(--primary);
             color: #000;
-            border-color: var(--primary);
-            box-shadow: 0 0 15px var(--primary);
-            transform: scale(1.05);
-        }
-        button:active {
-            transform: scale(0.95);
+            transform: scale(1.03);
         }
         button:disabled {
-            background: #333 !important;
-            color: #888 !important;
-            border-color: #555 !important;
+            background: #334155 !important;
+            color: #94a3b8 !important;
+            border-color: #475569 !important;
             box-shadow: none !important;
-            cursor: not-allowed;
             transform: none !important;
+            cursor: not-allowed;
         }
       
-        input[type="text"], input[type="number"], select {
+        .section {
+            background: #12122e;
+            padding: 20px 18px;
+            margin: 12px 0;
+            border-radius: 10px;
+            border: 2px solid var(--primary);
+        }
+
+        #menu-screen .section {
+            max-width: 860px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+      
+        select, input[type="number"], input[type="text"], input[type="password"] {
             font-family: 'Press Start 2P', system-ui;
-            background: #000;
+            padding: 10px 12px;
+            background: #0a0a1f;
             color: #fff;
-            border: 3px solid var(--primary);
-            padding: 10px;
-            font-size: 12px;
-            margin: 8px;
-            box-sizing: border-box;
-            outline: none;
-        }
-        input:focus, select:focus {
-            box-shadow: 0 0 10px var(--primary);
-        }
-      
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-      
-        .form-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-        .form-group label {
-            display: block;
-            font-size: 10px;
-            margin-bottom: 8px;
-            color: var(--primary);
-        }
-        .form-group input, .form-group select {
-            width: 100%;
-            margin: 0;
-        }
-      
-        #csv-upload {
-            display: none;
-        }
-      
-        #timer-display {
-            font-size: clamp(18px, 5vw, 36px);
-            color: var(--secondary);
-            text-shadow: 0 0 12px var(--secondary);
-            margin: 15px 0;
-            display: none;
-        }
-      
-        .teams-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 25px;
-        }
-        .team-box {
-            background: rgba(0,0,0,0.6);
-            border: 4px solid #fff;
-            padding: 20px;
-            flex: 1;
-            min-width: 280px;
-            max-width: 500px;
-            border-radius: 6px;
-            transition: border-color 0.3s;
-        }
-        .team-box.active-turn {
-            border-color: var(--accent);
-            box-shadow: 0 0 20px var(--accent);
-        }
-        .team-name {
-            font-size: 16px;
-            margin-bottom: 10px;
-            color: var(--primary);
-        }
-        .team-score {
-            font-size: 24px;
-            margin-bottom: 15px;
-            color: var(--accent);
-        }
-      
-        .question-box {
-            background: #000;
-            border: 3px solid var(--primary);
-            padding: 15px;
-            margin-bottom: 15px;
-            min-height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: clamp(11px, 2.5vw, 16px);
-            line-height: 1.6;
-        }
-      
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-        }
-        @media(min-width: 600px) {
-            .options-grid { grid-template-columns: 1fr 1fr; }
-        }
-        .option-btn {
-            text-align: left;
-            padding: 12px;
-            font-size: clamp(10px, 2vw, 13px);
-            margin: 0;
-            line-height: 1.4;
-            display: flex;
-            align-items: flex-start;
-        }
-        .option-prefix {
-            color: var(--secondary);
-            margin-right: 8px;
-            flex-shrink: 0;
-        }
-      
-        .feedback-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        .feedback-content {
-            font-size: 32px;
-            margin-bottom: 20px;
-            animation: pulse 0.5s infinite alternate;
-        }
-        .feedback-content.correct { color: var(--accent); text-shadow: 0 0 15px var(--accent); }
-        .feedback-content.wrong { color: var(--secondary); text-shadow: 0 0 15px var(--secondary); }
-        .explanation-text {
-            max-width: 80%;
+            border: 2px solid var(--accent);
+            margin: 4px 0;
             font-size: 14px;
-            line-height: 1.6;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #menu-screen .compact-grid select,
+        #menu-screen .compact-grid input[type="number"] {
+            width: 100% !important;
+            max-width: none !important;
+        }
+      
+        label {
+            font-size: 13px;
+            display: block;
+            margin-bottom: 6px;
+        }
+      
+        .score {
+            font-size: 32px;
+            color: var(--accent);
+            text-shadow: 0 0 8px var(--accent);
+        }
+      
+        .question {
+            background: #0a0a1f;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 10px 0;
+            min-height: 85px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px; 
+            line-height: 1.55;
+            text-align: left;
+            border: 2px solid var(--primary);
+            box-sizing: border-box;
+        }
+      
+        .option-btn {
+            padding: 12px 14px;
+            font-size: clamp(13px, 2vw, 15px);
+            border: 2px solid #334155;
+            background: #12122e;
+            text-align: left;
+            margin: 5px 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+      
+        .leaderboard {
+            background: #12122e;
+            padding: 16px;
+            border-radius: 10px;
+            border: 2px solid var(--secondary);
             margin-bottom: 20px;
-            color: #ccc;
+        }
+       
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+            gap: 14px;
+            width: 100%;
+            padding-bottom: 12px;
         }
       
-        @keyframes pulse {
-            from { transform: scale(0.95); }
-            to { transform: scale(1.05); }
+        .team-card {
+            position: relative; 
+            overflow: hidden;
+            background: #12122e;
+            border: 4px solid #334155;
+            border-radius: 10px;
+            padding: 14px;
+            min-height: 420px;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
         }
-      
-        #audio-controls {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            z-index: 999;
+       
+        .team-header {
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        #audio-controls button {
-            padding: 6px 12px;
-            font-size: 10px;
-            margin: 2px;
-            border-width: 2px;
-            background: rgba(0,0,0,0.7);
+       
+        .progress-container {
+            width: 100%;
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            margin: 8px 0;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+       
+        .options {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .status {
+            min-height: 20px;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+       
+        .compact-grid {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: 278px 278px 278px;
+            max-width: 860px;
+            margin: 0 auto;
+            justify-content: center;
+        }
+
+        .csv-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .team-grid.solo-mode {
+            max-width: 620px;
+            margin: 0 auto;
+            justify-content: center;
+        }
+
+        .team-grid.solo-mode .team-card {
+            min-height: 400px;
+            border-color: #39ff14;
         }
         
-        .footer-credit {
-            margin-top: 40px;
-            font-size: 9px;
-            color: #555;
-            letter-spacing: 1px;
+        .csv-buttons button {
+            flex: 1;
+        }
+
+        .end-condition {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: flex-start;
+        }
+        .end-left, .end-right {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .freeze-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(10, 10, 31, 0.85);
+            backdrop-filter: blur(3px);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #00f9ff;
+            text-align: center;
+            text-shadow: 0 0 15px #00f9ff;
+            line-height: 1.8;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
 <body>
-
     <header>
-        <h1>CKCPS WARS</h1>
+        <h1>🏴‍☠️ CKCPS WARS 🏴‍☠️</h1>
+        <p style="margin:4px 0 0 0; font-size:12px; color:#00f9ff;">CYBERPUNK NEON EDITION • P.1–P.6</p>
     </header>
-
     <div class="container">
         
-        <div id="menu-screen" class="screen active">
-            <div class="panel">
-                <h2 class="panel-title">1. LOAD QUESTIONS (CSV)</h2>
-                <label for="csv-upload" class="file-label">📂 CHOOSE CSV FILE</label>
-                <input type="file" id="csv-upload" accept=".csv">
-                <div id="file-status" style="margin-top:10px; font-size:10px; color:var(--accent);">NO FILE LOADED</div>
+        <div id="login-screen" class="screen active">
+            <div class="section" style="max-width: 400px; margin: 40px auto; border-color: #facc15; padding: 30px 25px;">
+                <h2 style="color: #facc15; margin-top: 0;">PLAYER LOGIN</h2>
+                <p style="font-size: 11px; color: #94a3b8; margin-bottom: 25px;">請輸入班別、班號與密碼</p>
+
+                <label style="color:#00f9ff; text-align: left;">Class 班別</label>
+                <input type="text" id="login-class" placeholder="e.g. 3A">
+
+                <label style="color:#00f9ff; text-align: left; margin-top: 15px;">Class Number 班號</label>
+                <input type="text" id="login-num" placeholder="e.g. 15">
+
+                <label style="color:#00f9ff; text-align: left; margin-top: 15px;">Password 密碼</label>
+                <input type="password" id="login-pwd" placeholder="****">
+
+                <button onclick="attemptLogin()" style="width: 100%; margin-top: 25px; font-size: 18px; border-color: #facc15; box-shadow: 0 0 15px #facc15;">
+                    🔓 LOGIN
+                </button>
             </div>
+        </div>
 
-            <div class="panel">
-                <h2 class="panel-title">2. GAME CONFIGURATION</h2>
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label>GAME MODE</label>
-                        <select id="game-mode-select" onchange="toggleSoloMode()">
-                            <option value="solo">SOLO MODE (單人挑戰)</option>
-                            <option value="multi">TEAM MODE (小組對抗)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>END CONDITION</label>
-                        <select id="end-mode" onchange="toggleEndOptions()">
-                            <option value="score">REACH TARGET SCORE</option>
-                            <option value="time">TIME LIMIT</option>
-                        </select>
-                    </div>
+        <div id="menu-screen" class="screen">
+            <div class="compact-grid">
+                <div class="section">
+                    <label style="color:#00f9ff;">NUMBER OF TEAMS</label>
+                    <select id="num-teams" onchange="toggleSoloMode()">
+                        <option value="solo" selected>🧑 SOLO (個人模式)</option>
+                        <option value="2">2 Teams</option>
+                        <option value="3">3 Teams</option>
+                        <option value="4">4 Teams</option>
+                        <option value="5">5 Teams</option>
+                        <option value="6">6 Teams</option>
+                    </select>
                 </div>
-
-                <div class="grid-2" style="margin-top:15px;">
-                    <div id="target-score-group" class="form-group">
-                        <label>TARGET SCORE</label>
-                        <input type="number" id="target-score" value="10" min="1">
-                    </div>
-                    <div id="time-limit-group" class="form-group" style="display:none;">
-                        <label>TIME LIMIT (MINUTES)</label>
-                        <input type="number" id="time-limit" value="3" min="1">
-                    </div>
+                <div class="section">
+                    <label style="color:#00f9ff;">&nbsp;&nbsp;&nbsp;&nbsp;SUBJECT&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                    <select id="subject">
+                        <option value="Chinese">Chinese中文</option>
+                        <option value="English">English</option>
+                        <option value="Maths">Maths數學</option>
+                        <option value="Science">Science</option>
+                        <option value="科學">科學</option>
+                        <option value="Chinese-E">Chi to Eng</option>
+                        <option value="English-C">Eng to Chi</option>
+                    </select>
                 </div>
-
-                <div id="solo-config" style="margin-top:20px; border-top:2px dashed #444; padding-top:20px;">
-                    <div class="grid-2">
-                        <div class="form-group">
-                            <label>CLASS (班別)</label>
-                            <input type="text" id="solo-class" placeholder="e.g. 4A" max-length="10">
-                        </div>
-                        <div class="form-group">
-                            <label>NAME (姓名)</label>
-                            <input type="text" id="solo-name" placeholder="e.g. Tom">
-                        </div>
-                    </div>
-                </div>
-
-                <div id="team-config" style="display:none; margin-top:20px; border-top:2px dashed #444; padding-top:20px;">
-                    <div class="form-group" style="max-width:300px; margin:0 auto 15px auto;">
-                        <label style="text-align:center;">NUMBER OF TEAMS</label>
-                        <select id="team-count" onchange="generateTeamFields()">
-                            <option value="1">1 TEAM</option>
-                            <option value="2" selected>2 TEAMS</option>
-                            <option value="3">3 TEAMS</option>
-                            <option value="4">4 TEAMS</option>
-                        </select>
-                    </div>
-                    <div id="team-names-inputs" class="grid-2"></div>
+                <div class="section">
+                    <label style="color:#00f9ff;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LEVEL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                    <select id="level">
+                        <option value="K">K</option>
+                        <option value="P1" selected>P.1</option>
+                        <option value="P2">P.2</option>
+                        <option value="P3">P.3</option>
+                        <option value="P4">P.4</option>
+                        <option value="P5">P.5</option>
+                        <option value="P6">P.6</option>
+                    </select>
                 </div>
             </div>
 
-            <button id="start-btn" onclick="startGame()">🚀 START GAME</button>
-            
-            <div class="footer-credit">POWERED BY CKCPS | V2607080909</div>
+            <div id="solo-info" class="section" style="display:none; border-color:#39ff14;">
+                <label style="color:#39ff14;">PLAYER INFORMATION 玩家資料</label>
+                <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:8px;">
+                    <div style="flex:1; min-width:130px;">
+                        <label style="font-size:12px; color:#94a3b8;">Class</label>
+                        <input type="text" id="solo-class" placeholder="e.g. 3A" style="width:80%; font-size:15px; padding:8px;" readonly>
+                    </div>
+                    <div style="flex:2; min-width:180px;">
+                        <label style="font-size:12px; color:#94a3b8;">Name</label>
+                        <input type="text" id="solo-name" placeholder="Full name please 請輸入全名" style="width:80%; font-size:15px; padding:8px;" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="end-condition">
+                    <div class="end-left">
+                        <label style="color:#ff00aa;">GAME END CONDITION</label>
+                        <select id="end-mode" onchange="toggleEndOptions()" style="width:100%;">
+                            <option value="time">Timed Game</option>
+                            <option value="score">First to Score</option>
+                        </select>
+                    </div>
+                    <div class="end-right">
+                        <div id="score-options">
+                            <label style="color:#ff00aa;">TARGET SCORE</label>
+                            <input type="number" id="target-score" value="300" min="50" step="50" style="width:100%;">
+                        </div>
+                        <div id="time-options" style="display:none;">
+                            <label style="color:#ff00aa;">DURATION (minutes)</label>
+                            <input type="number" id="game-time" value="1" min="1" max="60" style="width:100%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <label style="color:#00f9ff;">BACKGROUND MUSIC</label>
+                <div style="display:flex; align-items:center; gap:12px; margin-top:8px; flex-wrap:wrap;">
+                    <div style="flex:1; min-width:220px;">
+                        <select id="music-track" style="width:100%; font-size:13px;">
+                            <option value="">No music</option>
+                            <option value="Haaland.mp3">Music 1</option>
+                            <option value="Greensleeves.mp3">Music 2</option>
+                            <option value="music3.mp3">Music 3</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <label style="color:#39ff14;">QUESTION SOURCE</label>
+                <div class="csv-buttons">
+                    <button onclick="document.getElementById('csv-upload').click()">
+                        📁 UPLOAD CSV 上載
+                    </button>
+                    <button onclick="loadDefaultCSV()" style="border-color:#39ff14;">
+                        📋 Default 預設
+                    </button>
+                </div>
+                <input type="file" id="csv-upload" accept=".csv" style="display:none;" onchange="handleCSVUpload(event)">
+            </div>
         </div>
 
         <div id="game-screen" class="screen">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <button onclick="quitGame()" style="background:#500; border-color:#f00; font-size:10px; padding:8px 16px;">⬅️ QUIT</button>
-                <button id="pause-btn" onclick="togglePause()" style="background:#550; border-color:#ff0; font-size:10px; padding:8px 16px; display:none;">⏸️ PAUSE</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+                <strong id="game-info" style="color:#00f9ff; flex:1; text-align:left;"></strong>
+                
+                <div style="display:flex; align-items:center; gap:8px; justify-content:center; flex:1;">
+                    <span id="timer-display" style="font-size:15px; background:#12122e; padding:6px 12px; border-radius:6px; border:2px solid #ff00aa; display:none;"></span>
+                    <button id="pause-btn" onclick="togglePause()" style="padding:10px 20px; font-size:13px; border-color:#ff00aa;">⏸️ PAUSE</button>
+                </div>
+                
+                <div style="flex:1; text-align:right;">
+                    <button onclick="endGame()" style="padding:10px 20px; font-size:13px;">END GAME</button>
+                </div>
             </div>
             
-            <div id="timer-display">TIME: 0:00</div>
+            <div class="leaderboard">
+                <h3 id="leaderboard-title" style="color:#ff00aa;">🏆 LEADERBOARD 🏆</h3>
+                <div id="leaderboard" style="text-align:left;"></div>
+            </div>
             
-            <div id="teams-container" class="teams-container"></div>
+            <div id="team-grid" class="team-grid"></div>
         </div>
-
     </div>
-
-    <div id="feedback-overlay" class="feedback-overlay">
-        <div id="feedback-text" class="feedback-content"></div>
-        <div id="explanation-text" class="explanation-text"></div>
-        <button id="next-btn">CONTINUE ➡️</button>
-    </div>
-
-    <div id="audio-controls">
-        <button onclick="toggleMute()">🔊/🔇 MUSIC</button>
-    </div>
-
-    <audio id="bg-music" loop>
-        <source src="https://actions.google.com/sounds/v1/science_fiction/retro_video_game_loop.ogg" type="audio/ogg">
-    </audio>
-    <audio id="sound-correct">
-        <source src="https://actions.google.com/sounds/v1/cartoon/positive_guitar_chords.ogg" type="audio/ogg">
-    </audio>
-    <audio id="sound-wrong">
-        <source src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" type="audio/ogg">
-    </audio>
 
     <script>
-        // GOOGLE SHEET APPS SCRIPT URL
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyfDofGstx_7l_yNIdYm2VvV_l6Z7fUo7eor_hOas5u_HcozCisZcZ9gD7O6V_6XW-qEA/exec";
+        window.onerror = function(message, source, lineno, colno, error) {
+            alert("⚠️ 遊戲偵測到錯誤: \n" + message + "\n位於第 " + lineno + " 行\n請檢查程式碼。");
+            return true;
+        };
 
-        let allQuestions = {};
-        let currentQuestions = []; 
         let customQuestions = [];
-        let teams = [];
-        let currentTeamTurn = 0; 
-        let gameMode = 'solo'; 
-        let endMode = 'score'; 
-        let targetScore = 10;
-        let gameInterval = null;
-        let gameEndTime = 0;
-        let isPaused = false;
-        let pausedRemainingTime = 0;
-        let currentSubject = "General";
-        let currentLevel = "Mixed";
-        let isMuted = false;
+        let currentSubject = '', currentLevel = '', teams = [], currentQuestions = [];
+        let gameInterval = null, endMode = 'score', targetScore = 100, gameEndTime = null;
+        let isPaused = false, pausedRemainingTime = 0, pendingResultTimeouts = {};
 
-        // Default Fallback Questions if no CSV uploaded
-        const defaultQuestions = [
-            { question: "What is the capital of France?", options: ["A. Berlin", "B. Madrid", "C. Paris", "D. Rome"], ans: 2, explanation: "Paris is the capital and most populous city of France." },
-            { question: "Which planet is known as the Red Planet?", options: ["A. Earth", "B. Mars", "C. Jupiter", "D. Venus"], ans: 1, explanation: "Mars is often called the Red Planet due to iron oxide on its surface." },
-            { question: "What is 5 + 7?", options: ["A. 10", "B. 11", "C. 12", "D. 13"], ans: 2, explanation: "Simple addition: 5 + 7 equals 12." }
-        ];
+        // 請確保這裡填入您部署出來的 Web App URL
+        const GOOGLE_SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxqgywi-q3jfo3ENHdWkQMn0KJHTtaXISaIDqq3AQJiolRn9jge_gvCH-UkHGCFTboz/exec';
 
-        // Handle CSV File Upload
-        document.getElementById('csv-upload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                try {
-                    const text = evt.target.result;
-                    const parsed = parseCSV(text);
-                    if (parsed && parsed.length > 0) {
-                        customQuestions = parsed;
-                        document.getElementById('file-status').textContent = `✅ LOADED ${parsed.length} CUSTOM QUESTIONS`;
-                        
-                        // Try to auto-detect Subject/Level from filename if formatted as Subject_Level.csv
-                        const nameNoExt = file.name.replace(/\.[^/.]+$/, "");
-                        const parts = nameNoExt.split('_');
-                        if (parts.length >= 2) {
-                            currentSubject = parts[0];
-                            currentLevel = parts[1];
-                        } else {
-                            currentSubject = nameNoExt;
-                            currentLevel = "Custom";
+        // ==================== LOGIN SYSTEM ====================
+        async function attemptLogin() {
+            const cls = document.getElementById('login-class').value.trim();
+            const num = document.getElementById('login-num').value.trim();
+            const pwd = document.getElementById('login-pwd').value.trim();
+
+            if (!cls || !num || !pwd) {
+                alert("請填寫班別、班號與密碼！\n(Please fill in all fields)");
+                return;
+            }
+
+            try {
+                const hiddenPath = atob('Li9wYXNzd29yZC5jc3Y='); 
+                const response = await fetch(hiddenPath);
+                if (!response.ok) throw new Error('找不到檔案');
+                
+                let text = await response.text();
+                if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+                
+                const lines = text.trim().split('\n');
+                let isValid = false;
+                let playerName = "";
+
+                for (let i = 1; i < lines.length; i++) {
+                    if (!lines[i].trim()) continue;
+                    let parts = lines[i].split(',').map(s => s.replace(/"/g, '').trim());
+                    
+                    if (parts.length >= 4) {
+                        if (parts[0].toLowerCase() === cls.toLowerCase() && parts[1] === num) {
+                            if (parts[2] === pwd) {
+                                isValid = true; playerName = parts[3]; break;
+                            } else if (parts[3] === pwd) {
+                                isValid = true; playerName = parts[2]; break;
+                            }
                         }
-                    } else {
-                        alert("Could not parse CSV or file is empty. Please ensure correct format.");
-                        resetFileInput();
                     }
-                } catch (err) {
-                    alert("Error reading file: " + err.message);
-                    resetFileInput();
                 }
-            };
-            reader.readAsText(file, 'UTF-8');
-        });
 
-        function resetFileInput() {
-            document.getElementById('csv-upload').value = '';
-            document.getElementById('file-status').textContent = "NO FILE LOADED";
-            customQuestions = [];
-            currentSubject = "General";
-            currentLevel = "Mixed";
+                if (isValid) {
+                    alert(`✅ 登入成功！歡迎，${playerName}！`);
+                    document.getElementById('login-screen').classList.remove('active');
+                    document.getElementById('menu-screen').classList.add('active');
+                    
+                    document.getElementById('solo-class').value = cls.toUpperCase();
+                    document.getElementById('solo-name').value = playerName;
+                } else {
+                    alert("❌ 班別、班號或密碼錯誤！\n(Invalid credentials)");
+                }
+            } catch (err) {
+                alert("⚠️ 無法載入驗證檔。\n請確保密碼表命名正確且位於相同資料夾。\n" + err.message);
+            }
         }
 
-        function parseCSV(text) {
-            const lines = [];
-            let row = [""];
-            let inQuotes = false;
-
-            for (let i = 0; i < text.length; i++) {
-                let c = text[i];
-                let next = text[i+1];
-                if (c === '"') {
-                    if (inQuotes && next === '"') { row[row.length - 1] += '"'; i++; }
-                    else { inQuotes = !inQuotes; }
-                } else if (c === ',' && !inQuotes) {
-                    row.push('');
-                } else if ((c === '\r' || c === '\n') && !inQuotes) {
-                    if (c === '\r' && next === '\n') { i++; }
-                    lines.push(row);
-                    row = [''];
-                } else {
-                    row[row.length - 1] += c;
-                }
-            }
-            if (row.length > 1 || row[0] !== '') lines.push(row);
-
-            // Convert to structured questions
-            // Expected headers: question, A, B, C, D, answer, explanation
-            if (lines.length < 2) return [];
-            
-            const headers = lines[0].map(h => h.trim().toLowerCase());
-            const qIdx = headers.indexOf('question');
-            const aIdx = headers.indexOf('a');
-            const bIdx = headers.indexOf('b');
-            const cIdx = headers.indexOf('c');
-            const dIdx = headers.indexOf('d');
-            const ansIdx = headers.indexOf('answer');
-            const expIdx = headers.indexOf('explanation');
-
-            if (qIdx === -1 || aIdx === -1 || bIdx === -1 || cIdx === -1 || dIdx === -1 || ansIdx === -1) {
-                alert("CSV configuration missing required columns: question, A, B, C, D, answer");
-                return [];
-            }
-
-            const questions = [];
-            for (let i = 1; i < lines.length; i++) {
-                const r = lines[i];
-                if (r.length < 6 || !r[qIdx]) continue; // skip shallow rows
-
-                let rawAns = r[ansIdx].trim().toUpperCase();
-                let ansNum = 0;
-                if (rawAns === 'A' || rawAns === '1') ansNum = 0;
-                else if (rawAns === 'B' || rawAns === '2') ansNum = 1;
-                else if (rawAns === 'C' || rawAns === '3') ansNum = 2;
-                else if (rawAns === 'D' || rawAns === '4') ansNum = 3;
-                else {
-                    let parsedInt = parseInt(rawAns);
-                    if (!isNaN(parsedInt) && parsedInt >= 1 && parsedInt <= 4) ansNum = parsedInt - 1;
-                    else continue; // Invalid answer mapping, skip row safely
-                }
-
-                questions.push({
-                    question: r[qIdx],
-                    options: [
-                        "A. " + (r[aIdx] || ""),
-                        "B. " + (r[bIdx] || ""),
-                        "C. " + (r[cIdx] || ""),
-                        "D. " + (r[dIdx] || "")
-                    ],
-                    ans: ansNum,
-                    explanation: expIdx !== -1 ? (r[expIdx] || "") : ""
+        // ==================== 雲端上傳成績 ====================
+        async function saveSoloResultToGoogleSheet(playerData) {
+            if (!GOOGLE_SHEET_WEBAPP_URL || GOOGLE_SHEET_WEBAPP_URL.includes('你的部署ID')) return false;
+            try {
+                await fetch(GOOGLE_SHEET_WEBAPP_URL, {
+                    method: 'POST', mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(playerData)
                 });
+                alert(`✅ 成績已成功儲存到雲端！\n\n班級：${playerData.class}\n姓名：${playerData.name}\n分數：${playerData.score}`);
+                return true;
+            } catch (error) {
+                alert('❌ 儲存失敗，請檢查網路或 URL 是否正確。');
+                return false;
+            }
+        }
+
+        // ==================== 雲端精準下載排行 (Solo Mode 雙欄佈局) ====================
+        async function fetchCloudLeaderboard(playerClass, subject, level) {
+            const leaderboardEl = document.getElementById('leaderboard');
+            if (!leaderboardEl) return;
+
+            // 初始化為載入狀態，重置為單欄
+            leaderboardEl.style.display = 'block';
+            leaderboardEl.innerHTML = '<div style="text-align:center; color:#00f9ff; font-size:11px; animation:pulse 1s infinite;">📥 正在連線並載入排行與個人成績...</div>';
+
+            if (!GOOGLE_SHEET_WEBAPP_URL || GOOGLE_SHEET_WEBAPP_URL.includes('你的部署ID')) {
+                leaderboardEl.innerHTML = '<div style="color:#ff00aa;text-align:center;font-size:11px;">⚠️ 未設定雲端網址</div>';
+                return;
+            }
+
+            try {
+                // 發出 GET 請求讀取所有歷史資料
+                const response = await fetch(`${GOOGLE_SHEET_WEBAPP_URL}?t=${Date.now()}`);
+                if (!response.ok) throw new Error('網路回應異常');
+                
+                const allRecords = await response.json();
+                if (allRecords.error) {
+                    leaderboardEl.innerHTML = `<div style="color:#ff00aa;text-align:center;font-size:11px;">❌ 錯誤: ${allRecords.error}</div>`;
+                    return;
+                }
+                if (!Array.isArray(allRecords) || allRecords.length === 0) {
+                    leaderboardEl.innerHTML = `<div style="text-align:center;color:#94a3b8;font-size:12px;margin-top:10px;">目前暫無紀錄，快來搶下第一個名次！</div>`;
+                    return;
+                }
+
+                // 基礎標準化處理與比對變數
+                const norm = (str) => (str || '').toString().toLowerCase().replace(/\.|\s|grade|form|年級|級/g, '').trim();
+                const targetClass = norm(playerClass);
+                const targetSub = norm(subject);
+                const targetLvl = norm(level);
+                const currentPlayerName = window.currentSoloPlayer ? window.currentSoloPlayer.name.trim() : "";
+
+                // 1. 嚴格過濾：同科、同 LEVEL 的所有歷史紀錄
+                let subjectLevelFiltered = allRecords.filter(r => {
+                    const rSub = norm(r.subject);
+                    const rLvl = norm(r.level);
+
+                    const subMatch = rSub === targetSub || 
+                                     (targetSub === 'maths' && (rSub === 'math' || rSub === '數學')) ||
+                                     (targetSub === '科學' && (rSub === '科學')) ||
+                                     (targetSub === 'science' && (rSub === 'science')) ||
+                                     (targetSub === 'chinese' && (rSub === '中文' || rSub === 'chinese'));
+                    const lvlMatch = rLvl === targetLvl || rLvl === targetLvl.replace('p','');
+                    
+                    return subMatch && lvlMatch;
+                });
+
+                // 2. 左半邊計算：同班級內排行 (去重複名字：同一個名字只取最高分)
+                let classFiltered = subjectLevelFiltered.filter(r => norm(r.class) === targetClass);
+                let uniquePlayers = {};
+                classFiltered.forEach(r => {
+                    const nameKey = r.name ? r.name.trim() : 'Unknown';
+                    const scoreVal = parseInt(r.score) || 0;
+                    if (!uniquePlayers[nameKey] || scoreVal > uniquePlayers[nameKey].score) {
+                        uniquePlayers[nameKey] = {
+                            name: nameKey,
+                            score: scoreVal
+                        };
+                    }
+                });
+                let top5 = Object.values(uniquePlayers).sort((a, b) => b.score - a.score).slice(0, 5);
+
+                // 3. 右半邊計算：撈取自己玩同一科目和 level 時的 5 個歷史最佳成績 (免去重)
+                let personalFiltered = subjectLevelFiltered.filter(r => r.name && r.name.trim().toLowerCase() === currentPlayerName.toLowerCase());
+                let personalTop5 = personalFiltered
+                    .map(r => ({ score: parseInt(r.score) || 0, date: r.date || '' }))
+                    .sort((a, b) => b.score - a.score)
+                    .slice(0, 5);
+
+                // 4. 啟用 Grid 雙欄佈局 (左半與右半各佔 50% 寬度)
+                leaderboardEl.style.display = 'grid';
+                leaderboardEl.style.gridTemplateColumns = '1fr 1fr';
+                leaderboardEl.style.gap = '20px';
+
+                // 建立左側 HTML (班級 TOP 5)
+                let leftHtml = '<div style="border-right: 1px solid #334155; padding-right: 15px; text-align: left;"><h4 style="color:#ff00aa; margin: 0 0 10px 0; font-size:12px; text-align:center;">CLASS TOP 5</h4>';
+                if (top5.length === 0) {
+                    leftHtml += `<div style="text-align:center;color:#94a3b8;font-size:11px;margin-top:15px;">暫無紀錄</div>`;
+                } else {
+                    top5.forEach((t, i) => {
+                        leftHtml += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #334155;font-size:12px;">
+                            <span><strong style="color:#ff00aa;">#${i+1}</strong> <span style="margin-left:6px;">${t.name}</span></span>
+                            <span style="color:#39ff14;font-weight:bold;">${t.score} pts</span>
+                        </div>`;
+                    });
+                }
+                leftHtml += '</div>';
+
+                // 建立右側 HTML (個人最佳 5 個成績)
+                let rightHtml = '<div style="text-align: left;"><h4 style="color:#00f9ff; margin: 0 0 10px 0; font-size:12px; text-align:center;">MY BEST 5</h4>';
+                if (personalTop5.length === 0) {
+                    rightHtml += `<div style="text-align:center;color:#94a3b8;font-size:11px;margin-top:15px;">暫無紀錄</div>`;
+                } else {
+                    personalTop5.forEach((t, i) => {
+                        rightHtml += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #334155;font-size:12px;">
+                            <span><strong style="color:#00f9ff;">#${i+1}</strong> <span style="margin-left:6px;color:#94a3b8;font-size:11px;">${t.date || 'Best'}</span></span>
+                            <span style="color:#39ff14;font-weight:bold;">${t.score} pts</span>
+                        </div>`;
+                    });
+                }
+                rightHtml += '</div>';
+
+                leaderboardEl.innerHTML = leftHtml + rightHtml;
+
+            } catch (err) {
+                console.error(err);
+                leaderboardEl.style.display = 'block';
+                leaderboardEl.innerHTML = '<div style="color:#ff00aa;text-align:center;font-size:11px;">❌ 無法下載雲端排行</div>';
+            }
+        }
+
+        let bgmAudio = null;
+        let isMusicPlaying = false;
+
+        function toggleEndOptions() {
+            const mode = document.getElementById('end-mode').value;
+            document.getElementById('score-options').style.display = mode === 'score' ? 'block' : 'none';
+            document.getElementById('time-options').style.display = mode === 'time' ? 'block' : 'none';
+        }
+
+        function toggleSoloMode() {
+            const numTeamsValue = document.getElementById('num-teams').value;
+            const soloInfo = document.getElementById('solo-info');
+            soloInfo.style.display = numTeamsValue === 'solo' ? 'block' : 'none';
+        }
+
+        function disableAllAnswerButtons(disabled) {
+            const allButtons = document.querySelectorAll('#team-grid .option-btn');
+            allButtons.forEach(btn => btn.disabled = disabled);
+        }
+
+        function togglePause() {
+            const pauseBtn = document.getElementById('pause-btn');
+            if (!pauseBtn) return;
+            isPaused = !isPaused;
+
+            if (isPaused) {
+                if (gameInterval) { clearInterval(gameInterval); gameInterval = null; }
+                if (endMode === 'time' && gameEndTime) pausedRemainingTime = gameEndTime - Date.now();
+                disableAllAnswerButtons(true);
+                Object.values(pendingResultTimeouts).forEach(id => clearTimeout(id));
+                pendingResultTimeouts = {};
+                pauseBackgroundMusic();
+                pauseBtn.innerHTML = '▶️ RESUME';
+                pauseBtn.style.borderColor = '#facc15';
+                pauseBtn.style.boxShadow = '0 0 12px rgba(250, 204, 21, 0.5)';
+            } else {
+                if (endMode === 'time' && pausedRemainingTime > 0) {
+                    gameEndTime = Date.now() + pausedRemainingTime;
+                    startTimer();
+                }
+                disableAllAnswerButtons(false);
+                resumeBackgroundMusic();
+                
+                teams.forEach((team, idx) => {
+                    const statusEl = document.getElementById(`status-${team.id}`);
+                    if (statusEl && (statusEl.innerHTML.includes('CORRECT') || statusEl.innerHTML.includes('Wrong'))) {
+                        currentQuestions[idx] = getRandomQuestion();
+                        renderTeamQuestion(team.id, idx);
+                    }
+                });
+
+                pauseBtn.innerHTML = '⏸️ PAUSE';
+                pauseBtn.style.borderColor = '#ff00aa';
+                pauseBtn.style.boxShadow = '0 0 12px rgba(0, 249, 255, 0.4)';
+            }
+        }
+
+        function playBackgroundMusic() {
+            if (isMusicPlaying) return;
+            const musicSelect = document.getElementById('music-track');
+            const track = musicSelect ? musicSelect.value : '';
+            if (!track) { isMusicPlaying = false; return; }
+            stopBackgroundMusic();
+            bgmAudio = new Audio(track);
+            bgmAudio.loop = true;
+            bgmAudio.volume = 0.6;
+            bgmAudio.play().catch(() => console.log('%c[Music] 無法播放', 'color:#f59e0b'));
+            isMusicPlaying = true;
+        }
+
+        function stopBackgroundMusic() {
+            isMusicPlaying = false;
+            if (bgmAudio) { bgmAudio.pause(); bgmAudio.currentTime = 0; bgmAudio = null; }
+        }
+
+        function pauseBackgroundMusic() { if (bgmAudio && !bgmAudio.paused) bgmAudio.pause(); }
+        function resumeBackgroundMusic() { if (bgmAudio && bgmAudio.paused && isMusicPlaying) bgmAudio.play().catch(()=>{}); }
+
+        async function loadDefaultCSV() {
+            try {
+                const response = await fetch('./default.csv');
+                if (!response.ok) throw new Error('File not found');
+                const csvText = await response.text();
+                const allParsed = parseCSV(csvText);
+                const selectedSubject = document.getElementById('subject').value;
+                const selectedLevel = document.getElementById('level').value;
+                customQuestions = filterQuestionsBySubjectLevel(allParsed, selectedSubject, selectedLevel);
+                if (customQuestions.length === 0) customQuestions = allParsed;
+                alert(`✅ 預設題庫已成功載入！\n共 ${customQuestions.length} 題匹配 ${selectedSubject} - ${selectedLevel}`);
+                
+                // 自動啟動遊戲
+                startGame();
+            } catch (err) {
+                alert('❌ 無法載入 default.csv\n可能原因：檔案不在相同資料夾，或是瀏覽器阻擋了本地檔案讀取。請改用「上載」按鈕匯入。');
+            }
+        }
+
+        function handleCSVUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                const allParsed = parseCSV(e.target.result);
+                const selectedSubject = document.getElementById('subject').value;
+                const selectedLevel = document.getElementById('level').value;
+                customQuestions = filterQuestionsBySubjectLevel(allParsed, selectedSubject, selectedLevel);
+                if (customQuestions.length === 0) customQuestions = allParsed;
+                alert(`✅ CSV 題庫已成功載入！\n共 ${customQuestions.length} 題匹配 ${selectedSubject} - ${selectedLevel}`);
+            };
+            reader.readAsText(file);
+        }
+
+        function startGame() {
+            if (!customQuestions || customQuestions.length === 0) {
+                alert('⚠️ 請先載入題庫！\n請點擊「📋 Default 預設」或上載您的 CSV 檔案。');
+                return;
+            }
+
+            const numTeamsValue = document.getElementById('num-teams').value;
+            let numTeams;
+            if (numTeamsValue === 'solo') {
+                const soloClass = document.getElementById('solo-class').value.trim();
+                const soloName = document.getElementById('solo-name').value.trim();
+                if (!soloClass || !soloName) { alert('請填寫班級和姓名！(Please enter Class and Name)'); return; }
+                window.currentSoloPlayer = { class: soloClass, name: soloName };
+                numTeams = 1;
+            } else {
+                numTeams = parseInt(numTeamsValue);
+                window.currentSoloPlayer = null;
+            }
+
+            currentSubject = document.getElementById('subject').value;
+            currentLevel = document.getElementById('level').value;
+            endMode = document.getElementById('end-mode').value;
+            if (endMode === 'score') targetScore = parseInt(document.getElementById('target-score').value) || 100;
+            else window.gameMinutes = parseInt(document.getElementById('game-time').value) || 10;
+
+            document.getElementById('menu-screen').classList.remove('active');
+            document.getElementById('game-screen').classList.add('active');
+            const infoEl = document.getElementById('game-info');
+
+            if (numTeamsValue === 'solo' && window.currentSoloPlayer) {
+                infoEl.innerHTML = `${currentSubject} • ${currentLevel} &nbsp;|&nbsp; <span style="color:#39ff14;">${window.currentSoloPlayer.class} ${window.currentSoloPlayer.name}</span>`;
+                document.getElementById('leaderboard-title').textContent = "🏆 LEADERBOARD 🏆";
+                fetchCloudLeaderboard(window.currentSoloPlayer.class, currentSubject, currentLevel);
+            } else {
+                infoEl.innerHTML = `${currentSubject} • ${currentLevel} <span style="color:#94a3b8; font-size:12px;">(${customQuestions.length} Qs)</span>`;
+                document.getElementById('leaderboard-title').textContent = "🏆 LEADERBOARD 🏆";
+            }
+
+            initTeams(numTeams);
+            playBackgroundMusic();
+        }
+
+        function initTeams(numTeams) {
+            teams = []; currentQuestions = [];
+            const colors = ['#f87171', '#60a5fa', '#facc15', '#a78bfa', '#f472b6', '#34d399'];
+            for (let i = 0; i < numTeams; i++) {
+                let displayName = window.currentSoloPlayer ? window.currentSoloPlayer.name : `Team ${String.fromCharCode(65+i)}`;
+                teams.push({ id: i+1, name: displayName, score: 0, color: colors[i % colors.length], multiplier: 1 });
+                currentQuestions.push(getRandomQuestion());
+            }
+            renderAllTeams();
+            
+            if (!window.currentSoloPlayer) {
+                updateLeaderboard();
+            }
+
+            isPaused = false;
+            pausedRemainingTime = 0;
+            const pauseBtn = document.getElementById('pause-btn');
+            if (pauseBtn) {
+                pauseBtn.innerHTML = '⏸️ PAUSE';
+                pauseBtn.style.borderColor = '#ff00aa';
+                pauseBtn.style.display = 'inline-block';
+            }
+
+            if (endMode === 'time') {
+                gameEndTime = Date.now() + (window.gameMinutes || 10) * 60 * 1000;
+                document.getElementById('timer-display').style.display = 'inline';
+                startTimer();
+            } else {
+                document.getElementById('timer-display').style.display = 'none';
+            }
+        }
+
+        function parseCSV(csvText) {
+            if (csvText.charCodeAt(0) === 0xFEFF) csvText = csvText.slice(1);
+            const lines = csvText.trim().split('\n');
+            if (lines.length < 2) return [];
+
+            let rawHeader = parseCSVLine(lines[0]);
+            const header = rawHeader.map(h => h.toLowerCase().replace(/"/g, '').replace(/\n/g, ' ').replace(/\s+/g, ' ').trim());
+            const questions = [];
+            const findIdx = (keywords) => header.findIndex(h => keywords.some(k => h.includes(k)));
+
+            const idxSubject = findIdx(['subject']);
+            const idxLevel   = findIdx(['level']);
+            const idxQ       = findIdx(['question text']);
+            const idxAnswer1 = findIdx(['answer 1']);
+            const idxAnswer2 = findIdx(['answer 2']);
+            const idxAnswer3 = findIdx(['answer 3']);
+            const idxAnswer4 = findIdx(['answer 4']);
+            const idxCorrect = findIdx(['correct answer', 'correct']);
+
+            let validQuestionCount = 0;
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                const row = parseCSVLine(lines[i]);
+                if (row.length < 4) continue;
+
+                const qText = (idxQ !== -1 ? row[idxQ] : row[3] || '').trim();
+                const opts = [];
+                [idxAnswer1, idxAnswer2, idxAnswer3, idxAnswer4].forEach(idx => {
+                    if (idx !== -1 && row[idx] && row[idx].trim()) opts.push(row[idx].trim());
+                });
+
+                let correctIdx = -1;
+                if (idxCorrect !== -1 && row[idxCorrect]) correctIdx = parseInt(row[idxCorrect].trim()) - 1;
+                else correctIdx = parseInt(row[row.length - 1]) - 1;
+
+                const subj = (idxSubject !== -1 ? row[idxSubject] : '').trim();
+                const lvl  = (idxLevel   !== -1 ? row[idxLevel]   : '').trim();
+
+                if (qText && opts.length >= 2 && !isNaN(correctIdx) && correctIdx >= 0 && correctIdx < opts.length) {
+                    validQuestionCount++;
+                    questions.push({ id: validQuestionCount, q: qText, options: opts, ans: correctIdx, subject: subj, level: lvl });
+                }
             }
             return questions;
         }
 
-        function toggleSoloMode() {
-            gameMode = document.getElementById('game-mode-select').value;
-            if (gameMode === 'solo') {
-                document.getElementById('solo-config').style.display = 'block';
-                document.getElementById('team-config').style.display = 'none';
-            } else {
-                document.getElementById('solo-config').style.display = 'none';
-                document.getElementById('team-config').style.display = 'block';
-                generateTeamFields();
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '', inQuotes = false;
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') inQuotes = !inQuotes;
+                else if (char === ',' && !inQuotes) { result.push(current.trim()); current = ''; }
+                else current += char;
             }
+            result.push(current.trim());
+            return result;
         }
 
-        function toggleEndOptions() {
-            endMode = document.getElementById('end-mode').value;
-            if (endMode === 'score') {
-                document.getElementById('target-score-group').style.display = 'block';
-                document.getElementById('time-limit-group').style.display = 'none';
-            } else {
-                document.getElementById('target-score-group').style.display = 'none';
-                document.getElementById('time-limit-group').style.display = 'block';
+        function filterQuestionsBySubjectLevel(allQuestions, subject, level) {
+            if (!allQuestions || allQuestions.length === 0) return [];
+            const norm = (str) => (str || '').toLowerCase().replace(/\.|\s|grade|form|年級|級/g, '').trim();
+            const targetSub = norm(subject), targetLvl = norm(level);
+            return allQuestions.filter(q => {
+                const qSub = norm(q.subject), qLvl = norm(q.level);
+                const subMatch = !qSub || qSub === targetSub || 
+                                 (targetSub === 'maths' && (qSub === 'math' || qSub === '數學')) ||
+                                 (targetSub === '科學' && (qSub === '科學')) ||
+                                 (targetSub === 'science' && (qSub === 'Science')) ||
+                                 (targetSub === 'chinese' && (qSub === '中文' || qSub === 'chinese'));
+                const lvlMatch = !qLvl || qLvl === targetLvl || qLvl === targetLvl.replace('p','');
+                return subMatch && lvlMatch;
+            });
+        }
+
+        function getRandomQuestion() {
+            if (!customQuestions || customQuestions.length === 0) return { id: 0, q: "載入異常！", options: ["A", "B"], ans: 0 };
+            const pool = customQuestions;
+            const original = pool[Math.floor(Math.random() * pool.length)];
+            let shuffled = [...original.options];
+            const correctText = shuffled[original.ans];
+            for (let i = shuffled.length-1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i+1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
             }
+            return { id: original.id, q: original.q, options: shuffled, ans: shuffled.indexOf(correctText) };
         }
 
-        function generateTeamFields() {
-            const count = parseInt(document.getElementById('team-count').value);
-            const container = document.getElementById('team-names-inputs');
-            container.innerHTML = '';
-            for (let i = 1; i <= count; i++) {
-                container.innerHTML += `
-                    <div class="form-group">
-                        <label>TEAM ${i} NAME</label>
-                        <input type="text" id="team-name-${i}" value="TEAM ${i}">
-                    </div>
-                `;
-            }
-        }
+        function renderTeamQuestion(teamId, teamIndex) {
+            const qEl = document.getElementById(`qtext-${teamId}`);
+            const optsDiv = document.getElementById(`options-${teamId}`);
+            const statusEl = document.getElementById(`status-${teamId}`);
+            if(!qEl || !optsDiv || !statusEl) return;
 
-        function playSound(id) {
-            if (isMuted) return;
-            const sound = document.getElementById(id);
-            if (sound) {
-                sound.currentTime = 0;
-                sound.play().catch(e => console.log("Audio playing prevented"));
-            }
-        }
-
-        function startBackgroundMusic() {
-            if (isMuted) return;
-            const music = document.getElementById('bg-music');
-            if (music) {
-                music.play().catch(e => console.log("Music play blocked by browser. Interaction required."));
-            }
-        }
-
-        function stopBackgroundMusic() {
-            const music = document.getElementById('bg-music');
-            if (music) music.pause();
-        }
-
-        function toggleMute() {
-            isMuted = !isMuted;
-            const music = document.getElementById('bg-music');
-            if (music) {
-                if (isMuted) music.pause();
-                else if (document.getElementById('game-screen').classList.contains('active') && !isPaused) music.play().catch(e => {});
-            }
-        }
-
-        function startGame() {
-            const activeQuestions = customQuestions.length > 0 ? customQuestions : defaultQuestions;
+            const qData = currentQuestions[teamIndex];
+            const qText = qData.q;
+            const qId = qData.id;
+            const isShort = qText.length > 0 && qText.length <= 5;
             
-            // Setup Teams Structure
-            teams = [];
-            if (gameMode === 'solo') {
-                const sClass = document.getElementById('solo-class').value.trim() || "Mixed";
-                const sName = document.getElementById('solo-name').value.trim() || "Player 1";
-                window.currentSoloPlayer = { class: sClass, name: sName };
-                teams.push({ id: 'solo', name: `[${sClass}] ${sName}`, score: 0, pool: [...activeQuestions] });
+            qEl.style.fontSize = isShort ? '70px' : '17px';
+            qEl.style.lineHeight = isShort ? '1.2' : '1.55';
+            
+            // 加入題目編號顯示，並用較小的灰色字體 (#xxx)
+            qEl.innerHTML = `${qText} <span style="color:#64748b; font-size: 13px; margin-left: 6px; vertical-align: baseline;">(#${qId})</span>`;
+            
+            if(teams[teamIndex].multiplier === 3) {
+                statusEl.innerHTML = `<span style="color:#ff4500; font-weight:bold; animation: pulse 1s infinite;">🔥 3x POINTS NEXT Q! 🔥</span>`;
             } else {
-                window.currentSoloPlayer = null;
-                const count = parseInt(document.getElementById('team-count').value);
-                for (let i = 1; i <= count; i++) {
-                    const name = document.getElementById(`team-name-${i}`).value.trim() || `TEAM ${i}`;
-                    teams.push({ id: `team-${i}`, name: name, score: 0, pool: [...activeQuestions] });
-                }
+                statusEl.innerHTML = '';
             }
-
-            // Shuffle pools safely
-            teams.forEach(t => shuffleArray(t.pool));
-
-            // Set configuration targets
-            endMode = document.getElementById('end-mode').value;
-            if (endMode === 'score') {
-                targetScore = parseInt(document.getElementById('target-score').value) || 10;
-                document.getElementById('timer-display').style.display = 'none';
-                document.getElementById('pause-btn').style.display = 'none';
-            } else {
-                const minutes = parseFloat(document.getElementById('time-limit').value) || 3;
-                window.gameMinutes = minutes; 
-                document.getElementById('timer-display').style.display = 'block';
-                document.getElementById('pause-btn').style.display = 'inline-block';
-                gameEndTime = Date.now() + (minutes * 60 * 1000);
-                startTimer();
-            }
-
-            currentTeamTurn = 0;
-            isPaused = false;
-            pausedRemainingTime = 0;
-
-            // Render Layout UI
-            renderGameLayout();
-
-            // Toggle screens
-            document.getElementById('menu-screen').classList.remove('active');
-            document.getElementById('game-screen').classList.add('active');
-
-            startBackgroundMusic();
-            nextTurn();
+            
+            optsDiv.innerHTML = '';
+            currentQuestions[teamIndex].options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = `${String.fromCharCode(65+i)}. ${opt}`;
+                btn.onclick = () => handleAnswer(teamId, i, teamIndex);
+                optsDiv.appendChild(btn);
+            });
         }
 
-        function startTimer() {
-            if (gameInterval) clearInterval(gameInterval);
-            gameInterval = setInterval(() => {
-                // 改用 Math.max 確保不會算出負數
-                const remaining = Math.max(0, Math.ceil((gameEndTime - Date.now()) / 1000));
-                
-                const min = Math.floor(remaining / 60);
-                const sec = remaining % 60;
-                
-                // 先更新畫面，確保最後一秒畫面會準確刷新成 TIME: 0:00
-                document.getElementById('timer-display').textContent = `TIME: ${min}:${sec < 10 ? '0'+sec : sec}`;
+        function renderAllTeams() {
+            const grid = document.getElementById('team-grid');
+            grid.innerHTML = '';
 
-                if (remaining <= 0) { 
-                    clearInterval(gameInterval);
-                    
-                    // 核心修正：時間一到，第一時間強制停用畫面上所有的答案按鈕，防止被點擊作答
-                    disableAllAnswerButtons(true);
-                    
-                    // 延遲 50 毫秒再跳出 alert，讓瀏覽器有時間渲染 0:00 畫面與按鈕變灰的狀態
-                    setTimeout(() => {
-                        alert("⏰ Time's Up!");
-                        endGame('time'); 
-                    }, 50);
-                    return;
+            if (teams.length === 1) grid.classList.add('solo-mode');
+            else grid.classList.remove('solo-mode');
+
+            teams.forEach((team, index) => {
+                const card = document.createElement('div');
+                card.className = 'team-card';
+                card.id = `card-${team.id}`; 
+                
+                card.innerHTML = `
+                    <div class="team-header">
+                        <div class="team-name" style="color:${team.color}; font-weight:bold;">${team.name}</div>
+                        <div class="score" id="score-${team.id}">${team.score}</div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progress-${team.id}" style="width:0%"></div>
+                    </div>
+                    <div class="question" id="qtext-${team.id}"></div>
+                    <div class="options" id="options-${team.id}"></div>
+                    <div class="status" id="status-${team.id}"></div>
+                `;
+                grid.appendChild(card);
+                renderTeamQuestion(team.id, index);
+            });
+        }
+
+        function freezeTeam(targetTeamIndex, seconds) {
+            const team = teams[targetTeamIndex];
+            const card = document.getElementById(`card-${team.id}`);
+            if(!card) return;
+            
+            let overlay = document.getElementById(`freeze-${team.id}`);
+            if(!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = `freeze-${team.id}`;
+                overlay.className = 'freeze-overlay';
+                card.appendChild(overlay);
+            }
+            
+            overlay.style.display = 'flex';
+            let timeLeft = seconds;
+            overlay.innerHTML = `<h2 style="margin:0;">❄️ FROZEN ❄️<br><span style="font-size:32px;">${timeLeft}s</span></h2>`;
+            
+            if(team.freezeTimer) clearInterval(team.freezeTimer);
+            
+            team.freezeTimer = setInterval(() => {
+                if(isPaused) return; 
+                timeLeft--;
+                if(timeLeft <= 0) {
+                    clearInterval(team.freezeTimer);
+                    team.freezeTimer = null;
+                    if(overlay) overlay.style.display = 'none';
+                } else {
+                    if(overlay) overlay.innerHTML = `<h2 style="margin:0;">❄️ FROZEN ❄️<br><span style="font-size:32px;">${timeLeft}s</span></h2>`;
                 }
             }, 1000);
         }
 
-        // 輔助函式：用來將所有答題按鈕鎖定或解鎖
-        function disableAllAnswerButtons(disable) {
-            const optionButtons = document.querySelectorAll('.option-btn');
-            optionButtons.forEach(btn => {
-                btn.disabled = disable;
-            });
-        }
+        function applyPrize(prize, teamIndex) {
+            const me = teams[teamIndex];
+            const opponents = teams.map((t, i) => i).filter(i => i !== teamIndex);
 
-        function togglePause() {
-            if (endMode !== 'time') return;
-            const pauseBtn = document.getElementById('pause-btn');
-            if (!isPaused) {
-                isPaused = true;
-                clearInterval(gameInterval);
-                pausedRemainingTime = gameEndTime - Date.now();
-                pauseBtn.innerHTML = '▶️ RESUME';
-                stopBackgroundMusic();
-                disableAllAnswerButtons(true);
-            } else {
-                isPaused = false;
-                gameEndTime = Date.now() + pausedRemainingTime;
-                startTimer();
-                pauseBtn.innerHTML = '⏸️ PAUSE';
-                startBackgroundMusic();
-                disableAllAnswerButtons(false);
-            }
-        }
-
-        function renderGameLayout() {
-            const container = document.getElementById('teams-container');
-            container.innerHTML = '';
-            
-            teams.forEach((team, index) => {
-                container.innerHTML += `
-                    <div id="box-${team.id}" class="team-box">
-                        <div class="team-name">${team.name}</div>
-                        <div id="score-${team.id}" class="team-score">0 / ${endMode==='score'?targetScore:'∞'} PTS</div>
-                        <div id="q-zone-${team.id}">
-                            <div class="question-box" id="question-${team.id}">LOADING...</div>
-                            <div class="options-grid" id="options-${team.id}"></div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function nextTurn() {
-            if (isPaused) return;
-
-            // In multi-mode, update highlights. In solo, keep highlighted.
-            teams.forEach((t, i) => {
-                const element = document.getElementById(`box-${t.id}`);
-                if (element) {
-                    if (gameMode === 'solo' || i === currentTeamTurn) {
-                        element.classList.add('active-turn');
-                        document.getElementById(`q-zone-${t.id}`).style.opacity = "1";
-                        document.getElementById(`q-zone-${t.id}`).style.pointerEvents = "auto";
-                    } else {
-                        element.classList.remove('active-turn');
-                        document.getElementById(`q-zone-${t.id}`).style.opacity = "0.2";
-                        document.getElementById(`q-zone-${t.id}`).style.pointerEvents = "none";
-                    }
+            if (prize.type === 'steal') {
+                if (opponents.length > 0) {
+                    const validOpps = opponents.filter(i => teams[i].score > 0);
+                    if(validOpps.length > 0) {
+                        const targetIdx = validOpps[Math.floor(Math.random() * validOpps.length)];
+                        const stealAmt = Math.min(5, teams[targetIdx].score);
+                        teams[targetIdx].score -= stealAmt;
+                        me.score += stealAmt;
+                    } else { me.score += 5; }
+                } else { me.score += 5; }
+            } else if (prize.type === 'freeze1') {
+                if (opponents.length > 0) {
+                    const targetIdx = opponents[Math.floor(Math.random() * opponents.length)];
+                    freezeTeam(targetIdx, 5);
                 }
+            } else if (prize.type === 'add10') {
+                me.score += 10;
+            } else if (prize.type === 'freezeAll') {
+                opponents.forEach(i => freezeTeam(i, 3));
+            } else if (prize.type === 'triple') {
+                me.multiplier = 3;
+            }
+
+            const maxTarget = endMode === 'score' ? targetScore : 300;
+            teams.forEach(t => {
+                const scoreEl = document.getElementById(`score-${t.id}`);
+                if(scoreEl) scoreEl.textContent = t.score;
+                const prog = Math.min((t.score / maxTarget) * 100, 100);
+                const pEl = document.getElementById(`progress-${t.id}`);
+                if(pEl) pEl.style.width = `${prog}%`;
             });
 
-            // Populate question for current team (or all teams in solo)
-            if (gameMode === 'solo') {
-                serveQuestion(0);
-            } else {
-                serveQuestion(currentTeamTurn);
+            if (!window.currentSoloPlayer) {
+                updateLeaderboard();
+            }
+
+            if (endMode === 'score' && me.score >= targetScore) {
+                setTimeout(() => { 
+                    if (window.currentSoloPlayer) alert(`🎉 Finished!`);
+                    else alert(`🎉 ${me.name} WINS!`);
+                    endGame(); 
+                }, 800);
             }
         }
 
-        function serveQuestion(teamIndex) {
-            const team = teams[teamIndex];
+        function startLuckyDraw(teamId, teamIndex) {
+            const qEl = document.getElementById(`qtext-${teamId}`);
+            const optsDiv = document.getElementById(`options-${teamId}`);
+            const statusEl = document.getElementById(`status-${teamId}`);
             
-            // Cycle question pool safely if depleted
-            if (team.pool.length === 0) {
-                const srcQuestions = customQuestions.length > 0 ? customQuestions : defaultQuestions;
-                team.pool = [...srcQuestions];
-                shuffleArray(team.pool);
-            }
+            qEl.style.fontSize = '24px';
+            qEl.style.lineHeight = '1.3';
+            qEl.innerHTML = `<div style="text-align:center; width:100%; color:#facc15; text-shadow:0 0 10px #facc15;">🎰 MYSTERY BOX 🎰</div>`;
+            optsDiv.innerHTML = '';
+            statusEl.innerHTML = '';
 
-            const activeQ = team.pool.pop();
-            currentQuestions[teamIndex] = activeQ;
+            const prizes = [
+                { icon: '🏴‍☠️', text: 'Steal 5 Pts', color: '#ff00aa', type: 'steal' },
+                { icon: '❄️', text: 'Freeze 1 (5s)', color: '#00f9ff', type: 'freeze1' },
+                { icon: '💎', text: '+10 Points', color: '#39ff14', type: 'add10' },
+                { icon: '⚡', text: 'Freeze All (3s)', color: '#facc15', type: 'freezeAll' },
+                { icon: '🔥', text: '3x Points Next Q', color: '#ff4500', type: 'triple' }
+            ];
 
-            // Update DOM Elements safely
-            document.getElementById(`question-${team.id}`).textContent = activeQ.question;
-            const optGrid = document.getElementById(`options-${team.id}`);
-            optGrid.innerHTML = '';
+            let spinCount = 0;
+            const spinInterval = setInterval(() => {
+                const p = prizes[spinCount % prizes.length];
+                optsDiv.innerHTML = `<div style="font-size:16px; text-align:center; padding:18px; color:${p.color}; border:2px dashed ${p.color}; margin:10px; border-radius:8px;">${p.icon} ${p.text}</div>`;
+                spinCount++;
+            }, 50);
 
-            const prefix = ['A', 'B', 'C', 'D'];
-            activeQ.options.forEach((opt, oIdx) => {
-                // Strips existing prefix inside strings if present to safely format cleanly
-                const cleaner = opt.replace(/^[A-Da-d]\.\s*/, '');
-                optGrid.innerHTML += `
-                    <button class="option-btn" onclick="handleAnswer('${team.id}', ${oIdx}, ${teamIndex})">
-                        <span class="option-prefix">${prefix[oIdx]}.</span> ${cleaner}
-                    </button>
-                `;
-            });
+            setTimeout(() => {
+                clearInterval(spinInterval);
+                const winIdx = Math.floor(Math.random() * prizes.length);
+                const winPrize = prizes[winIdx];
+                
+                optsDiv.innerHTML = `<div style="font-size:18px; text-align:center; padding:20px; background:#12122e; color:${winPrize.color}; border:3px solid ${winPrize.color}; box-shadow: 0 0 15px ${winPrize.color}; margin:10px; border-radius:8px; animation: pulse 0.5s infinite;">🎉 ${winPrize.icon}<br>${winPrize.text} 🎉</div>`;
+                
+                applyPrize(winPrize, teamIndex);
+
+                setTimeout(() => {
+                    currentQuestions[teamIndex] = getRandomQuestion();
+                    renderTeamQuestion(teamId, teamIndex);
+                }, 2000);
+
+            }, 1000);
         }
 
         function handleAnswer(teamId, selectedIndex, teamIndex) {
-            // 防禦性檢查：如果是時間制且時間已經過期，或者是暫停狀態，點擊無效
-            if (endMode === 'time' && (isPaused || (gameEndTime && Date.now() >= gameEndTime))) return;
-
             const q = currentQuestions[teamIndex];
             const isCorrect = selectedIndex === q.ans;
-            const team = teams[teamIndex];
+            const statusEl = document.getElementById(`status-${teamId}`);
+            const buttons = document.querySelectorAll(`#options-${teamId} .option-btn`);
+           
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === q.ans) btn.style.borderColor = '#39ff14';
+                if (idx === selectedIndex && !isCorrect) btn.style.borderColor = '#ff00aa';
+            });
 
-            // Lock inputs globally to avoid multi-clicks during overlay display phases
-            disableAllAnswerButtons(true);
-
-            const overlay = document.getElementById('feedback-overlay');
-            const txt = document.getElementById('feedback-text');
-            const exp = document.getElementById('explanation-text');
-            const nextBtn = document.getElementById('next-btn');
+            const oldScore = teams[teamIndex].score;
+            const ptsToAdd = 10 * (teams[teamIndex].multiplier || 1);
+            teams[teamIndex].multiplier = 1; 
 
             if (isCorrect) {
-                playSound('sound-correct');
-                txt.textContent = "🎯 CORRECT!";
-                txt.className = "feedback-content correct";
-                team.score++;
-                document.getElementById(`score-${team.id}`).textContent = `${team.score} / ${endMode==='score'?targetScore:'∞'} PTS`;
+                teams[teamIndex].score += ptsToAdd;
+                statusEl.innerHTML = `<span style="color:#39ff14">✅ CORRECT! +${ptsToAdd}</span>`;
             } else {
-                playSound('sound-wrong');
-                txt.textContent = `❌ WRONG!\nCorrect answer is: ${['A','B','C','D'][q.ans]}`;
-                txt.className = "feedback-content wrong";
+                statusEl.innerHTML = `<span style="color:#ff00aa">❌ Wrong. Answer: ${String.fromCharCode(65 + q.ans)}</span>`;
             }
 
-            exp.textContent = q.explanation || "No further explanation provided.";
-            overlay.style.display = 'flex';
-
-            // Check instantly if target score achieved in target score tracking configurations
-            if (endMode === 'score' && team.score >= targetScore) {
-                nextBtn.onclick = function() {
-                    overlay.style.display = 'none';
-                    endGame('score');
-                };
+            document.getElementById(`score-${teamId}`).textContent = teams[teamIndex].score;
+            const progress = Math.min((teams[teamIndex].score / (endMode=='score' ? targetScore : 300)) * 100, 100);
+            document.getElementById(`progress-${teamId}`).style.width = `${progress}%`;
+            
+            if (!window.currentSoloPlayer) {
+                updateLeaderboard();
+            }
+            
+            if (endMode === 'score' && teams[teamIndex].score >= targetScore) {
+                setTimeout(() => { 
+                    if (window.currentSoloPlayer) alert(`🎉 Finished!`);
+                    else alert(`🎉 ${teams[teamIndex].name} WINS!`);
+                    endGame(); 
+                }, 800);
                 return;
             }
 
-            // Normal progression configuration handling routines
-            nextBtn.onclick = function() {
-                overlay.style.display = 'none';
-                disableAllAnswerButtons(false);
+            const crossed50 = Math.floor(teams[teamIndex].score / 50) > Math.floor(oldScore / 50);
 
-                // Check time bound again dynamically before stepping turn positions ahead
-                if (endMode === 'time' && Date.now() >= gameEndTime) {
-                    return; 
+            pendingResultTimeouts[teamId] = setTimeout(() => {
+                if (isCorrect && crossed50 && !window.currentSoloPlayer) {
+                    startLuckyDraw(teamId, teamIndex);
+                } else {
+                    currentQuestions[teamIndex] = getRandomQuestion();
+                    renderTeamQuestion(teamId, teamIndex);
                 }
-
-                if (gameMode === 'multi') {
-                    currentTeamTurn = (currentTeamTurn + 1) % teams.length;
-                }
-                nextTurn();
-            };
+                delete pendingResultTimeouts[teamId];
+            }, 1600);
         }
 
-        function endGame(endModeTriggered = 'score') {
-            clearInterval(gameInterval);
-            stopBackgroundMusic();
-            disableAllAnswerButtons(true);
+        function updateLeaderboard() {
+            const leaderboardEl = document.getElementById('leaderboard');
+            if (leaderboardEl) leaderboardEl.style.display = 'block';
 
-            // Determine Winner names strings
-            let reportTitle = "GAME OVER!\n\n";
-            if (gameMode === 'solo') {
-                reportTitle += `Final Score: ${teams[0].score} points.`;
-            } else {
-                let max = -1;
-                let winners = [];
-                teams.forEach(t => {
-                    if (t.score > max) { max = t.score; winners = [t.name]; }
-                    else if (t.score === max) { winners.push(t.name); }
-                });
-                reportTitle += `👑 WINNER: ${winners.join(' & ')} with ${max} points!\n\n`;
-                
-                // Complete scoreboard logs summary appendations
-                teams.forEach(t => {
-                    reportTitle += `${t.name}: ${t.score} pts\n`;
-                });
-            }
+            const sorted = [...teams].sort((a,b) => b.score - a.score);
+            let html = '';
+            sorted.forEach((t, i) => {
+                html += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #334155;">
+                    <span><strong>#${i+1}</strong> ${t.name}</span>
+                    <span style="color:#39ff14;font-weight:bold;">${t.score} pts</span>
+                </div>`;
+            });
+            if (leaderboardEl) leaderboardEl.innerHTML = html;
+        }
 
-            alert(reportTitle);
+        function endGame() {
+            if (!confirm("End game and return to menu?")) return;
 
-            // SOLO Cloud Sheet Sync Engine integration pipelines
             const wasSolo = !!window.currentSoloPlayer;
             const finalScore = (teams.length > 0) ? teams[0].score : 0;
+
+            stopBackgroundMusic();
+            if (gameInterval) clearInterval(gameInterval);
 
             if (wasSolo && window.currentSoloPlayer) {
                 const player = window.currentSoloPlayer;
@@ -870,42 +1166,15 @@
                     const recordData = {
                         date: new Date().toLocaleDateString('zh-HK'),
                         time: new Date().toLocaleTimeString('zh-HK'),
-                        class: player.class,
-                        name: player.name,
-                        subject: currentSubject,
-                        level: currentLevel,
-                        score: finalScore,
-                        endMode: endModeTriggered,
-                        targetOrTime: endModeTriggered === 'score' ? targetScore : (window.gameMinutes || 10)
+                        class: player.class, name: player.name,
+                        subject: currentSubject, level: currentLevel,
+                        score: finalScore, endMode: endMode,
+                        targetOrTime: endMode === 'score' ? targetScore : (window.gameMinutes || 10)
                     };
                     saveSoloResultToGoogleSheet(recordData);
                 }
             }
 
-            quitGame();
-        }
-
-        function saveSoloResultToGoogleSheet(data) {
-            // Safe cross-domain async delivery engine using standard image beaconing patterns 
-            // to bypass strict CORS blocking limitations effectively
-            const queryParams = new URLSearchParams(data).toString();
-            const targetUrl = `${GOOGLE_SCRIPT_URL}?${queryParams}`;
-            
-            console.log("Saving metrics packet directly to cloud endpoint layer:", data);
-            
-            const beacon = new Image();
-            beacon.src = targetUrl;
-            beacon.onload = () => alert("🎉 成績已成功同步上傳到雲端系統！");
-            beacon.onerror = () => {
-                // Apps script actions often report false status updates to pure images due to redirects 
-                // but usually complete execution inside tracking sheets regardless
-                alert("成績備份要求已發送！(請確認雲端試算表更新)");
-            };
-        }
-
-        function quitGame() {
-            clearInterval(gameInterval);
-            stopBackgroundMusic();
             isPaused = false;
             pausedRemainingTime = 0;
             const pauseBtn = document.getElementById('pause-btn');
@@ -913,40 +1182,48 @@
             
             document.getElementById('game-screen').classList.remove('active');
             document.getElementById('menu-screen').classList.add('active');
-            
-            // Clean dynamic parameters
             document.getElementById('csv-upload').value = '';
-            document.getElementById('file-status').textContent = customQuestions.length > 0 ? `✅ LOADED ${customQuestions.length} CUSTOM QUESTIONS` : "NO FILE LOADED";
             document.getElementById('timer-display').style.display = 'none';
+            customQuestions = [];
             window.currentSoloPlayer = null;
         }
 
-        // Shared Standard Fisher-Yates array shuffling algorithms implementation logic
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
+        function startTimer() {
+            if (gameInterval) clearInterval(gameInterval);
+            gameInterval = setInterval(() => {
+                const remaining = Math.ceil((gameEndTime - Date.now()) / 1000);
+                
+                // 倒數歸零處理
+                if (remaining <= 0) { 
+                    clearInterval(gameInterval); 
+                    // 先將顯示時間設為 0:00，並鎖住所有答案
+                    document.getElementById('timer-display').textContent = `TIME: 0:00`;
+                    disableAllAnswerButtons(true);
+                    
+                    // 延遲一點點時間彈出視窗，確保網頁能渲染上述的畫面更新
+                    setTimeout(() => {
+                        alert("⏰ Time's Up!"); 
+                        endGame(); 
+                    }, 100);
+                    return; 
+                }
+                
+                const min = Math.floor(remaining / 60);
+                const sec = remaining % 60;
+                document.getElementById('timer-display').textContent = `TIME: ${min}:${sec < 10 ? '0'+sec : sec}`;
+            }, 1000);
         }
 
-        // Global Event Hotkeys Bindings (A, B, C, D Mapping actions)
         document.addEventListener('keydown', e => {
             if (!document.getElementById('game-screen').classList.contains('active') || isPaused) return;
             const key = e.key.toUpperCase();
             if (!['A','B','C','D'].includes(key)) return;
             const idx = key.charCodeAt(0) - 65;
-            
-            // Target active game box context
-            teams.forEach((team, teamIdx) => {
-                if (gameMode === 'multi' && teamIdx !== currentTeamTurn) return; // ignore inactive team fields hotkeys
-                
+            teams.forEach(team => {
                 const opts = document.getElementById(`options-${team.id}`);
-                if (opts) {
+                if (opts && !opts.querySelector('button[disabled]')) {
                     const btns = opts.querySelectorAll('.option-btn');
-                    // Verify if first button is not disabled to safeguard system click actions logic bounds
-                    if (btns[0] && !btns[0].disabled) {
-                        if (btns[idx]) btns[idx].click();
-                    }
+                    if (btns[idx]) btns[idx].click();
                 }
             });
         });
@@ -956,7 +1233,6 @@
             toggleSoloMode();
         };
         
-        // Anti-Right-Click Interface Lockdown Protections
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
             return false;
