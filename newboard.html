@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>排行榜 V26070080934🏆</title>
+  <title>排行榜 V26070091011🏆</title>
   <style>
     /* 基礎變數 (預設暗色) */
     :root {
@@ -272,22 +272,37 @@
         const container = document.getElementById(`container-${idx}`);
         const norm = str => String(str || '').replace(/\s|\./g, '').toUpperCase();
         
-        // 1. 基本篩選：科目與年級
-        let list = allData.filter(d => norm(d.subject) === norm(currentSubject) && norm(d.level) === norm(level));
+       // 1. 基本篩選：科目與年級
+let list = allData.filter(d => norm(d.subject) === norm(currentSubject) && norm(d.level) === norm(level));
 
-        // 2. 班別開頭數字動態過濾 (P.1 只能 ≤ 1, P.2 只能 ≤ 2, 依此類推)
-        const levelNum = parseInt(level.replace(/[^0-9]/g, ''), 10);
-        if (!isNaN(levelNum)) {
-          list = list.filter(d => {
-            const classStr = String(d.class || '').trim();
-            if (!classStr) return false; 
-            const classNum = parseInt(classStr.charAt(0), 10);
-            return !isNaN(classNum) && classNum <= levelNum;
-          });
-        }
+// 2. 班別開頭數字動態過濾 (P.1 只能 ≤ 1, P.2 只能 ≤ 2, 依此類推)
+const levelNum = parseInt(level.replace(/[^0-9]/g, ''), 10);
+if (!isNaN(levelNum)) {
+  list = list.filter(d => {
+    const classStr = String(d.class || '').trim();
+    if (!classStr) return false; 
+    const classNum = parseInt(classStr.charAt(0), 10);
+    return !isNaN(classNum) && classNum <= levelNum;
+  });
+}
 
-        // 3. 排序並取前 8 名
-        list = list.sort((a, b) => b.score - a.score).slice(0, 10); 
+// 【新增步驟】3. 同名去重：按名字分類，只保留最高分的那一筆資料
+const uniqueMap = new Map();
+list.forEach(item => {
+  const name = String(item.name || '').trim();
+  if (!name) return;
+  const score = Number(item.score);
+  
+  // 如果名字沒出現過，或者這次的分數比之前記錄的更高，就更新紀錄
+  if (!uniqueMap.has(name) || score > Number(uniqueMap.get(name).score)) {
+    uniqueMap.set(name, item);
+  }
+});
+
+// 將 Map 轉回陣列，並進行排序取前 10 名
+list = Array.from(uniqueMap.values())
+  .sort((a, b) => b.score - a.score)
+  .slice(0, 10);
 
         container.innerHTML = `
           <table>
