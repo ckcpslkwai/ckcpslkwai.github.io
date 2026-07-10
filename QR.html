@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan to Join</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated background blobs for visual depth */
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 0;
+            animation: float 6s infinite ease-in-out;
+        }
+        body::before { top: -10%; left: -10%; }
+        body::after { bottom: -10%; right: -10%; animation-delay: 3s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Main Container Card */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2.5rem;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 380px;
+            width: 90%;
+            z-index: 1;
+            transform: translateY(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        /* QR Code Wrapper with subtle pulse effect */
+        .qr-wrapper {
+            background: #ffffff;
+            padding: 1rem;
+            border-radius: 16px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05), 0 8px 16px rgba(0,0,0,0.05);
+            display: inline-block;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .qr-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 16px;
+            border: 2px solid #764ba2;
+            opacity: 0.5;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(1.08); opacity: 0; }
+        }
+
+        .qr-image {
+            width: 220px;
+            height: 220px;
+            display: block;
+            object-fit: contain;
+        }
+
+        /* Typography */
+        .text-zh {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.4rem;
+            letter-spacing: 1px;
+        }
+
+        .text-en {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        /* Subtle bottom accent line */
+        .accent-line {
+            width: 50px;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            margin: 1.5rem auto 0;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="qr-wrapper">
+            <!-- Ensure QR.png is in the same directory -->
+            <img src="QR.png" alt="Scan to Join QR Code" class="qr-image">
+        </div>
+        <div class="text-zh">掃瞄即可參與</div>
+        <div class="text-en">Scan to join</div>
+        <div class="accent-line"></div>
+    </div>
+
+</body>
+</html>
