@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CKCPS WARS - 校園互動問答系統入口首頁</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        
+        /* 1. 預設：賽博朋克霓虹風格 (Cyberpunk Theme) */
+        :root {
+            --bg-gradient: linear-gradient(180deg, #060614 0%, #0a0a24 100%);
+            --header-bg: rgba(11, 11, 34, 0.85);
+            --header-border: #00f9ff;
+            --header-shadow: 0 0 25px rgba(0, 249, 255, 0.25);
+            --header-text: #ffffff;
+            --header-desc: #94a3b8;
+            --h1-font: 'Orbitron', sans-serif;
+            --h1-text-shadow: 0 0 10px #00f9ff;
+            
+            --bg-dark: #060614;
+            --card-bg: #11112a;
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            --primary: #00f9ff;     /* 遊戲藍 */
+            --secondary: #ff00aa;   /* 排行粉 */
+            --accent: #39ff14;      /* 教師綠 */
+            --text-main: #ffffff;
+            --text-dim: #94a3b8;
+            --border-color: #222244;
+            --item-bg: rgba(255, 255, 255, 0.02);
+            --item-border: rgba(255, 255, 255, 0.08);
+            --placeholder-bg: rgba(0, 0, 0, 0.2);
+
+            /* 動態懸停控制變數 */
+            --game-hover-bg: rgba(0, 249, 255, 0.08);
+            --game-hover-shadow: inset 0 0 10px rgba(0, 249, 255, 0.2);
+            --rank-hover-bg: rgba(255, 0, 170, 0.08);
+            --rank-hover-shadow: inset 0 0 10px rgba(255, 0, 170, 0.2);
+            --teacher-hover-bg: rgba(57, 255, 20, 0.08);
+            --teacher-hover-shadow: inset 0 0 10px rgba(57, 255, 20, 0.2);
+
+            /* 動態標籤控制變數 */
+            --tag-game-bg: rgba(0, 249, 255, 0.15);
+            --tag-rank-bg: rgba(255, 0, 170, 0.15);
+            --tag-teacher-bg: rgba(57, 255, 20, 0.15);
+        }
+
+        /* 2. 圓玄學院陳國超興德小學 學校官方配色風格 (CKCPS School Theme) */
+        body.school-theme {
+            --bg-gradient: linear-gradient(180deg, #faf9f8 0%, #f0f4f7 100%); /* 圖片質感米白 */
+            --header-bg: #2d4565;       /* 圖片精準海軍藍 */
+            --header-border: #f9995d;   /* 圖片精準活力珊瑚橘 */
+            --header-shadow: 0 4px 20px rgba(45, 69, 101, 0.15);
+            --header-text: #ffffff;
+            --header-desc: #faf9f8;
+            --h1-font: "微軟正黑體", -apple-system, sans-serif;
+            --h1-text-shadow: none;
+            
+            --bg-dark: #faf9f8;
+            --card-bg: #ffffff;
+            --card-shadow: 0 4px 20px rgba(45, 69, 101, 0.06);
+            --primary: #2d4565;         /* 遊戲區：海軍藍 */
+            --secondary: #f9995d;       /* 排行區：珊瑚橘 */
+            --accent: #71b2c4;          /* 教師區：晴空粉藍 */
+            --text-main: #2d4565;       /* 主要文字改為深海軍藍 */
+            --text-dim: #5d718e;        /* 說明文字改為外觀藍灰 */
+            --border-color: #cbd5e1;    /* 輕量化邊框 */
+            --item-bg: #faf9f8;         /* 選項底色 */
+            --item-border: #e2e8f0;
+            --placeholder-bg: rgba(0, 0, 0, 0.04);
+
+            /* 動態懸停控制變數 (純色淡化) */
+            --game-hover-bg: rgba(45, 69, 101, 0.06);
+            --game-hover-shadow: none;
+            --rank-hover-bg: rgba(249, 153, 93, 0.08);
+            --rank-hover-shadow: none;
+            --teacher-hover-bg: rgba(113, 178, 196, 0.08);
+            --teacher-hover-shadow: none;
+
+            /* 動態標籤控制變數 */
+            --tag-game-bg: rgba(45, 69, 101, 0.1);
+            --tag-rank-bg: rgba(249, 153, 93, 0.15);
+            --tag-teacher-bg: rgba(113, 178, 196, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "微軟正黑體", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* 右上角控制按鈕容器 */
+        .controls-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 12px;
+        }
+
+        .control-btn {
+            padding: 10px 18px;
+            background: rgba(11, 11, 34, 0.85);
+            border: 2px solid var(--primary);
+            color: #ffffff;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 15px rgba(0, 249, 255, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px var(--primary);
+        }
+
+        /* 學校配色下的控制按鈕樣式 */
+        body.school-theme .control-btn {
+            background: #ffffff;
+            border: 2px solid #2d4565;
+            color: #2d4565;
+            box-shadow: 0 4px 12px rgba(45, 69, 101, 0.15);
+        }
+        body.school-theme .control-btn:hover {
+            background: #2d4565;
+            color: #ffffff;
+            box-shadow: 0 4px 20px rgba(45, 69, 101, 0.25);
+        }
+
+        header {
+            background: var(--header-bg);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 3px solid var(--header-border);
+            box-shadow: var(--header-shadow);
+            backdrop-filter: blur(10px);
+            color: var(--header-text);
+            transition: all 0.3s ease;
+        }
+
+        header h1 {
+            font-family: var(--h1-font);
+            font-size: 2.5rem;
+            letter-spacing: 3px;
+            text-shadow: var(--h1-text-shadow);
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        body.school-theme header h1 {
+            letter-spacing: 1px;
+        }
+
+        header p {
+            color: var(--header-desc);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+        }
+
+        .portal-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            flex: 1;
+            width: 100%;
+        }
+
+        .portal-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .portal-section:hover {
+            transform: translateY(-5px);
+        }
+
+        .section-game:hover { border-color: var(--primary); }
+        .section-rank:hover { border-color: var(--secondary); }
+        .section-teacher:hover { border-color: var(--accent); }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            padding-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-game .section-title { color: var(--primary); border-bottom: 2px solid var(--primary); }
+        .section-rank .section-title { color: var(--secondary); border-bottom: 2px solid var(--secondary); }
+        .section-teacher .section-title { color: var(--accent); border-bottom: 2px solid var(--accent); }
+
+        .link-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            height: 100%;
+        }
+
+        .link-item a {
+            display: flex;
+            flex-direction: column;
+            padding: 16px 20px;
+            background: var(--item-bg);
+            border: 1px solid var(--item-border);
+            border-radius: 10px;
+            color: var(--text-main);
+            text-decoration: none;
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+
+        .link-item a .title-text {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .link-item a .desc-text {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .section-game .link-item a:hover {
+            background: var(--game-hover-bg);
+            border-color: var(--primary);
+            box-shadow: var(--game-hover-shadow);
+            padding-left: 25px;
+        }
+        .section-rank .link-item a:hover {
+            background: var(--rank-hover-bg);
+            border-color: var(--secondary);
+            box-shadow: var(--rank-hover-shadow);
+            padding-left: 25px;
+        }
+        .section-teacher .link-item a:hover {
+            background: var(--teacher-hover-bg);
+            border-color: var(--accent);
+            box-shadow: var(--teacher-hover-shadow);
+            padding-left: 25px;
+        }
+
+        /* 預留狀態樣式 */
+        .link-item.placeholder a {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: var(--placeholder-bg);
+            border-style: dashed;
+        }
+        .link-item.placeholder a:hover {
+            padding-left: 20px !important;
+            box-shadow: none !important;
+            background: var(--placeholder-bg) !important;
+            border-color: var(--item-border) !important;
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: bold;
+            font-family: 'Orbitron', sans-serif;
+        }
+        body.school-theme .tag {
+            font-family: -apple-system, sans-serif;
+        }
+        .tag-game { background: var(--tag-game-bg); color: var(--primary); border: 1px solid var(--primary); }
+        .tag-rank { background: var(--tag-rank-bg); color: var(--secondary); border: 1px solid var(--secondary); }
+        .tag-teacher { background: var(--tag-teacher-bg); color: var(--accent); border: 1px solid var(--accent); }
+        .tag-wait { background: rgba(0, 0, 0, 0.1); color: var(--text-dim); }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+            background: rgba(5, 5, 15, 0.02);
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls-container">
+        <button class="control-btn" onclick="toggleTheme()">
+            <span id="theme-btn-icon">🎨</span>
+            <span id="theme-btn-text">切換學校配色</span>
+        </button>
+        <button class="control-btn" onclick="toggleLang()">
+            <span>🌐</span>
+            <span id="lang-btn-text">English</span>
+        </button>
+    </div>
+
+    <header>
+        <h1 id="main-title">CKCPS WARS</h1>
+        <p id="main-subtitle" data-zh="校園互動問答競賽與榮譽排行系統入口" data-en="Campus Interactive Quiz Competition & Honor Ranking Portal">校園互動問答競賽與榮譽排行系統入口</p>
+    </header>
+
+    <main class="portal-container">
+
+        <section class="portal-section section-game">
+            <h2 class="section-title">
+                <span id="title-game" data-zh="遊戲競賽" data-en="1. Quiz Games">遊戲競賽</span>
+                <span class="tag tag-game" id="tag-game" data-zh="進入遊戲" data-en="ENTER GAME">ENTER GAME</span>
+            </h2>
+            <ul class="link-list">
+                <li class="link-item">
+                    <a href="tug2-6F (1).html">
+                        <div class="title-text" data-zh="CKCPS WARS 通用多學科版 <span>➔</span>" data-en="CKCPS WARS General Edition <span>➔</span>">CKCPS WARS 通用多學科版 <span>➔</span></div>
+                        <div class="desc-text" data-zh="支援 1-6 隊多人即時對戰，內建道具老虎機機制的綜合學科問答遊戲。" data-en="Supports 1-6 teams real-time battle, featuring a built-in slot machine mechanism for general school subjects.">支援 1-6 隊多人即時對戰，內建道具老虎機機制的綜合學科問答遊戲。</div>
+                    </a>
+                </li>
+                <li class="link-item">
+                    <a href="mathsv5.html">
+                        <div class="title-text" data-zh="CYBERPUNK MATH 數學專用版 <span>➔</span>" data-en="CYBERPUNK MATH Special Edition <span>➔</span>">CYBERPUNK MATH 數學專用版 <span>➔</span></div>
+                        <div class="desc-text" data-zh="配備專屬虛擬數字鍵盤，挑戰各年級動態數學計算題。" data-en="Equipped with a dedicated virtual numeric keypad to challenge dynamic math quizzes across various grades.">配備專屬虛擬數字鍵盤，挑戰各年級動態數學計算題。</div>
+                    </a>
+                </li>
+                <li class="link-item placeholder">
+                    <a href="#" onclick="return false;">
+                        <div class="title-text">
+                            <span data-zh="全新遊玩模式" data-en="New Game Mode">全新遊玩模式</span> 
+                            <span class="tag tag-wait" data-zh="敬請期待" data-en="COMING SOON">COMING SOON</span>
+                        </div>
+                        <div class="desc-text" data-zh="更多精彩刺激的互動玩法正在開發中，敬請期待。" data-en="More exciting interactive gameplay configurations are under development. Stay tuned.">更多精彩刺激的互動玩法正在開發中，敬請期待。</div>
+                    </a>
+                </li>
+            </ul>
+        </section>
+
+        <section class="portal-section section-rank">
+            <h2 class="section-title">
+                <span id="title-rank" data-zh="榮譽排行" data-en="2. Honor Leaderboards">榮譽排行</span>
+                <span class="tag tag-rank" id="tag-rank" data-zh="榮譽榜單" data-en="LEADERBOARDS">LEADERBOARDS</span>
+            </h2>
+            <ul class="link-list">
+                <li class="link-item">
+                    <a href="newboard2 (1).html">
+                        <div class="title-text" data-zh="公共資訊與榮譽榜公告 <span>➔</span>" data-en="Public Info & Honor Board Announcement <span>➔</span>">公共資訊與榮譽榜公告 <span>➔</span></div>
+                        <div class="desc-text" data-zh="大螢幕專用！動態輪播各科榮譽榜，並整合屯門區天氣與九巴到站時間（ETA）。" data-en="Designed for big screens! Displays automated updates of ranking boards, Tuen Mun weather, and KMB Bus ETA.">大螢幕專用！動態輪播各科榮譽榜，並整合屯門區天氣與九巴到站時間（ETA）。</div>
+                    </a>
+                </li>
+                <li class="link-item">
+                    <a href="search-leaderboard.html">
+                        <div class="title-text" data-zh="手動搜尋特定排行榜 <span>➔</span>" data-en="Manual Search for Specific Leaderboards <span>➔</span>">手動搜尋特定排行榜 <span>➔</span></div>
+                        <div class="desc-text" data-zh="自訂篩選特定學科、年級 or 比賽日期的完整歷史名次排行榜。" data-en="Manually query and filter comprehensive leaderboard records by subject, grade, or event date.">自訂篩選特定學科、年級 or 比賽日期的完整歷史名次排行榜。</div>
+                    </a>
+                </li>
+                <li class="link-item">
+                    <a href="search-my-score.html">
+                        <div class="title-text" data-zh="手動搜尋自己成績 <span>➔</span>" data-en="Manual Search for Personal Scores <span>➔</span>">手動搜尋自己成績 <span>➔</span></div>
+                        <div class="desc-text" data-zh="輸入班別、班號或個人識別碼，即時查閱歷史答題紀錄與最佳成就。" data-en="Enter class, number, or student ID to instantly look up historical answers and achievements.">輸入班別、班號或個人識別碼，即時查閱歷史答題紀錄與最佳成就。</div>
+                    </a>
+                </li>
+            </ul>
+        </section>
+
+        <section class="portal-section section-teacher">
+            <h2 class="section-title">
+                <span id="title-teacher" data-zh="教師後端" data-en="3. Teacher Console">教師後端</span>
+                <span class="tag tag-teacher" id="tag-teacher" data-zh="教師專用" data-en="TEACHER ONLY">TEACHER ONLY</span>
+            </h2>
+            <ul class="link-list">
+                <li class="link-item">
+                    <a onclick="verifyTeacherAccess('https://docs.google.com/spreadsheets/d/1xly88OIf729MRzMSuP0_izC-fBev-A59Hwwku87Ncqo/edit?gid=149464893#gid=149464893', false)">
+                        <div class="title-text" data-zh="管理與查看系統題庫 <span>➔</span>" data-en="Manage & View System Question Bank <span>➔</span>">管理與查看系統題庫 <span>➔</span></div>
+                        <div class="desc-text" data-zh="檢視現有 CSV 題目設定（包含題目文字、選項、限時及正確答案編號）。" data-en="Review the current CSV exam setups (including texts, question details, timers, and answer indices).">檢視現有 CSV 題目設定（包含題目文字、選項、限時及正確答案編號）。</div>
+                    </a>
+                </li>
+                <li class="link-item">
+                    <a onclick="verifyTeacherAccess('https://docs.google.com/spreadsheets/d/1lwPiw4WVCorhjgpHycsahXoaPGPPZ7XR9OWWoImZq5g/edit?gid=0#gid=0', true)">
+                        <div class="title-text" data-zh="線上查看學生紀錄 <span>➔</span>" data-en="View Student Records <span>➔</span>">線上查看學生紀錄 <span>➔</span></div>
+                        <div class="desc-text" data-zh="直接打開 Google Sheets 雲端試算表，即時查閱所有學生的歷程答題紀錄、時間與得分統計。" data-en="Open the Google Sheets cloud spreadsheet directly to inspect real-time student answer logs, timestamps, and score statistics.">直接打開 Google Sheets 雲端試算表，即時查閱所有學生的歷程答題紀錄、時間與得分統計。</div>
+                    </a>
+                </li>
+            </ul>
+        </section>
+
+    </main>
+
+    <footer id="footer-text" data-zh="&copy; 2026 CKCPS WARS. 所有系統組件運行正常。" data-en="&copy; 2026 CKCPS WARS. All System Components Operational.">
+        &copy; 2026 CKCPS WARS. 所有系統組件運行正常。
+    </footer>
+
+    <script>
+        // 初始化核心狀態
+        let currentLang = 'zh';     // 'zh' | 'en'
+        let currentTheme = 'cyber'; // 'cyber' | 'school'
+
+        function toggleTheme() {
+            currentTheme = (currentTheme === 'cyber') ? 'school' : 'cyber';
+            updateUI();
+        }
+
+        function toggleLang() {
+            currentLang = (currentLang === 'zh') ? 'en' : 'zh';
+            updateUI();
+        }
+
+        function updateUI() {
+            const body = document.body;
+            
+            // 1. 處理配色樣式套用
+            if (currentTheme === 'school') {
+                body.classList.add('school-theme');
+            } else {
+                body.classList.remove('school-theme');
+            }
+            
+            // 2. 處理全頁 data 標籤多語言翻譯
+            const translatableElements = document.querySelectorAll('[data-zh]');
+            translatableElements.forEach(el => {
+                const targetText = el.getAttribute('data-' + currentLang);
+                if (targetText) {
+                    el.innerHTML = targetText;
+                }
+            });
+            
+            // 3. 處理需要同時看「配色」和「語言」的複合元素
+            const mainTitle = document.getElementById('main-title');
+            if (currentLang === 'zh') {
+                mainTitle.innerText = (currentTheme === 'school') ? "圓玄學院陳國超興德小學 問答系統門戶" : "CKCPS WARS";
+            } else {
+                mainTitle.innerText = (currentTheme === 'school') ? "YYI Chan Kwok Chiu Hing Tak Primary School Quiz Portal" : "CKCPS WARS";
+            }
+            
+            // 4. 更新配色按鈕內部文字
+            const themeText = document.getElementById('theme-btn-text');
+            const themeIcon = document.getElementById('theme-btn-icon');
+            if (currentTheme === 'school') {
+                themeText.innerText = (currentLang === 'zh') ? "切換賽博霓虹" : "Switch to Cyberpunk";
+                themeIcon.innerText = "🌌";
+            } else {
+                themeText.innerText = (currentLang === 'zh') ? "切換學校配色" : "Switch to School Style";
+                themeIcon.innerText = "🎨";
+            }
+            
+            // 5. 更新語言按鈕內部文字
+            const langText = document.getElementById('lang-btn-text');
+            langText.innerText = (currentLang === 'zh') ? "English" : "繁體中文";
+        }
+
+        /**
+         * 教師後端專用密碼驗證邏輯
+         * @param {string} url - 驗證成功後要跳轉或開啟的網址
+         * @param {boolean} openInNewTab - 是否在新分頁開啟
+         */
+        async function verifyTeacherAccess(url, openInNewTab) {
+            const promptMsg = (currentLang === 'zh') ? "🔐 請輸入教師認證密碼：" : "🔐 Please enter Teacher Password:";
+            const pwd = prompt(promptMsg);
+            
+            // 使用者取消或未輸入則直接返回
+            if (!pwd) return;
+
+            try {
+                const hiddenPath = atob('Li9wYXNzd29yZC5jc3Y='); 
+                const response = await fetch(hiddenPath);
+                if (!response.ok) throw new Error('找不到檔案');
+                
+                let text = await response.text();
+                if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+                
+                const lines = text.trim().split('\n');
+                let isValid = false;
+
+                // 掃描 CSV 每一行進行密碼比對 (比照主程式邏輯)
+for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    let parts = lines[i].split(',').map(s => s.replace(/"/g, '').trim());
+    
+    // 💡 假設 parts[0] 或 parts[1] 是名字/職位，這裡限定只有 "admin" 的那一行有效
+    if (parts[0] === 'admin' && parts.length >= 3) { 
+        if (parts[2] === pwd || (parts[3] && parts[3] === pwd)) {
+            isValid = true; 
+            break; // 找到並驗證成功就跳出
+        }
+    }
+}
+
+                if (isValid) {
+                    if (openInNewTab) {
+                        window.open(url, '_blank');
+                    } else {
+                        window.location.href = url;
+                    }
+                } else {
+                    const failMsg = (currentLang === 'zh') ? "❌ 密碼錯誤！拒絕存取。" : "❌ Invalid password! Access denied.";
+                    alert(failMsg);
+                }
+            } catch (err) {
+                const errMsg = (currentLang === 'zh') 
+                    ? "⚠️ 無法載入驗證檔。\n請確保密碼表命名正確且位於相同資料夾。\n" 
+                    : "⚠️ Failed to load verification file.\nMake sure password database exists in the same folder.\n";
+                alert(errMsg + err.message);
+            }
+        }
+    </script>
+
+</body>
+</html>
