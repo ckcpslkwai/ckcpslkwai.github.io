@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS - 校園互動問答系統入口首頁</title>
+    <title>CKCPS WARS - 校園互動問答系統入口首頁v1</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         
@@ -303,6 +303,76 @@
         .tag-teacher { background: var(--tag-teacher-bg); color: var(--accent); border: 1px solid var(--accent); }
         .tag-wait { background: rgba(0, 0, 0, 0.1); color: var(--text-dim); }
 
+        /* ==================== 隱密式自訂密碼彈窗樣式 ==================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(6px);
+            z-index: 2000;
+            display: none; /* 預設隱藏，驗證時改為 flex */
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-box {
+            background: var(--card-bg);
+            border: 2px solid var(--accent); /* 跟隨教師區的特色主題色 */
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: var(--card-shadow), 0 0 30px rgba(0,0,0,0.5);
+            animation: modalFadeIn 0.25s ease-out;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.93); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--text-main);
+        }
+        .modal-input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0 25px 0;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--item-bg);
+            color: var(--text-main);
+            font-size: 1.2rem;
+            text-align: center;
+            outline: none;
+            letter-spacing: 4px; /* 密碼圓點間距 */
+        }
+        .modal-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+        }
+        body.school-theme .modal-input:focus {
+            box-shadow: 0 0 10px rgba(113, 178, 196, 0.2);
+        }
+        .modal-btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        .modal-btn-cancel {
+            background: rgba(128, 128, 128, 0.15) !important;
+            border-color: var(--text-dim) !important;
+            color: var(--text-dim) !important;
+            box-shadow: none !important;
+        }
+        .modal-btn-cancel:hover {
+            background: rgba(128, 128, 128, 0.3) !important;
+            color: var(--text-main) !important;
+        }
+        /* ========================================================== */
+
         footer {
             text-align: center;
             padding: 25px;
@@ -414,6 +484,22 @@
 
     </main>
 
+    <!-- ==================== 隱密式教師密碼 HTML 彈窗組件 ==================== -->
+    <div id="teacher-pwd-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-title" id="modal-title-text" data-zh="🔐 請輸入教師認證密碼" data-en="🔐 Please enter Teacher Password">🔐 請輸入教師認證密碼</div>
+            
+            <!-- type="password" 確保密碼全部呈現黑點隱密狀態 -->
+            <input type="password" id="modal-password-input" class="modal-input" placeholder="••••••">
+            
+            <div class="modal-btn-group">
+                <button class="control-btn" onclick="submitTeacherAuth()" id="modal-btn-confirm" data-zh="確認" data-en="Confirm">確認</button>
+                <button class="control-btn modal-btn-cancel" onclick="closeTeacherAuthModal()" id="modal-btn-cancel" data-zh="取消" data-en="Cancel">取消</button>
+            </div>
+        </div>
+    </div>
+    <!-- =================================================================== -->
+
     <footer id="footer-text" data-zh="&copy; 2026 CKCPS WARS. 所有系統組件運行正常。" data-en="&copy; 2026 CKCPS WARS. All System Components Operational.">
         &copy; 2026 CKCPS WARS. 所有系統組件運行正常。
     </footer>
@@ -422,6 +508,10 @@
         // 初始化核心狀態
         let currentLang = 'zh';     // 'zh' | 'en'
         let currentTheme = 'cyber'; // 'cyber' | 'school'
+
+        // 用於記錄暫存目標狀態
+        let pendingUrl = '';
+        let pendingOpenInNewTab = false;
 
         function toggleTheme() {
             currentTheme = (currentTheme === 'cyber') ? 'school' : 'cyber';
@@ -477,15 +567,35 @@
         }
 
         /**
-         * 教師後端專用密碼驗證邏輯
-         * @param {string} url - 驗證成功後要跳轉或開啟的網址
-         * @param {boolean} openInNewTab - 是否在新分頁開啟
+         * 1. 喚起自訂彈窗
          */
-        async function verifyTeacherAccess(url, openInNewTab) {
-            const promptMsg = (currentLang === 'zh') ? "🔐 請輸入教師認證密碼：" : "🔐 Please enter Teacher Password:";
-            const pwd = prompt(promptMsg);
+        function verifyTeacherAccess(url, openInNewTab) {
+            pendingUrl = url;
+            pendingOpenInNewTab = openInNewTab;
             
-            // 使用者取消或未輸入則直接返回
+            // 清空上一次的輸入
+            const inputField = document.getElementById('modal-password-input');
+            inputField.value = '';
+            
+            // 展現彈窗並自動聚焦
+            document.getElementById('teacher-pwd-modal').style.display = 'flex';
+            inputField.focus();
+        }
+
+        /**
+         * 2. 關閉彈窗
+         */
+        function closeTeacherAuthModal() {
+            document.getElementById('teacher-pwd-modal').style.display = 'none';
+            pendingUrl = '';
+            pendingOpenInNewTab = false;
+        }
+
+        /**
+         * 3. 非同步驗證與提交
+         */
+        async function submitTeacherAuth() {
+            const pwd = document.getElementById('modal-password-input').value.trim();
             if (!pwd) return;
 
             try {
@@ -499,25 +609,28 @@
                 const lines = text.trim().split('\n');
                 let isValid = false;
 
-                // 掃描 CSV 每一行進行密碼比對 (比照主程式邏輯)
-for (let i = 1; i < lines.length; i++) {
-    if (!lines[i].trim()) continue;
-    let parts = lines[i].split(',').map(s => s.replace(/"/g, '').trim());
-    
-    // 💡 假設 parts[0] 或 parts[1] 是名字/職位，這裡限定只有 "admin" 的那一行有效
-    if (parts[0] === 'admin' && parts.length >= 3) { 
-        if (parts[2] === pwd || (parts[3] && parts[3] === pwd)) {
-            isValid = true; 
-            break; // 找到並驗證成功就跳出
-        }
-    }
-}
+                // 掃描 CSV 每一行進行密碼比對（保留你指定的 "admin" 專用行驗證邏輯）
+                for (let i = 1; i < lines.length; i++) {
+                    if (!lines[i].trim()) continue;
+                    let parts = lines[i].split(',').map(s => s.replace(/"/g, '').trim());
+                    
+                    if (parts[0] === 'admin' && parts.length >= 3) { 
+                        if (parts[2] === pwd || (parts[3] && parts[3] === pwd)) {
+                            isValid = true; 
+                            break; 
+                        }
+                    }
+                }
 
                 if (isValid) {
-                    if (openInNewTab) {
-                        window.open(url, '_blank');
+                    const target = pendingUrl;
+                    const inNewTab = pendingOpenInNewTab;
+                    closeTeacherAuthModal();
+
+                    if (inNewTab) {
+                        window.open(target, '_blank');
                     } else {
-                        window.location.href = url;
+                        window.location.href = target;
                     }
                 } else {
                     const failMsg = (currentLang === 'zh') ? "❌ 密碼錯誤！拒絕存取。" : "❌ Invalid password! Access denied.";
@@ -530,6 +643,13 @@ for (let i = 1; i < lines.length; i++) {
                 alert(errMsg + err.message);
             }
         }
+
+        // 綁定鍵盤事件：按下 Enter 直接提交
+        document.getElementById('modal-password-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                submitTeacherAuth();
+            }
+        });
     </script>
 
 </body>
