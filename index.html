@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS - 校園互動問答系統入口首頁v1</title>
+    <title>CKCPS WARS - 校園互動問答系統入口首頁v1.1</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         
@@ -609,18 +609,18 @@
                 const lines = text.trim().split('\n');
                 let isValid = false;
 
-                // 掃描 CSV 每一行進行密碼比對（保留你指定的 "admin" 專用行驗證邏輯）
-                for (let i = 1; i < lines.length; i++) {
-                    if (!lines[i].trim()) continue;
-                    let parts = lines[i].split(',').map(s => s.replace(/"/g, '').trim());
-                    
-                    if (parts[0] === 'admin' && parts.length >= 3) { 
-                        if (parts[2] === pwd || (parts[3] && parts[3] === pwd)) {
-                            isValid = true; 
-                            break; 
-                        }
-                    }
-                }
+for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    let parts = lines[i].split(',').map(s => s.replace(/"/g, '').trim());
+    
+    // 💡 你的 CSV 只有兩欄：name 是 parts[0]，password 是 parts[1]
+    if (parts[0] === 'admin' && parts.length >= 2) { 
+        if (parts[1] === pwd) {
+            isValid = true; 
+            break; // 找到並驗證成功就跳出
+        }
+    }
+}
 
                 if (isValid) {
                     const target = pendingUrl;
