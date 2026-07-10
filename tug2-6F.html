@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS V2607102237</title>
+    <title>CKCPS WARS V2607102256</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
       
@@ -788,11 +788,11 @@ display: grid !important; /* 使用 !important 確保樣式優先 */
                 const selectedLevel = document.getElementById('level').value;
                 customQuestions = filterQuestionsBySubjectLevel(allParsed, selectedSubject, selectedLevel);
                 if (customQuestions.length === 0) {
-                    alert(`⚠️ 所選科目及級別尚在準備中 ${selectedSubject} ${selectedLevel} in default.csv.\nLoaded all ${allParsed.length} 現改為載入全題庫所有問題.`);
+                    alert(`⚠️ ${selectedLevel} ${selectedSubject} 的題目尚在準備中，現改為載入全題庫 ${allParsed.length}條問題. \nQuestions in ${selectedLevel} ${selectedSubject} are still being prepared. All ${allParsed.length} questions in the database are loaded.`);
                     customQuestions = allParsed;
                 } else {
 
-                alert(`✅ 預設題庫已成功載入！\n共 ${customQuestions.length} 題匹配 ${selectedSubject} - ${selectedLevel}`);
+                alert(`✅ 預設題庫已成功載入！共 ${customQuestions.length} 題匹配 ${selectedSubject} - ${selectedLevel}\nDefault database loaded.There are ${customQuestions.length} questions matching ${selectedSubject} - ${selectedLevel}.`);
                 }
                 startGame();
             } catch (err) {
