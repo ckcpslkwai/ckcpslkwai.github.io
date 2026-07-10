@@ -793,7 +793,7 @@ display: grid !important; /* 使用 !important 確保樣式優先 */
                 } else {
 
                 alert(`✅ 預設題庫已成功載入！\n共 ${customQuestions.length} 題匹配 ${selectedSubject} - ${selectedLevel}`);
-                
+                }
                 startGame();
             } catch (err) {
                 alert('❌ 無法載入 default.csv\n可能原因：檔案不在相同資料夾，或是瀏覽器阻擋了本地檔案讀取。請改用「上載」按鈕匯入。');
