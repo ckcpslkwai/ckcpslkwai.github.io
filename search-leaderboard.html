@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS - 雲端榮譽排行榜查詢v2607111333</title>
+    <title>CKCPS WARS - 雲端榮譽排行榜查詢v2607111336</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         
@@ -143,7 +143,6 @@
         }
         .filter-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 20px; color: var(--secondary); }
         
-        /* 5欄網格設定 */
         .filter-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -169,7 +168,7 @@
         .filter-control:disabled { opacity: 0.4; cursor: not-allowed; }
 
         .search-action-btn {
-            grid-column: 1 / -1; /* 按鈕拉滿整排 */
+            grid-column: 1 / -1;
             padding: 12px 25px;
             background: var(--secondary);
             border: none;
@@ -219,10 +218,9 @@
 
     <main class="search-container">
         <div class="sync-status-bar">
-            <span>🔄</span> <span id="sync-text" data-zh="正在從 Google Sheets 同步數據..." data-en="Syncing live data from Google Sheets...">正在從 Google Sheets 同步數據...</span>
+            <span>🔄</span> <span id="sync-text" data-zh="正在從 Google Sheets 同步精準數據..." data-en="Syncing live data from Google Sheets...">正在從 Google Sheets 同步精準數據...</span>
         </div>
 
-        <!-- 🔍 精準五大篩選面板 -->
         <section class="filter-panel">
             <div class="filter-title" data-zh="🔍 條件篩選設定 (不選代表包含全部)" data-en="🔍 Filter Settings (Unselected means All)">🔍 條件篩選設定 (不選代表包含全部)</div>
             <div class="filter-grid">
@@ -235,7 +233,7 @@
                     </select>
                 </div>
 
-                <!-- 2. 姓名 (連動變更) -->
+                <!-- 2. 姓名 -->
                 <div class="filter-group">
                     <label for="filter-name" data-zh="學生姓名" data-en="Student Name">學生姓名</label>
                     <select id="filter-name" class="filter-control" disabled>
@@ -264,18 +262,12 @@
                     <label for="filter-month" data-zh="月份" data-en="Month">月份</label>
                     <select id="filter-month" class="filter-control">
                         <option value="ALL" data-zh="✨ 全部月份" data-en="✨ All Months">✨ 全部月份</option>
-                        <option value="01">1 月</option>
-                        <option value="02">2 月</option>
-                        <option value="03">3 月</option>
-                        <option value="04">4 月</option>
-                        <option value="05">5 月</option>
-                        <option value="06">6 月</option>
-                        <option value="07">7 月</option>
-                        <option value="08">8 月</option>
-                        <option value="09">9 月</option>
-                        <option value="10">10 月</option>
-                        <option value="11">11 月</option>
-                        <option value="12">12 月</option>
+                        <option value="01">1 月</option><option value="02">2 月</option>
+                        <option value="03">3 月</option><option value="04">4 月</option>
+                        <option value="05">5 月</option><option value="06">6 月</option>
+                        <option value="07">7 月</option><option value="08">8 月</option>
+                        <option value="09">9 月</option><option value="10">10 月</option>
+                        <option value="11">11 月</option><option value="12">12 月</option>
                     </select>
                 </div>
 
@@ -283,7 +275,6 @@
             </div>
         </section>
 
-        <!-- 📊 資料呈現面板 -->
         <section class="results-panel">
             <div class="table-responsive">
                 <table class="leaderboard-table" id="data-table" style="display: none;">
@@ -312,8 +303,8 @@
         let currentTheme = localStorage.getItem('ckcps_theme') || 'cyber'; 
         let fullLeaderboardData = [];
 
-        // 🔗 換用極度友善的 gviz API，完全免疫跨網域阻擋
-        const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1lwPiw4WVCorhjgpHycsahXoaPGPPZ7XR9OWWoImZq5g/gviz/tq?tqx=out:csv&gid=0';
+        // 使用 Google 視覺化結構 API
+        const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1lwPiw4WVCorhjgpHycsahXoaPGPPZ7XR9OWWoImZq5g/gviz/tq?gid=0';
 
         window.onload = function() {
             updateUI();
@@ -349,72 +340,86 @@
             try {
                 const response = await fetch(GOOGLE_SHEET_URL);
                 if (!response.ok) throw new Error();
-                let csvText = await response.text();
+                let rawText = await response.text();
                 
-                parseGoogleCSV(csvText);
+                // 擷取正確的 JSON 物件結構
+                const jsonString = rawText.match(/google\.visualization\.Query\.setResponse\(([\s\S\w\W]*)\);/)[1];
+                const dataObj = JSON.parse(jsonString);
+                
+                processGoogleJson(dataObj);
 
-                syncText.setAttribute('data-zh', '🟢 雲端同步完成！已載入最新榜單資料。');
-                syncText.setAttribute('data-en', '🟢 Cloud Sync Active! Latest leaderboard loaded.');
+                syncText.setAttribute('data-zh', '🟢 雲端同步完成！已載入最新精準資料。');
+                syncText.setAttribute('data-en', '🟢 Cloud Sync Active! Accurate data loaded.');
                 updateUI();
             } catch (err) {
-                syncText.setAttribute('data-zh', '🔴 連線失敗，請檢查網路或確認試算表已開啟「知道連結的任何人均可檢視」。');
-                syncText.setAttribute('data-en', '🔴 Sync failed. Check internet or Sheet sharing settings.');
+                console.error(err);
+                syncText.setAttribute('data-zh', '🔴 連線或解析失敗。請確認試算表已開啟「知道連結的任何人均可檢視」。');
+                syncText.setAttribute('data-en', '🔴 Sync failed. Check sharing settings.');
                 document.getElementById('status-box').innerText = "⚠️ Error loading data.";
                 updateUI();
             }
         }
 
-        // 🛠️ 修正欄位抓取錯誤：精準切割並分配對應欄位
-        function parseGoogleCSV(text) {
-            const lines = text.split('\n');
+        // 🎯 核心修正：利用 Google Sheets 內建的橫向矩陣索引，100% 杜絕欄位錯位！
+        function processGoogleJson(dataObj) {
             fullLeaderboardData = [];
+            const rows = dataObj.table.rows;
             
             let classesSet = new Set();
             let subjectsSet = new Set();
             let levelsSet = new Set();
 
-            for (let i = 1; i < lines.length; i++) {
-                let line = lines[i].trim();
-                if (!line) continue;
+            rows.forEach(row => {
+                const cells = row.c;
+                // 確保儲存格至少有 6 欄
+                if (cells && cells.length >= 6) {
+                    // 安全讀取對應的文字值（防空值）
+                    let dateStr = cells[0] && cells[0].v ? String(cells[0].v) : "";
+                    let className = cells[1] && cells[1].v ? String(cells[1].v) : "";
+                    let name = cells[2] && cells[2].v ? String(cells[2].v) : "";
+                    let subject = cells[3] && cells[3].v ? String(cells[3].v) : "";
+                    let level = cells[4] && cells[4].v ? String(cells[4].v) : "";
+                    let scoreVal = cells[5] && cells[5].v ? parseFloat(cells[5].v) : 0;
+                    let scoreStr = cells[5] && cells[5].f ? cells[5].f : (cells[5] && cells[5].v ? String(cells[5].v) : "0");
 
-                // 處理雙引號與逗號切割
-                let parts = [];
-                let insideQuote = false;
-                let currentPart = '';
-                for (let c = 0; c < line.length; c++) {
-                    let char = line[c];
-                    if (char === '"') { insideQuote = !insideQuote; }
-                    else if (char === ',' && !insideQuote) { parts.push(currentPart.trim()); currentPart = ''; }
-                    else { currentPart += char; }
-                }
-                parts.push(currentPart.trim());
+                    // 處理 Google JSON 特有的 Date 格式 (例如 "Date(2024,4,12)" 代表 2024年5月12日)
+                    if(dateStr.includes("Date(")) {
+                        let matches = dateStr.match(/\d+/g);
+                        if(matches && matches.length >= 3) {
+                            let y = matches[0];
+                            let m = String(parseInt(matches[1]) + 1).padStart(2, '0'); // JS/Google 月份從 0 開始
+                            let d = String(matches[2]).padStart(2, '0');
+                            dateStr = `${y}/${m}/${d}`;
+                        }
+                    }
 
-                if (parts.length >= 6) {
-                    // 🗲 修正：parts[0]是時間, parts[1]班別, parts[2]姓名, parts[3]科目, parts[4]程度, parts[5]分數
-                    let dateStr = parts[0]; 
+                    // 從日期格式中提取月份
                     let monthStr = "";
-                    if(dateStr && dateStr.includes("/")) {
-                        monthStr = dateStr.split("/")[1].padStart(2, '0'); // 擷取月份
-                    } else if(dateStr && dateStr.includes("-")) {
+                    if (dateStr.includes("/")) {
+                        monthStr = dateStr.split("/")[1].padStart(2, '0');
+                    } else if (dateStr.includes("-")) {
                         monthStr = dateStr.split("-")[1].padStart(2, '0');
                     }
 
-                    fullLeaderboardData.push({
-                        date: dateStr,
-                        month: monthStr,
-                        className: parts[1],
-                        name: parts[2],
-                        subject: parts[3],
-                        level: parts[4],
-                        score: parseFloat(parts[5]) || 0,
-                        scoreStr: parts[5]
-                    });
+                    // 排除表頭標籤行
+                    if (className.toLowerCase() !== "class" && className !== "班別" && className !== "班級") {
+                        fullLeaderboardData.push({
+                            date: dateStr,
+                            month: monthStr,
+                            className: className,
+                            name: name,
+                            subject: subject,
+                            level: level,
+                            score: scoreVal,
+                            scoreStr: scoreStr
+                        });
 
-                    if(parts[1]) classesSet.add(parts[1]);
-                    if(parts[3]) subjectsSet.add(parts[3]);
-                    if(parts[4]) levelsSet.add(parts[4]);
+                        if(className) classesSet.add(className);
+                        if(subject) subjectsSet.add(subject);
+                        if(level) levelsSet.add(level);
+                    }
                 }
-            }
+            });
 
             buildDropdown('filter-class', classesSet, '✨ 全部班級', '✨ All Classes');
             buildDropdown('filter-subject', subjectsSet, '✨ 所有科合計', '✨ Total All Subjects');
@@ -435,7 +440,6 @@
             });
         }
 
-        // 🔗 班級變更 ➡️ 連動刷新「姓名列表」
         function onClassChanged() {
             const targetClass = document.getElementById('filter-class').value;
             const nameDropdown = document.getElementById('filter-name');
@@ -463,7 +467,6 @@
             updateUI();
         }
 
-        // ⚡ 核心條件組合篩選
         function executeFiltering() {
             const cls = document.getElementById('filter-class').value;
             const name = document.getElementById('filter-name').value;
@@ -484,7 +487,6 @@
                 return true;
             });
 
-            // 分數從高到低排
             filtered.sort((a, b) => b.score - a.score);
             tbody.innerHTML = '';
 
