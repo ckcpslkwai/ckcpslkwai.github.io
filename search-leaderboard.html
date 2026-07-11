@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS - 雲端榮譽排行榜查詢v2607111336</title>
+    <title>CKCPS WARS - 雲端榮譽排行榜查詢v2607111353</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         
@@ -168,7 +168,7 @@
         .filter-control:disabled { opacity: 0.4; cursor: not-allowed; }
 
         .search-action-btn {
-            grid-column: 1 / -1;
+            grid-column: 1 / -1; 
             padding: 12px 25px;
             background: var(--secondary);
             border: none;
@@ -211,21 +211,20 @@
     </div>
 
     <header>
-        <h1 id="page-title" data-zh="🏆 榮譽排行榜自訂查詢" data-en="🏆 Dynamic Leaderboard Query">🏆 榮譽排行榜自訂查詢</h1>
-        <p data-zh="自訂篩選班級、姓名、科目、程度與月份，即時產生名次排行" data-en="Filter by Class, Name, Subject, Level, and Month for real-time rankings">自訂篩選班級、姓名、科目、程度與月份，即時產生名次排行</p>
+        <h1 id="page-title" data-zh="🏆 榮譽總分排行榜查詢" data-en="🏆 Grand Total Leaderboard">🏆 榮譽總分排行榜查詢</h1>
+        <p data-zh="自訂篩選條件，系統將自動加總符合條件的所有作答得分進行排名" data-en="Filter conditions and the system will automatically aggregate and rank total scores">自訂篩選條件，系統將自動加總符合條件的所有作答得分進行排名</p>
         <a href="index.html" class="back-link" data-zh="⬅️ 返回系統入口首頁" data-en="⬅️ Back to Portal Home">⬅️ 返回系統入口首頁</a>
     </header>
 
     <main class="search-container">
         <div class="sync-status-bar">
-            <span>🔄</span> <span id="sync-text" data-zh="正在從 Google Sheets 同步精準數據..." data-en="Syncing live data from Google Sheets...">正在從 Google Sheets 同步精準數據...</span>
+            <span>🔄</span> <span id="sync-text" data-zh="正在從 Google Sheets 同步數據..." data-en="Syncing live data from Google Sheets...">正在從 Google Sheets 同步數據...</span>
         </div>
 
         <section class="filter-panel">
-            <div class="filter-title" data-zh="🔍 條件篩選設定 (不選代表包含全部)" data-en="🔍 Filter Settings (Unselected means All)">🔍 條件篩選設定 (不選代表包含全部)</div>
+            <div class="filter-title" data-zh="🔍 條件篩選設定 (不選代表包含全部並加總)" data-en="🔍 Filter Settings (Unselected means aggregating all)">🔍 條件篩選設定 (不選代表包含全部並加總)</div>
             <div class="filter-grid">
                 
-                <!-- 1. 班級 -->
                 <div class="filter-group">
                     <label for="filter-class" data-zh="班級" data-en="Class">班級</label>
                     <select id="filter-class" class="filter-control" onchange="onClassChanged()">
@@ -233,7 +232,6 @@
                     </select>
                 </div>
 
-                <!-- 2. 姓名 -->
                 <div class="filter-group">
                     <label for="filter-name" data-zh="學生姓名" data-en="Student Name">學生姓名</label>
                     <select id="filter-name" class="filter-control" disabled>
@@ -241,7 +239,6 @@
                     </select>
                 </div>
 
-                <!-- 3. 科目 -->
                 <div class="filter-group">
                     <label for="filter-subject" data-zh="科目" data-en="Subject">科目</label>
                     <select id="filter-subject" class="filter-control">
@@ -249,7 +246,6 @@
                     </select>
                 </div>
 
-                <!-- 4. 程度 (LEVEL) -->
                 <div class="filter-group">
                     <label for="filter-level" data-zh="程度 (Level)" data-en="Level">程度 (Level)</label>
                     <select id="filter-level" class="filter-control">
@@ -257,21 +253,18 @@
                     </select>
                 </div>
 
-                <!-- 5. 月份 -->
                 <div class="filter-group">
                     <label for="filter-month" data-zh="月份" data-en="Month">月份</label>
                     <select id="filter-month" class="filter-control">
                         <option value="ALL" data-zh="✨ 全部月份" data-en="✨ All Months">✨ 全部月份</option>
-                        <option value="01">1 月</option><option value="02">2 月</option>
-                        <option value="03">3 月</option><option value="04">4 月</option>
-                        <option value="05">5 月</option><option value="06">6 月</option>
-                        <option value="07">7 月</option><option value="08">8 月</option>
-                        <option value="09">9 月</option><option value="10">10 月</option>
-                        <option value="11">11 月</option><option value="12">12 月</option>
+                        <option value="01">1 月</option><option value="02">2 月</option><option value="03">3 月</option>
+                        <option value="04">4 月</option><option value="05">5 月</option><option value="06">6 月</option>
+                        <option value="07">7 月</option><option value="08">8 月</option><option value="09">9 月</option>
+                        <option value="10">10 月</option><option value="11">11 月</option><option value="12">12 月</option>
                     </select>
                 </div>
 
-                <button class="search-action-btn" onclick="executeFiltering()" data-zh="⚡ 執行條件篩選" data-en="⚡ Apply Filter">⚡ 執行條件篩選</button>
+                <button class="search-action-btn" onclick="executeFiltering()" data-zh="⚡ 計算總分並排序" data-en="⚡ Calculate Totals & Rank">⚡ 計算總分並排序</button>
             </div>
         </section>
 
@@ -279,14 +272,15 @@
             <div class="table-responsive">
                 <table class="leaderboard-table" id="data-table" style="display: none;">
                     <thead>
+                        <!-- ⚠️ 因為已經是加總總分，所以拿掉「日期」欄位，改顯示「作答總次數」 -->
                         <tr>
                             <th data-zh="名次" data-en="Rank">名次</th>
-                            <th data-zh="日期" data-en="Date">日期</th>
                             <th data-zh="班別" data-en="Class">班別</th>
                             <th data-zh="姓名" data-en="Name">姓名</th>
-                            <th data-zh="科目" data-en="Subject">科目</th>
-                            <th data-zh="程度" data-en="Level">程度</th>
-                            <th data-zh="得分/數據" data-en="Score">得分/數據</th>
+                            <th data-zh="篩選科目" data-en="Subject Filter">篩選科目</th>
+                            <th data-zh="篩選程度" data-en="Level Filter">篩選程度</th>
+                            <th data-zh="總計分數" data-en="Total Score">總計分數</th>
+                            <th data-zh="作答總次數" data-en="Total Attempts">作答總次數</th>
                         </tr>
                     </thead>
                     <tbody id="table-body"></tbody>
@@ -296,15 +290,23 @@
         </section>
     </main>
 
-    <footer>&copy; 2026 CKCPS WARS. 雲端資料庫模組.</footer>
+    <footer>&copy; 2026 CKCPS WARS. 雲端大數據加總模組.</footer>
 
     <script>
         let currentLang = localStorage.getItem('ckcps_lang') || 'zh';     
         let currentTheme = localStorage.getItem('ckcps_theme') || 'cyber'; 
-        let fullLeaderboardData = [];
+        let rawDataStore = []; // 儲存最原始的作答資料
 
-        // 使用 Google 視覺化結構 API
-        const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1lwPiw4WVCorhjgpHycsahXoaPGPPZ7XR9OWWoImZq5g/gviz/tq?gid=0';
+        // 📊 【重要設定：請確認這裡的欄位位置】 
+        // 陣列是從 0 開始算的。假設你的 Google 表單預設欄位如下：
+        const COL_TIMESTAMP = 0; // 第 1 欄：時間戳記 (我們靠這個抓月份，並且不再顯示它)
+        const COL_CLASS = 1;     // 第 2 欄：班級
+        const COL_NAME = 2;      // 第 3 欄：姓名
+        const COL_SUBJECT = 3;   // 第 4 欄：科目
+        const COL_LEVEL = 4;     // 第 5 欄：程度
+        const COL_SCORE = 5;     // 第 6 欄：分數
+
+        const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1lwPiw4WVCorhjgpHycsahXoaPGPPZ7XR9OWWoImZq5g/gviz/tq?tqx=out:csv&gid=0';
 
         window.onload = function() {
             updateUI();
@@ -340,86 +342,72 @@
             try {
                 const response = await fetch(GOOGLE_SHEET_URL);
                 if (!response.ok) throw new Error();
-                let rawText = await response.text();
+                let csvText = await response.text();
                 
-                // 擷取正確的 JSON 物件結構
-                const jsonString = rawText.match(/google\.visualization\.Query\.setResponse\(([\s\S\w\W]*)\);/)[1];
-                const dataObj = JSON.parse(jsonString);
-                
-                processGoogleJson(dataObj);
+                parseGoogleCSV(csvText);
 
-                syncText.setAttribute('data-zh', '🟢 雲端同步完成！已載入最新精準資料。');
-                syncText.setAttribute('data-en', '🟢 Cloud Sync Active! Accurate data loaded.');
+                syncText.setAttribute('data-zh', '🟢 雲端同步完成！已載入最新榜單資料。');
+                syncText.setAttribute('data-en', '🟢 Cloud Sync Active! Latest leaderboard loaded.');
                 updateUI();
             } catch (err) {
-                console.error(err);
-                syncText.setAttribute('data-zh', '🔴 連線或解析失敗。請確認試算表已開啟「知道連結的任何人均可檢視」。');
-                syncText.setAttribute('data-en', '🔴 Sync failed. Check sharing settings.');
+                syncText.setAttribute('data-zh', '🔴 連線失敗，請檢查網路或確認試算表已開啟「知道連結的任何人均可檢視」。');
+                syncText.setAttribute('data-en', '🔴 Sync failed. Check internet or Sheet sharing settings.');
                 document.getElementById('status-box').innerText = "⚠️ Error loading data.";
                 updateUI();
             }
         }
 
-        // 🎯 核心修正：利用 Google Sheets 內建的橫向矩陣索引，100% 杜絕欄位錯位！
-        function processGoogleJson(dataObj) {
-            fullLeaderboardData = [];
-            const rows = dataObj.table.rows;
+        function parseGoogleCSV(text) {
+            const lines = text.split('\n');
+            rawDataStore = [];
             
             let classesSet = new Set();
             let subjectsSet = new Set();
             let levelsSet = new Set();
 
-            rows.forEach(row => {
-                const cells = row.c;
-                // 確保儲存格至少有 6 欄
-                if (cells && cells.length >= 6) {
-                    // 安全讀取對應的文字值（防空值）
-                    let dateStr = cells[0] && cells[0].v ? String(cells[0].v) : "";
-                    let className = cells[1] && cells[1].v ? String(cells[1].v) : "";
-                    let name = cells[2] && cells[2].v ? String(cells[2].v) : "";
-                    let subject = cells[3] && cells[3].v ? String(cells[3].v) : "";
-                    let level = cells[4] && cells[4].v ? String(cells[4].v) : "";
-                    let scoreVal = cells[5] && cells[5].v ? parseFloat(cells[5].v) : 0;
-                    let scoreStr = cells[5] && cells[5].f ? cells[5].f : (cells[5] && cells[5].v ? String(cells[5].v) : "0");
+            // 從第二行開始讀取 (跳過表頭)
+            for (let i = 1; i < lines.length; i++) {
+                let line = lines[i].trim();
+                if (!line) continue;
 
-                    // 處理 Google JSON 特有的 Date 格式 (例如 "Date(2024,4,12)" 代表 2024年5月12日)
-                    if(dateStr.includes("Date(")) {
-                        let matches = dateStr.match(/\d+/g);
-                        if(matches && matches.length >= 3) {
-                            let y = matches[0];
-                            let m = String(parseInt(matches[1]) + 1).padStart(2, '0'); // JS/Google 月份從 0 開始
-                            let d = String(matches[2]).padStart(2, '0');
-                            dateStr = `${y}/${m}/${d}`;
+                let parts = [];
+                let insideQuote = false;
+                let currentPart = '';
+                for (let c = 0; c < line.length; c++) {
+                    let char = line[c];
+                    if (char === '"') { insideQuote = !insideQuote; }
+                    else if (char === ',' && !insideQuote) { parts.push(currentPart.trim()); currentPart = ''; }
+                    else { currentPart += char; }
+                }
+                parts.push(currentPart.trim());
+
+                if (parts.length > Math.max(COL_CLASS, COL_SCORE)) {
+                    
+                    // 1. 抓取時間並轉換為月份
+                    let timeStr = parts[COL_TIMESTAMP];
+                    let monthStr = "";
+                    if (timeStr) {
+                        let parsedDate = new Date(timeStr);
+                        if (!isNaN(parsedDate.getTime())) {
+                            monthStr = (parsedDate.getMonth() + 1).toString().padStart(2, '0');
                         }
                     }
 
-                    // 從日期格式中提取月份
-                    let monthStr = "";
-                    if (dateStr.includes("/")) {
-                        monthStr = dateStr.split("/")[1].padStart(2, '0');
-                    } else if (dateStr.includes("-")) {
-                        monthStr = dateStr.split("-")[1].padStart(2, '0');
-                    }
+                    // 2. 儲存原始解析資料
+                    rawDataStore.push({
+                        month: monthStr,
+                        className: parts[COL_CLASS],
+                        name: parts[COL_NAME],
+                        subject: parts[COL_SUBJECT],
+                        level: parts[COL_LEVEL],
+                        score: parseFloat(parts[COL_SCORE]) || 0
+                    });
 
-                    // 排除表頭標籤行
-                    if (className.toLowerCase() !== "class" && className !== "班別" && className !== "班級") {
-                        fullLeaderboardData.push({
-                            date: dateStr,
-                            month: monthStr,
-                            className: className,
-                            name: name,
-                            subject: subject,
-                            level: level,
-                            score: scoreVal,
-                            scoreStr: scoreStr
-                        });
-
-                        if(className) classesSet.add(className);
-                        if(subject) subjectsSet.add(subject);
-                        if(level) levelsSet.add(level);
-                    }
+                    if(parts[COL_CLASS]) classesSet.add(parts[COL_CLASS]);
+                    if(parts[COL_SUBJECT]) subjectsSet.add(parts[COL_SUBJECT]);
+                    if(parts[COL_LEVEL]) levelsSet.add(parts[COL_LEVEL]);
                 }
-            });
+            }
 
             buildDropdown('filter-class', classesSet, '✨ 全部班級', '✨ All Classes');
             buildDropdown('filter-subject', subjectsSet, '✨ 所有科合計', '✨ Total All Subjects');
@@ -452,7 +440,7 @@
 
             nameDropdown.disabled = false;
             let namesInClass = new Set();
-            fullLeaderboardData.forEach(item => {
+            rawDataStore.forEach(item => {
                 if (item.className === targetClass && item.name) {
                     namesInClass.add(item.name);
                 }
@@ -467,6 +455,7 @@
             updateUI();
         }
 
+        // ⚡ 核心功能：先篩選，再把同一個人的分數加總！
         function executeFiltering() {
             const cls = document.getElementById('filter-class').value;
             const name = document.getElementById('filter-name').value;
@@ -478,7 +467,8 @@
             const tbody = document.getElementById('table-body');
             const sBox = document.getElementById('status-box');
 
-            let filtered = fullLeaderboardData.filter(item => {
+            // 【步驟一】過濾出符合條件的紀錄
+            let filteredRecords = rawDataStore.filter(item => {
                 if (cls !== 'ALL' && item.className !== cls) return false;
                 if (name !== 'ALL' && item.name !== name) return false;
                 if (sub !== 'ALL' && item.subject !== sub) return false;
@@ -487,10 +477,30 @@
                 return true;
             });
 
-            filtered.sort((a, b) => b.score - a.score);
+            // 【步驟二】依照「學生 (班級+姓名)」進行分組加總 (Group By & Sum)
+            let studentTotalsMap = {};
+            filteredRecords.forEach(item => {
+                let uniqueKey = item.className + "|||" + item.name;
+                
+                if (!studentTotalsMap[uniqueKey]) {
+                    studentTotalsMap[uniqueKey] = {
+                        className: item.className,
+                        name: item.name,
+                        totalScore: 0,
+                        attempts: 0
+                    };
+                }
+                studentTotalsMap[uniqueKey].totalScore += item.score;
+                studentTotalsMap[uniqueKey].attempts += 1;
+            });
+
+            // 將物件轉回陣列，並依照總分由高到低排序
+            let aggregatedList = Object.values(studentTotalsMap);
+            aggregatedList.sort((a, b) => b.totalScore - a.totalScore);
+            
             tbody.innerHTML = '';
 
-            if (filtered.length === 0) {
+            if (aggregatedList.length === 0) {
                 table.style.display = 'none';
                 sBox.style.display = 'block';
                 sBox.setAttribute('data-zh', '📭 沒有找到符合條件的排名資料。');
@@ -502,10 +512,19 @@
             sBox.style.display = 'none';
             table.style.display = 'table';
 
+            // 顯示文字邏輯：如果選了特定科目就顯示該科目，如果選 ALL 就顯示「全部合計」
+            const displaySub = (sub === 'ALL') ? (currentLang==='zh'?'全科合計':'All Subjects') : sub;
+            const displayLvl = (lvl === 'ALL') ? (currentLang==='zh'?'全程度合計':'All Levels') : lvl;
+
+            // 【步驟三】產生表格，處理同分同名次邏輯
             let rank = 1;
-            for (let i = 0; i < filtered.length; i++) {
-                if (i > 0 && filtered[i].score < filtered[i-1].score) { rank = i + 1; }
-                const item = filtered[i];
+            for (let i = 0; i < aggregatedList.length; i++) {
+                // 若分數跟上一名比有變低，名次才往後跳 (同分並列)
+                if (i > 0 && aggregatedList[i].totalScore < aggregatedList[i-1].totalScore) { 
+                    rank = i + 1; 
+                }
+                
+                const item = aggregatedList[i];
                 const tr = document.createElement('tr');
                 
                 let rBadge = rank;
@@ -515,12 +534,12 @@
 
                 tr.innerHTML = `
                     <td>${rBadge}</td>
-                    <td>${item.date}</td>
                     <td><b>${item.className}</b></td>
                     <td><b>${item.name}</b></td>
-                    <td>${item.subject}</td>
-                    <td><span style="color:var(--accent); font-weight:bold;">${item.level}</span></td>
-                    <td><span style="color:var(--secondary); font-weight:bold;">${item.scoreStr}</span></td>
+                    <td style="color:var(--text-dim);">${displaySub}</td>
+                    <td style="color:var(--text-dim);">${displayLvl}</td>
+                    <td><span style="color:var(--secondary); font-size:1.1rem; font-weight:bold;">${item.totalScore}</span></td>
+                    <td><span style="color:var(--accent); font-weight:bold;">${item.attempts}</span> 次</td>
                 `;
                 tbody.appendChild(tr);
             }
