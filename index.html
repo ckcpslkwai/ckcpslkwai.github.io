@@ -394,7 +394,7 @@
         </button>
         <button class="control-btn" onclick="toggleTheme()">
             <span id="theme-btn-icon">🎨</span>
-            <span id="theme-btn-text">切換學校配色</span>
+            <span id="theme-btn-text"淺色主題</span>
         </button>
         <button class="control-btn" onclick="toggleLang()">
             <span>🌐</span>
@@ -543,7 +543,7 @@
             const themeText = document.getElementById('theme-btn-text');
             const themeIcon = document.getElementById('theme-btn-icon');
             if (currentTheme === 'school') {
-                themeText.innerText = (currentLang === 'zh') ? "切換賽博霓虹" : "Switch to Cyberpunk";
+                themeText.innerText = (currentLang === 'zh') ? "深色主題" : "Switch to Cyberpunk";
                 themeIcon.innerText = "🌌";
             } else {
                 themeText.innerText = (currentLang === 'zh') ? "切換學校配色" : "Switch to School Style";
