@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS - 校園互動問答系統首頁v0.54</title>
+    <title>CKCPS WARS - 校園互動問答系統首頁v0.55</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         
@@ -418,13 +418,13 @@
                 <li class="link-item">
                     <a href="tug2-6F.html">
                         <div class="title-text" data-zh="CKCPS WARS 通用多學科版 <span>➔</span>" data-en="CKCPS WARS General Edition <span>➔</span>">CKCPS WARS 通用多學科版 <span>➔</span></div>
-                        <div class="desc-text" data-zh="支援單人及 2-6 隊多人即時對戰的綜合學科問答遊戲。" data-en="Supports 1-6 teams real-time battle, featuring a built-in slot machine mechanism for general school subjects.">支援 1-6 隊多人即時對戰，內建道具老虎機機制的綜合學科問答遊戲。</div>
+                        <div class="desc-text" data-zh="支援單人挑戰及2-6隊多人即時對戰的綜合學科問答遊戲。" data-en="Supports Solo and 2-6 teams real-time battle for general school subjects.">支援單人挑戰及2-6隊多人即時對戰的綜合學科問答遊戲。</div>
                     </a>
                 </li>
                 <li class="link-item">
                     <a href="mathsv5.html">
-                        <div class="title-text" data-zh="MATHS 數學專用版 <span>➔</span>" data-en="CYBERPUNK MATH Special Edition <span>➔</span>">MATH WARS 數學專用版 <span>➔</span></div>
-                        <div class="desc-text" data-zh="2-６隊多人即時對戰，配備專屬虛擬數字鍵盤，挑戰各年級動態數學計算題。" data-en="Equipped with a dedicated virtual numeric keypad to challenge dynamic math quizzes across various grades.">配備專屬虛擬數字鍵盤，挑戰各年級動態數學計算題。</div>
+                        <div class="title-text" data-zh="CYBERPUNK MATH 數學專用版 <span>➔</span>" data-en="CYBERPUNK MATH Special Edition <span>➔</span>">MATHA WARS 數學專用版 <span>➔</span></div>
+                        <div class="desc-text" data-zh="支援2-6隊多人即時對戰，配備專屬虛擬數字鍵盤，挑戰各年級動態數學計算題。" data-en="2-6players, equipped with a dedicated virtual numeric keypad to challenge dynamic math quizzes across various grades.">支援2-6隊多人即時對戰，配備專屬虛擬數字鍵盤，挑戰各年級動態數學計算題。</div>
                     </a>
                 </li>
                 <li class="link-item placeholder">
@@ -454,7 +454,7 @@
                 <li class="link-item">
                     <a href="search-leaderboard.html">
                         <div class="title-text" data-zh="手動搜尋特定排行榜 <span>➔</span>" data-en="Manual Search for Specific Leaderboards <span>➔</span>">手動搜尋特定排行榜 <span>➔</span></div>
-                        <div class="desc-text" data-zh="自訂篩選特定班級、學科、程度的完整歷史名次排行榜。" data-en="Manually query and filter comprehensive leaderboard records by subject, grade, or event date.">自訂篩選特定學科、年級 or 比賽日期的完整歷史名次排行榜。</div>
+                        <div class="desc-text" data-zh="自訂篩選特定學科、年級 or 比賽日期的完整歷史名次排行榜。" data-en="Manually query and filter comprehensive leaderboard records by subject, grade, or event date.">自訂篩選特定學科、年級 or 比賽日期的完整歷史名次排行榜。</div>
                     </a>
                 </li>
             </ul>
@@ -498,66 +498,114 @@
     <footer id="footer-text" data-zh="&copy; 2026 CKCPS WARS. 所有系統組件運行正常。" data-en="&copy; 2026 CKCPS WARS. All System Components Operational.">
         &copy; 2026 CKCPS WARS. 所有系統組件運行正常。
     </footer>
-<script>
-    let currentLang = 'zh';     
-    let currentTheme = 'cyber'; 
-    let pendingUrl = '';
-    let pendingOpenInNewTab = false;
 
-    // 定義隱藏密碼
-    const SECRET_PWD = "Ckcteacher"; 
+    <script>
+        let currentLang = 'zh';     
+        let currentTheme = 'cyber'; 
 
-    function toggleTheme() {
-        currentTheme = (currentTheme === 'cyber') ? 'school' : 'cyber';
-        updateUI();
-    }
+        let pendingUrl = '';
+        let pendingOpenInNewTab = false;
 
-    function toggleLang() {
-        currentLang = (currentLang === 'zh') ? 'en' : 'zh';
-        updateUI();
-    }
+        function toggleTheme() {
+            currentTheme = (currentTheme === 'cyber') ? 'school' : 'cyber';
+            updateUI();
+        }
 
-    function updateUI() {
-        // ... (保持您原有的 UI 更新邏輯)
-    }
+        function toggleLang() {
+            currentLang = (currentLang === 'zh') ? 'en' : 'zh';
+            updateUI();
+        }
 
-    // 修改後的教師登入觸發點
-    function verifyTeacherAccess(url, openInNewTab) {
-        pendingUrl = url;
-        pendingOpenInNewTab = openInNewTab;
-        document.getElementById('teacher-pwd-modal').style.display = 'flex';
-        document.getElementById('modal-password-input').value = ''; // 清空輸入框
-        document.getElementById('modal-password-input').focus();
-    }
-
-    function closeTeacherAuthModal() {
-        document.getElementById('teacher-pwd-modal').style.display = 'none';
-    }
-
-    // 驗證密碼邏輯
-    function submitTeacherAuth() {
-        const inputPwd = document.getElementById('modal-password-input').value.trim();
-        
-        if (inputPwd === SECRET_PWD) {
-            closeTeacherAuthModal();
-            if (pendingOpenInNewTab) {
-                window.open(pendingUrl, '_blank');
+        function updateUI() {
+            const body = document.body;
+            
+            if (currentTheme === 'school') {
+                body.classList.add('school-theme');
             } else {
-                window.location.href = pendingUrl;
+                body.classList.remove('school-theme');
             }
-        } else {
-            const failMsg = (currentLang === 'zh') ? "❌ 密碼錯誤！" : "❌ Invalid password!";
-            alert(failMsg);
+            
+            const translatableElements = document.querySelectorAll('[data-zh]');
+            translatableElements.forEach(el => {
+                const targetText = el.getAttribute('data-' + currentLang);
+                if (targetText) {
+                    el.innerHTML = targetText;
+                }
+            });
+            
+            const mainTitle = document.getElementById('main-title');
+            if (currentLang === 'zh') {
+                mainTitle.innerText = (currentTheme === 'school') ? "圓玄學院陳國超興德小學 問答系統平台" : "CKCPS WARS";
+            } else {
+                mainTitle.innerText = (currentTheme === 'school') ? "YYI Chan Kwok Chiu Hing Tak Primary School Quiz Portal" : "CKCPS WARS";
+            }
+            
+            const themeText = document.getElementById('theme-btn-text');
+            const themeIcon = document.getElementById('theme-btn-icon');
+            if (currentTheme === 'school') {
+                themeText.innerText = (currentLang === 'zh') ? "切換賽博霓虹" : "Switch to Cyberpunk";
+                themeIcon.innerText = "🌌";
+            } else {
+                themeText.innerText = (currentLang === 'zh') ? "切換學校配色" : "Switch to School Style";
+                themeIcon.innerText = "🎨";
+            }
+            
+            const langText = document.getElementById('lang-btn-text');
+            langText.innerText = (currentLang === 'zh') ? "English" : "繁體中文";
         }
-    }
 
-    // 按下 Enter 鍵即可確認
-    document.getElementById('modal-password-input').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            submitTeacherAuth();
+        /**
+         * 🔓 修正：重新啟用密碼彈窗驗證邏輯
+         */
+        function verifyTeacherAccess(url, openInNewTab) {
+            pendingUrl = url;
+            pendingOpenInNewTab = openInNewTab;
+            // 清空舊的輸入並顯示彈窗
+            document.getElementById('modal-password-input').value = '';
+            document.getElementById('teacher-pwd-modal').style.display = 'flex';
+            document.getElementById('modal-password-input').focus();
         }
-    });
-</script>
+
+        function closeTeacherAuthModal() {
+            document.getElementById('teacher-pwd-modal').style.display = 'none';
+            pendingUrl = '';
+            pendingOpenInNewTab = false;
+        }
+
+        /**
+         * 🔐 驗證密碼：使用 Base64 解密隱藏的密碼進行比對
+         */
+        function submitTeacherAuth() {
+            const pwd = document.getElementById('modal-password-input').value.trim();
+            if (!pwd) return;
+
+            // 'Q2tjdGVhY2hlcg==' 是密碼 'Ckcteacher' 的 Base64 編碼
+            const secureToken = atob('Q2tjdGVhY2hlcg==');
+
+            if (pwd === secureToken) {
+                const target = pendingUrl;
+                const inNewTab = pendingOpenInNewTab;
+                closeTeacherAuthModal();
+
+                if (inNewTab) {
+                    window.open(target, '_blank');
+                } else {
+                    window.location.href = target;
+                }
+            } else {
+                const failMsg = (currentLang === 'zh') ? "❌ 密碼錯誤！拒絕存取。" : "❌ Invalid password! Access denied.";
+                alert(failMsg);
+                document.getElementById('modal-password-input').value = '';
+                document.getElementById('modal-password-input').focus();
+            }
+        }
+
+        document.getElementById('modal-password-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                submitTeacherAuth();
+            }
+        });
+    </script>
 
 </body>
 </html>
