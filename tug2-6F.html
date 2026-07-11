@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS V2607102256</title>
+    <title>CKCPS WARS V2607111438</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
       
@@ -378,7 +378,7 @@ display: grid !important; /* 使用 !important 確保樣式優先 */
         <div id="menu-screen" class="screen">
             <div class="compact-grid">
                 <div class="section">
-                    <label style="color:#00f9ff;">NUMBER OF TEAMS 隊伍數目</label>
+                    <label style="color:#00f9ff;">NO. OF TEAMS 隊伍數目</label>
                     <select id="num-teams" onchange="toggleSoloMode()">
                         <option value="solo" selected>🧑 SOLO (個人模式)</option>
                         <option value="2">2 Teams/2隊</option>
@@ -620,7 +620,8 @@ display: grid !important; /* 使用 !important 確保樣式優先 */
                     const rLvl = norm(r.level);
 
                     const subMatch = rSub === targetSub || 
-                                     (targetSub === 'maths' && (rSub === 'math' || rSub === '數學')) ||
+                                     (targetSub === 'maths' && (rSub === 'math' || rSub === 'Maths')) ||
+                                     (targetSub === '數學' && (rSub === '數學')) ||
                                      (targetSub === '科學' && (rSub === '科學')) ||
                                      (targetSub === 'science' && (rSub === 'science')) ||
                                      (targetSub === 'chinese' && (rSub === '中文' || rSub === 'chinese'));
@@ -956,8 +957,9 @@ display: grid !important; /* 使用 !important 確保樣式優先 */
             return allQuestions.filter(q => {
                 const qSub = norm(q.subject), qLvl = norm(q.level);
                 const subMatch = !qSub || qSub === targetSub || 
-                                 (targetSub === 'maths' && (qSub === 'math' || qSub === '數學')) ||
+                                 (targetSub === 'maths' && (qSub === 'math' || qSub === 'Maths')) ||
                                  (targetSub === '科學' && (qSub === '科學')) ||
+                                 (targetSub === '數學' && (qSub === '數學')) ||
                                  (targetSub === 'science' && (qSub === 'Science')) ||
                                  (targetSub === 'chinese' && (qSub === '中文' || qSub === 'chinese'));
                 const lvlMatch = !qLvl || qLvl === targetLvl || qLvl === targetLvl.replace('p','');
