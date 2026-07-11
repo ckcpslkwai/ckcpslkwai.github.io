@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS - 雲端榮譽排行榜查詢v2607111358</title>
+    <title>CKCPS WARS - 雲端榮譽排行榜查詢v26071404</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         
@@ -154,6 +154,7 @@
 
         .filter-group { display: flex; flex-direction: column; gap: 8px; }
         .filter-group label { font-size: 0.9rem; font-weight: bold; color: var(--text-dim); }
+        
         .filter-control {
             width: 100%;
             padding: 12px;
@@ -166,6 +167,18 @@
         }
         .filter-control:focus { border-color: var(--secondary); }
         .filter-control:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* 🔥 新增：確保 Cyberpunk 模式下，下拉選單「展開後」的選項文字為黑色 */
+        .filter-control option {
+            color: #000000;
+            background: #ffffff;
+        }
+        
+        /* 確保學校配色的展開選項維持其深藍色 */
+        body.school-theme .filter-control option {
+            color: #2d4565;
+            background: #ffffff;
+        }
 
         .search-action-btn {
             grid-column: 1 / -1; 
@@ -272,7 +285,6 @@
             <div class="table-responsive">
                 <table class="leaderboard-table" id="data-table" style="display: none;">
                     <thead>
-                        <!-- ⚠️ 因為已經是加總總分，所以拿掉「日期」欄位，改顯示「作答總次數」 -->
                         <tr>
                             <th data-zh="名次" data-en="Rank">名次</th>
                             <th data-zh="班別" data-en="Class">班別</th>
@@ -295,16 +307,14 @@
     <script>
         let currentLang = localStorage.getItem('ckcps_lang') || 'zh';     
         let currentTheme = localStorage.getItem('ckcps_theme') || 'cyber'; 
-        let rawDataStore = []; // 儲存最原始的作答資料
+        let rawDataStore = []; 
 
-        // 📊 【重要設定：請確認這裡的欄位位置】 
-        // 陣列是從 0 開始算的。假設你的 Google 表單預設欄位如下：
-        const COL_TIMESTAMP = 0; // 第 1 欄：時間戳記 (我們靠這個抓月份，並且不再顯示它)
-        const COL_CLASS = 2;     // 第 2 欄：班級
-        const COL_NAME = 3;      // 第 3 欄：姓名
-        const COL_SUBJECT = 4;   // 第 4 欄：科目
-        const COL_LEVEL = 5;     // 第 5 欄：程度
-        const COL_SCORE = 6;     // 第 6 欄：分數
+        const COL_TIMESTAMP = 0; 
+        const COL_CLASS = 2;     
+        const COL_NAME = 3;      
+        const COL_SUBJECT = 4;   
+        const COL_LEVEL = 5;     
+        const COL_SCORE = 6;     
 
         const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1lwPiw4WVCorhjgpHycsahXoaPGPPZ7XR9OWWoImZq5g/gviz/tq?tqx=out:csv&gid=0';
 
@@ -365,7 +375,6 @@
             let subjectsSet = new Set();
             let levelsSet = new Set();
 
-            // 從第二行開始讀取 (跳過表頭)
             for (let i = 1; i < lines.length; i++) {
                 let line = lines[i].trim();
                 if (!line) continue;
@@ -382,8 +391,6 @@
                 parts.push(currentPart.trim());
 
                 if (parts.length > Math.max(COL_CLASS, COL_SCORE)) {
-                    
-                    // 1. 抓取時間並轉換為月份
                     let timeStr = parts[COL_TIMESTAMP];
                     let monthStr = "";
                     if (timeStr) {
@@ -393,7 +400,6 @@
                         }
                     }
 
-                    // 2. 儲存原始解析資料
                     rawDataStore.push({
                         month: monthStr,
                         className: parts[COL_CLASS],
@@ -455,7 +461,6 @@
             updateUI();
         }
 
-        // ⚡ 核心功能：先篩選，再把同一個人的分數加總！
         function executeFiltering() {
             const cls = document.getElementById('filter-class').value;
             const name = document.getElementById('filter-name').value;
@@ -467,7 +472,6 @@
             const tbody = document.getElementById('table-body');
             const sBox = document.getElementById('status-box');
 
-            // 【步驟一】過濾出符合條件的紀錄
             let filteredRecords = rawDataStore.filter(item => {
                 if (cls !== 'ALL' && item.className !== cls) return false;
                 if (name !== 'ALL' && item.name !== name) return false;
@@ -477,7 +481,6 @@
                 return true;
             });
 
-            // 【步驟二】依照「學生 (班級+姓名)」進行分組加總 (Group By & Sum)
             let studentTotalsMap = {};
             filteredRecords.forEach(item => {
                 let uniqueKey = item.className + "|||" + item.name;
@@ -494,7 +497,6 @@
                 studentTotalsMap[uniqueKey].attempts += 1;
             });
 
-            // 將物件轉回陣列，並依照總分由高到低排序
             let aggregatedList = Object.values(studentTotalsMap);
             aggregatedList.sort((a, b) => b.totalScore - a.totalScore);
             
@@ -512,14 +514,11 @@
             sBox.style.display = 'none';
             table.style.display = 'table';
 
-            // 顯示文字邏輯：如果選了特定科目就顯示該科目，如果選 ALL 就顯示「全部合計」
             const displaySub = (sub === 'ALL') ? (currentLang==='zh'?'全科合計':'All Subjects') : sub;
             const displayLvl = (lvl === 'ALL') ? (currentLang==='zh'?'全程度合計':'All Levels') : lvl;
 
-            // 【步驟三】產生表格，處理同分同名次邏輯
             let rank = 1;
             for (let i = 0; i < aggregatedList.length; i++) {
-                // 若分數跟上一名比有變低，名次才往後跳 (同分並列)
                 if (i > 0 && aggregatedList[i].totalScore < aggregatedList[i-1].totalScore) { 
                     rank = i + 1; 
                 }
