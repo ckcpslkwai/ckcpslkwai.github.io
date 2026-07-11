@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS - 校園互動問答系統入口首頁v1.1</title>
+    <title>CKCPS WARS - 校園互動問答系統首頁v0.5</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         
@@ -311,13 +311,13 @@
             background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(6px);
             z-index: 2000;
-            display: none; /* 預設隱藏，驗證時改為 flex */
+            display: none; 
             align-items: center;
             justify-content: center;
         }
         .modal-box {
             background: var(--card-bg);
-            border: 2px solid var(--accent); /* 跟隨教師區的特色主題色 */
+            border: 2px solid var(--accent); 
             padding: 30px;
             border-radius: 16px;
             width: 90%;
@@ -347,7 +347,7 @@
             font-size: 1.2rem;
             text-align: center;
             outline: none;
-            letter-spacing: 4px; /* 密碼圓點間距 */
+            letter-spacing: 4px; 
         }
         .modal-input:focus {
             border-color: var(--accent);
@@ -387,6 +387,11 @@
 <body>
 
     <div class="controls-container">
+        <!-- 📄 新增的更新 Log 按鈕，配置新視窗打開機制與多語言對照 -->
+        <button class="control-btn" onclick="window.open('log.txt', '_blank')">
+            <span>📋</span>
+            <span data-zh="更新log" data-en="Update Log">更新log</span>
+        </button>
         <button class="control-btn" onclick="toggleTheme()">
             <span id="theme-btn-icon">🎨</span>
             <span id="theme-btn-text">切換學校配色</span>
@@ -399,7 +404,7 @@
 
     <header>
         <h1 id="main-title">CKCPS WARS</h1>
-        <p id="main-subtitle" data-zh="校園互動問答競賽與榮譽排行系統入口" data-en="Campus Interactive Quiz Competition & Honor Ranking Portal">校園互動問答競賽與榮譽排行系統入口</p>
+        <p id="main-subtitle" data-zh="校園互動問答競賽及排名系統" data-en="Campus Interactive Quiz Competition & Ranking Portal">校園互動問答競賽與排名系統</p>
     </header>
 
     <main class="portal-container">
@@ -411,14 +416,14 @@
             </h2>
             <ul class="link-list">
                 <li class="link-item">
-                    <a href="tug2-6F.html">
+                    <a href="tug2-6F (1).html">
                         <div class="title-text" data-zh="CKCPS WARS 通用多學科版 <span>➔</span>" data-en="CKCPS WARS General Edition <span>➔</span>">CKCPS WARS 通用多學科版 <span>➔</span></div>
                         <div class="desc-text" data-zh="支援 1-6 隊多人即時對戰，內建道具老虎機機制的綜合學科問答遊戲。" data-en="Supports 1-6 teams real-time battle, featuring a built-in slot machine mechanism for general school subjects.">支援 1-6 隊多人即時對戰，內建道具老虎機機制的綜合學科問答遊戲。</div>
                     </a>
                 </li>
                 <li class="link-item">
                     <a href="mathsv5.html">
-                        <div class="title-text" data-zh="CYBERPUNK MATH 數學專用版 <span>➔</span>" data-en="CYBERPUNK MATH Special Edition <span>➔</span>">CYBERPUNK MATH 數學專用版 <span>➔</span></div>
+                        <div class="title-text" data-zh="CYBERPUNK MATH 數學專用版 <span>➔</span>" data-en="CYBERPUNK MATH Special Edition <span>➔</span>">MATH WARS 數學專用版 <span>➔</span></div>
                         <div class="desc-text" data-zh="配備專屬虛擬數字鍵盤，挑戰各年級動態數學計算題。" data-en="Equipped with a dedicated virtual numeric keypad to challenge dynamic math quizzes across various grades.">配備專屬虛擬數字鍵盤，挑戰各年級動態數學計算題。</div>
                     </a>
                 </li>
@@ -441,7 +446,7 @@
             </h2>
             <ul class="link-list">
                 <li class="link-item">
-                    <a href="newboard2.html">
+                    <a href="newboard2 (1).html">
                         <div class="title-text" data-zh="公共資訊與榮譽榜公告 <span>➔</span>" data-en="Public Info & Honor Board Announcement <span>➔</span>">公共資訊與榮譽榜公告 <span>➔</span></div>
                         <div class="desc-text" data-zh="大螢幕專用！動態輪播各科榮譽榜，並整合屯門區天氣與九巴到站時間（ETA）。" data-en="Designed for big screens! Displays automated updates of ranking boards, Tuen Mun weather, and KMB Bus ETA.">大螢幕專用！動態輪播各科榮譽榜，並整合屯門區天氣與九巴到站時間（ETA）。</div>
                     </a>
@@ -484,32 +489,26 @@
 
     </main>
 
-    <!-- ==================== 隱密式教師密碼 HTML 彈窗組件 ==================== -->
+    <!-- 密碼彈窗組件保留，方便日後隨時恢復使用 -->
     <div id="teacher-pwd-modal" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-title" id="modal-title-text" data-zh="🔐 請輸入教師認證密碼" data-en="🔐 Please enter Teacher Password">🔐 請輸入教師認證密碼</div>
-            
-            <!-- type="password" 確保密碼全部呈現黑點隱密狀態 -->
             <input type="password" id="modal-password-input" class="modal-input" placeholder="••••••">
-            
             <div class="modal-btn-group">
                 <button class="control-btn" onclick="submitTeacherAuth()" id="modal-btn-confirm" data-zh="確認" data-en="Confirm">確認</button>
                 <button class="control-btn modal-btn-cancel" onclick="closeTeacherAuthModal()" id="modal-btn-cancel" data-zh="取消" data-en="Cancel">取消</button>
             </div>
         </div>
     </div>
-    <!-- =================================================================== -->
 
     <footer id="footer-text" data-zh="&copy; 2026 CKCPS WARS. 所有系統組件運行正常。" data-en="&copy; 2026 CKCPS WARS. All System Components Operational.">
         &copy; 2026 CKCPS WARS. 所有系統組件運行正常。
     </footer>
 
     <script>
-        // 初始化核心狀態
-        let currentLang = 'zh';     // 'zh' | 'en'
-        let currentTheme = 'cyber'; // 'cyber' | 'school'
+        let currentLang = 'zh';     
+        let currentTheme = 'cyber'; 
 
-        // 用於記錄暫存目標狀態
         let pendingUrl = '';
         let pendingOpenInNewTab = false;
 
@@ -526,14 +525,12 @@
         function updateUI() {
             const body = document.body;
             
-            // 1. 處理配色樣式套用
             if (currentTheme === 'school') {
                 body.classList.add('school-theme');
             } else {
                 body.classList.remove('school-theme');
             }
             
-            // 2. 處理全頁 data 標籤多語言翻譯
             const translatableElements = document.querySelectorAll('[data-zh]');
             translatableElements.forEach(el => {
                 const targetText = el.getAttribute('data-' + currentLang);
@@ -542,15 +539,13 @@
                 }
             });
             
-            // 3. 處理需要同時看「配色」和「語言」的複合元素
             const mainTitle = document.getElementById('main-title');
             if (currentLang === 'zh') {
-                mainTitle.innerText = (currentTheme === 'school') ? "圓玄學院陳國超興德小學 問答系統門戶" : "CKCPS WARS";
+                mainTitle.innerText = (currentTheme === 'school') ? "圓玄學院陳國超興德小學 問答系統平台" : "CKCPS WARS";
             } else {
                 mainTitle.innerText = (currentTheme === 'school') ? "YYI Chan Kwok Chiu Hing Tak Primary School Quiz Portal" : "CKCPS WARS";
             }
             
-            // 4. 更新配色按鈕內部文字
             const themeText = document.getElementById('theme-btn-text');
             const themeIcon = document.getElementById('theme-btn-icon');
             if (currentTheme === 'school') {
@@ -561,39 +556,29 @@
                 themeIcon.innerText = "🎨";
             }
             
-            // 5. 更新語言按鈕內部文字
             const langText = document.getElementById('lang-btn-text');
             langText.innerText = (currentLang === 'zh') ? "English" : "繁體中文";
         }
 
         /**
-         * 1. 喚起自訂彈窗
+         * 🔓 核心變更：暫時放行所有人直接進入
          */
         function verifyTeacherAccess(url, openInNewTab) {
-            pendingUrl = url;
-            pendingOpenInNewTab = openInNewTab;
-            
-            // 清空上一次的輸入
-            const inputField = document.getElementById('modal-password-input');
-            inputField.value = '';
-            
-            // 展現彈窗並自動聚焦
-            document.getElementById('teacher-pwd-modal').style.display = 'flex';
-            inputField.focus();
+            // 繞過密碼彈窗，直接進行頁面跳轉或開啟新分頁
+            if (openInNewTab) {
+                window.open(url, '_blank');
+            } else {
+                window.location.href = url;
+            }
         }
 
-        /**
-         * 2. 關閉彈窗
-         */
         function closeTeacherAuthModal() {
             document.getElementById('teacher-pwd-modal').style.display = 'none';
             pendingUrl = '';
             pendingOpenInNewTab = false;
         }
 
-        /**
-         * 3. 非同步驗證與提交
-         */
+        // 舊有驗證邏輯留底（目前不會被 verifyTeacherAccess 觸發）
         async function submitTeacherAuth() {
             const pwd = document.getElementById('modal-password-input').value.trim();
             if (!pwd) return;
@@ -609,18 +594,17 @@
                 const lines = text.trim().split('\n');
                 let isValid = false;
 
-for (let i = 1; i < lines.length; i++) {
-    if (!lines[i].trim()) continue;
-    let parts = lines[i].split(',').map(s => s.replace(/"/g, '').trim());
-    
-    // 💡 你的 CSV 只有兩欄：name 是 parts[0]，password 是 parts[1]
-    if (parts[0] === 'admin' && parts.length >= 2) { 
-        if (parts[1] === pwd) {
-            isValid = true; 
-            break; // 找到並驗證成功就跳出
-        }
-    }
-}
+                for (let i = 1; i < lines.length; i++) {
+                    if (!lines[i].trim()) continue;
+                    let parts = lines[i].split(',').map(s => s.replace(/"/g, '').trim());
+                    
+                    if (parts[0] === 'admin' && parts.length >= 2) { 
+                        if (parts[1] === pwd) {
+                            isValid = true; 
+                            break; 
+                        }
+                    }
+                }
 
                 if (isValid) {
                     const target = pendingUrl;
@@ -638,13 +622,12 @@ for (let i = 1; i < lines.length; i++) {
                 }
             } catch (err) {
                 const errMsg = (currentLang === 'zh') 
-                    ? "⚠️ 無法載入驗證檔。\n請確保密碼表命名正確且位於相同資料夾。\n" 
-                    : "⚠️ Failed to load verification file.\nMake sure password database exists in the same folder.\n";
-                alert(errMsg + err.message);
+                    ? "⚠️ 無法載入驗證檔。" 
+                    : "⚠️ Failed to load verification file.";
+                alert(errMsg);
             }
         }
 
-        // 綁定鍵盤事件：按下 Enter 直接提交
         document.getElementById('modal-password-input').addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 submitTeacherAuth();
