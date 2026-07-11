@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CKCPS WARS - 雲端榮譽排行榜查詢</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        
+        /* 核心雙配色變數 */
+        /* 1. 預設：賽博朋克霓虹風格 */
+        :root {
+            --bg-gradient: linear-gradient(180deg, #060614 0%, #0a0a24 100%);
+            --header-bg: rgba(11, 11, 34, 0.85);
+            --header-border: #00f9ff;
+            --header-shadow: 0 0 25px rgba(0, 249, 255, 0.25);
+            --header-text: #ffffff;
+            --header-desc: #94a3b8;
+            --h1-font: 'Orbitron', sans-serif;
+            --h1-text-shadow: 0 0 10px #00f9ff;
+            
+            --bg-dark: #060614;
+            --card-bg: #11112a;
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            --primary: #00f9ff;     
+            --secondary: #ff00aa;   
+            --accent: #39ff14;      
+            --text-main: #ffffff;
+            --text-dim: #94a3b8;
+            --border-color: #222244;
+            --item-bg: rgba(255, 255, 255, 0.04);
+            --item-border: rgba(255, 255, 255, 0.1);
+            
+            --th-bg: #1a1a3a;
+            --tr-even: rgba(255, 255, 255, 0.02);
+            --tr-hover: rgba(255, 0, 170, 0.1);
+        }
+
+        /* 2. 學校官方配色風格 */
+        body.school-theme {
+            --bg-gradient: linear-gradient(180deg, #faf9f8 0%, #f0f4f7 100%);
+            --header-bg: #2d4565;       
+            --header-border: #f9995d;   
+            --header-shadow: 0 4px 20px rgba(45, 69, 101, 0.15);
+            --header-text: #ffffff;
+            --header-desc: #faf9f8;
+            --h1-font: "微軟正黑體", -apple-system, sans-serif;
+            --h1-text-shadow: none;
+            
+            --bg-dark: #faf9f8;
+            --card-bg: #ffffff;
+            --card-shadow: 0 4px 20px rgba(45, 69, 101, 0.06);
+            --primary: #2d4565;         
+            --secondary: #f9995d;       
+            --accent: #71b2c4;          
+            --text-main: #2d4565;       
+            --text-dim: #5d718e;        
+            --border-color: #cbd5e1;    
+            --item-bg: #faf9f8;         
+            --item-border: #e2e8f0;
+
+            --th-bg: #e6edf5;
+            --tr-even: #f8fafc;
+            --tr-hover: rgba(249, 153, 93, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "微軟正黑體", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .controls-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 12px;
+        }
+
+        .control-btn {
+            padding: 10px 18px;
+            background: rgba(11, 11, 34, 0.85);
+            border: 2px solid var(--secondary);
+            color: #ffffff;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 15px rgba(255, 0, 170, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .control-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px var(--secondary);
+        }
+        body.school-theme .control-btn {
+            background: #ffffff;
+            border: 2px solid #2d4565;
+            color: #2d4565;
+            box-shadow: 0 4px 12px rgba(45, 69, 101, 0.15);
+        }
+        body.school-theme .control-btn:hover {
+            background: #2d4565;
+            color: #ffffff;
+        }
+
+        header {
+            background: var(--header-bg);
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 3px solid var(--header-border);
+            box-shadow: var(--header-shadow);
+            color: var(--header-text);
+        }
+        header h1 {
+            font-family: var(--h1-font);
+            font-size: 2.2rem;
+            text-shadow: var(--h1-text-shadow);
+            margin-bottom: 8px;
+        }
+        header p {
+            color: var(--header-desc);
+            font-size: 1rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 12px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+        .back-link:hover { text-decoration: underline; }
+
+        .search-container {
+            max-width: 1100px;
+            width: 100%;
+            margin: 30px auto;
+            padding: 0 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* 📡 雲端同步狀態提示列 */
+        .sync-status-bar {
+            background: rgba(57, 255, 20, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            font-size: 0.95rem;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        body.school-theme .sync-status-bar {
+            background: #e6f4ea;
+            border-color: #34a853;
+            color: #137333;
+        }
+
+        .filter-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+        }
+        .filter-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            align-items: flex-end;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .filter-group label {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--text-dim);
+        }
+        .filter-control {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--item-bg);
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+        }
+        .filter-control:focus { border-color: var(--secondary); }
+
+        .search-action-btn {
+            padding: 12px 25px;
+            background: var(--secondary);
+            border: none;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            height: 48px;
+        }
+        .search-action-btn:hover { opacity: 0.9; }
+        body.school-theme .search-action-btn { background: #f9995d; }
+
+        .results-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+        }
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+        .leaderboard-table th {
+            background: var(--th-bg);
+            color: var(--text-main);
+            padding: 14px 16px;
+            font-weight: bold;
+        }
+        .leaderboard-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+        .leaderboard-table tr:nth-child(even) { background: var(--tr-even); }
+        .leaderboard-table tr:hover { background: var(--tr-hover); }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+        .rank-1 { background: #ffd700; color: #000; }
+        .rank-2 { background: #c0c0c0; color: #000; }
+        .rank-3 { background: #cd7f32; color: #000; }
+
+        .status-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-dim);
+            font-size: 1.1rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-dim);
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls-container">
+        <button class="control-btn" onclick="toggleTheme()">
+            <span id="theme-btn-icon">🎨</span>
+            <span id="theme-btn-text">切換學校配色</span>
+        </button>
+        <button class="control-btn" onclick="toggleLang()">
+            <span>🌐</span>
+            <span id="lang-btn-text">English</span>
+        </button>
+    </div>
+
+    <header>
+        <h1 id="page-title" data-zh="🏆 雲端榮譽排行榜查詢" data-en="🏆 Cloud Leaderboard Query">🏆 雲端榮譽排行榜查詢</h1>
+        <p id="page-subtitle" data-zh="自動同步 Google Sheets 學生紀錄，即時篩選名次排行" data-en="Auto-syncs Google Sheets student records for real-time ranking filters">自動同步 Google Sheets 學生紀錄，即時篩選名次排行</p>
+        <a href="index.html" class="back-link" data-zh="⬅️ 返回系統入口首頁" data-en="⬅️ Back to Portal Home">⬅️ 返回系統入口首頁</a>
+    </header>
+
+    <main class="search-container">
+
+        <!-- 📡 雲端連線狀態條 -->
+        <div class="sync-status-bar">
+            <span>🔄</span>
+            <span id="sync-text" data-zh="正在連線至 Google 試算表獲取最新數據..." data-en="Connecting to Google Sheets for live data...">正在連線至 Google 試算表獲取最新數據...</span>
+        </div>
+
+        <!-- 篩選控制面板 -->
+        <section class="filter-panel">
+            <div class="filter-title">
+                <span>🔍</span>
+                <span data-zh="條件篩選設定" data-en="Filter Conditions Setup">條件篩選設定</span>
+            </div>
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label for="filter-subject" data-zh="選擇學科" data-en="Select Subject">選擇學科</label>
+                    <select id="filter-subject" class="filter-control">
+                        <option value="ALL" data-zh="✨ 全部學科" data-en="✨ All Subjects">✨ 全部學科</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-grade" data-zh="選擇年級" data-en="Select Grade">選擇年級</label>
+                    <select id="filter-grade" class="filter-control">
+                        <option value="ALL" data-zh="✨ 全部年級" data-en="✨ All Grades">✨ 全部年級</option>
+                        <option value="P1">P.1</option>
+                        <option value="P2">P.2</option>
+                        <option value="P3">P.3</option>
+                        <option value="P4">P.4</option>
+                        <option value="P5">P.5</option>
+                        <option value="P6">P.6</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-date" data-zh="比賽日期" data-en="Event Date">比賽日期</label>
+                    <input type="date" id="filter-date" class="filter-control">
+                </div>
+
+                <button class="search-action-btn" onclick="executeFiltering()" data-zh="執行篩選" data-en="Apply Filter">執行篩選</button>
+            </div>
+        </section>
+
+        <!-- 排行榜結果顯示面板 -->
+        <section class="results-panel">
+            <div class="table-responsive">
+                <table class="leaderboard-table" id="data-table" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th data-zh="名次" data-en="Rank">名次</th>
+                            <th data-zh="比賽日期" data-en="Date">比賽日期</th>
+                            <th data-zh="學科" data-en="Subject">學科</th>
+                            <th data-zh="年級" data-en="Grade">年級</th>
+                            <th data-zh="班別" data-en="Class">班別</th>
+                            <th data-zh="姓名" data-en="Name">姓名</th>
+                            <th data-zh="得分 / 數據" data-en="Score">得分 / 數據</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+            </div>
+            <div id="status-box" class="status-message" data-zh="🔄 正在載入歷史排行紀錄檔案..." data-en="🔄 Loading historical ranking records...">🔄 正在載入歷史排行紀錄檔案...</div>
+        </section>
+
+    </main>
+
+    <footer>
+        &copy; 2026 CKCPS WARS. 雲端即時排行榜模組。
+    </footer>
+
+    <script>
+        let currentLang = localStorage.getItem('ckcps_lang') || 'zh';     
+        let currentTheme = localStorage.getItem('ckcps_theme') || 'cyber'; 
+        let fullLeaderboardData = [];
+
+        // 🔗 核心變更：將原本的試算表網址，格式化為 CSV 導出專用 API
+        const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1lwPiw4WVCorhjgpHycsahXoaPGPPZ7XR9OWWoImZq5g/export?format=csv&gid=0';
+
+        window.onload = function() {
+            updateUI();
+            fetchCloudData();
+        };
+
+        function toggleTheme() {
+            currentTheme = (currentTheme === 'cyber') ? 'school' : 'cyber';
+            localStorage.setItem('ckcps_theme', currentTheme);
+            updateUI();
+        }
+
+        function toggleLang() {
+            currentLang = (currentLang === 'zh') ? 'en' : 'zh';
+            localStorage.setItem('ckcps_lang', currentLang);
+            updateUI();
+        }
+
+        function updateUI() {
+            const body = document.body;
+            if (currentTheme === 'school') body.classList.add('school-theme');
+            else body.classList.remove('school-theme');
+            
+            document.querySelectorAll('[data-zh]').forEach(el => {
+                const targetText = el.getAttribute('data-' + currentLang);
+                if (targetText) el.innerHTML = targetText;
+            });
+            
+            const themeText = document.getElementById('theme-btn-text');
+            const themeIcon = document.getElementById('theme-btn-icon');
+            if (currentTheme === 'school') {
+                themeText.innerText = (currentLang === 'zh') ? "切換賽博霓虹" : "Switch to Cyberpunk";
+                themeIcon.innerText = "🌌";
+            } else {
+                themeText.innerText = (currentLang === 'zh') ? "切換學校配色" : "Switch to School Style";
+                themeIcon.innerText = "🎨";
+            }
+            document.getElementById('lang-btn-text').innerText = (currentLang === 'zh') ? "English" : "繁體中文";
+        }
+
+        /**
+         * 🌐 從 Google 試算表非同步抓取最即時的資料
+         */
+        async function fetchCloudData() {
+            const syncText = document.getElementById('sync-text');
+            const statusBox = document.getElementById('status-box');
+            
+            try {
+                const response = await fetch(GOOGLE_SHEET_CSV_URL);
+                if (!response.ok) throw new Error('Network response was not ok');
+                
+                let text = await response.text();
+                
+                // 解析資料
+                processCSVText(text);
+
+                // 更新狀態列為成功
+                syncText.setAttribute('data-zh', '🟢 雲端連線成功！資料已同步為最新狀態。');
+                syncText.setAttribute('data-en', '🟢 Cloud connected successfully! Data is fully synchronized.');
+                updateUI();
+
+            } catch (err) {
+                console.error('Google Sheets 讀取失敗:', err);
+                
+                syncText.setAttribute('data-zh', '🔴 雲端讀取失敗。請確認該 Google 試算表已設定為「知道連結的任何人均可檢視」。');
+                syncText.setAttribute('data-en', '🔴 Cloud sync failed. Please ensure the Google Sheet permission is set to "Anyone with the link can view".');
+                
+                statusBox.setAttribute('data-zh', '⚠️ 無法自雲端載入數據。');
+                statusBox.setAttribute('data-en', '⚠️ Failed to load data from cloud database.');
+                updateUI();
+            }
+        }
+
+        // 解析 CSV 主要核心 (預期欄位順序：0日期, 1學科, 2年級, 3班別, 4姓名, 5分數)
+        // 💡 如果你的 Google 試算表欄位順序不同，請修改下方的 parts[x] 數字！
+        function processCSVText(text) {
+            if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+            const lines = text.trim().split('\n');
+            fullLeaderboardData = [];
+            let subjectsSet = new Set();
+
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                let parts = lines[i].split(',').map(s => s.replace(/"/g, '').trim());
+                
+                if (parts.length >= 6) {
+                    fullLeaderboardData.push({
+                        date: parts[0],              // 欄位 A (第 0 欄)
+                        subject: parts[1],           // 欄位 B (第 1 欄)
+                        grade: parts[2],             // 欄位 C (第 2 欄)
+                        className: parts[3],         // 欄位 D (第 3 欄)
+                        name: parts[4],              // 欄位 E (第 4 欄)
+                        score: parseFloat(parts[5]) || 0, // 欄位 F (第 5 欄)
+                        originalScoreStr: parts[5]
+                    });
+                    subjectsSet.add(parts[1]); 
+                }
+            }
+            rebuildSubjectDropdown(subjectsSet);
+            executeFiltering();
+        }
+
+        function rebuildSubjectDropdown(subjectsSet) {
+            const dropdown = document.getElementById('filter-subject');
+            dropdown.innerHTML = `<option value="ALL" data-zh="✨ 全部學科" data-en="✨ All Subjects">${currentLang==='zh'?'✨ 全部學科':'✨ All Subjects'}</option>`;
+            subjectsSet.forEach(sub => {
+                if(sub) {
+                    const opt = document.createElement('option');
+                    opt.value = sub; opt.innerText = sub;
+                    dropdown.appendChild(opt);
+                }
+            });
+        }
+
+        function executeFiltering() {
+            const targetSubject = document.getElementById('filter-subject').value;
+            const targetGrade = document.getElementById('filter-grade').value;
+            const targetDate = document.getElementById('filter-date').value;
+
+            const table = document.getElementById('data-table');
+            const tableBody = document.getElementById('table-body');
+            const statusBox = document.getElementById('status-box');
+
+            let filtered = fullLeaderboardData.filter(item => {
+                if (targetSubject !== 'ALL' && item.subject !== targetSubject) return false;
+                if (targetGrade !== 'ALL' && item.grade !== targetGrade) return false;
+                if (targetDate && !item.date.includes(targetDate)) return false;
+                return true;
+            });
+
+            // 依分數從高到低排序
+            filtered.sort((a, b) => b.score - a.score);
+            tableBody.innerHTML = '';
+            
+            if (filtered.length === 0) {
+                table.style.display = 'none';
+                statusBox.style.display = 'block';
+                statusBox.setAttribute('data-zh', '📭 沒有找到符合條件的排名資料。');
+                statusBox.setAttribute('data-en', '📭 No matching ranking data found.');
+                updateUI();
+                return;
+            }
+
+            statusBox.style.display = 'none';
+            table.style.display = 'table';
+
+            let currentRank = 1;
+            for (let i = 0; i < filtered.length; i++) {
+                if (i > 0 && filtered[i].score < filtered[i - 1].score) {
+                    currentRank = i + 1;
+                }
+                const item = filtered[i];
+                const tr = document.createElement('tr');
+                let rankDisplay = currentRank;
+                if (currentRank === 1) rankDisplay = `<span class="rank-badge rank-1">1</span>`;
+                else if (currentRank === 2) rankDisplay = `<span class="rank-badge rank-2">2</span>`;
+                else if (currentRank === 3) rankDisplay = `<span class="rank-badge rank-3">3</span>`;
+
+                tr.innerHTML = `
+                    <td>${rankDisplay}</td>
+                    <td>${item.date}</td>
+                    <td>${item.subject}</td>
+                    <td><strong>${item.grade}</strong></td>
+                    <td>${item.className}</td>
+                    <td><strong>${item.name}</strong></td>
+                    <td><span style="color:var(--secondary); font-weight:bold;">${item.originalScoreStr}</span></td>
+                `;
+                tableBody.appendChild(tr);
+            }
+            updateUI();
+        }
+    </script>
+</body>
+</html>
