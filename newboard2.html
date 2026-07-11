@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>排行榜 V2607091231🏆</title>
+  <title>排行榜 V2607111206🏆</title>
   <style>
     /* 基礎變數 (預設暗色) */
     :root {
@@ -95,8 +95,8 @@
     .rank-3 td { background: linear-gradient(135deg, #ffedd5 0%, #ea580c 50%, #b45309 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     
     #bus-eta-container { height: 11vh; background: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 12px; margin-bottom: 8px; display: flex; flex-direction: column; justify-content: center; padding: 6px 15px; gap: 4px; flex-shrink: 0; transition: background 0.3s; }
-    .bus-station-row { display: flex; align-items: center; gap: 15px; width: 100%; overflow-x: auto; white-space: nowrap; }
-    .bus-station-row::-webkit-scrollbar { display: none; } 
+    /* 修改 overflow-x 為 hidden 以利正確計算內容寬度，並確保文字不會隨意折行 */
+    .bus-station-row { display: flex; align-items: center; gap: 15px; width: 100%; overflow: hidden; white-space: nowrap; }
     .bus-station-name { font-size: 1.3rem; color: var(--accent); border-right: 1px solid var(--border-color); padding-right: 10px; flex-shrink: 0; font-weight: bold; }
     .bus-route-item { display: inline-flex; align-items: center; background: rgba(128,128,128,0.1); padding: 4px 10px; border-radius: 8px; gap: 8px; font-size: 1.3rem; }
     .bus-route-no { color: #f43f5e; font-weight: 950; } 
@@ -376,6 +376,30 @@
       }).sort((a,b) => String(a.route).localeCompare(String(b.route), "en", {numeric:true}));
     }
 
+    // 新增：自動縮小字體的函數
+    function adjustBusRowsFontSize() {
+      const rows = document.querySelectorAll('.bus-station-row');
+      rows.forEach(row => {
+        // 重置初始字體大小
+        row.style.fontSize = '1.3rem';
+        
+        // 獲取該行內所有需要同步縮小字體的子元素
+        const stationName = row.querySelector('.bus-station-name');
+        const routeItems = row.querySelectorAll('.bus-route-item');
+        
+        let currentSize = 1.3;
+        // 當內容寬度 (scrollWidth) 大於 容器可見寬度 (clientWidth) 時，自動調小字體，最低到 0.6rem 防止過度縮小
+        while (row.scrollWidth > row.clientWidth && currentSize > 0.6) {
+          currentSize -= 0.1;
+          row.style.fontSize = `${currentSize}rem`;
+          if (stationName) stationName.style.fontSize = `${currentSize}rem`;
+          routeItems.forEach(item => {
+            item.style.fontSize = `${currentSize}rem`;
+          });
+        }
+      });
+    }
+
     function renderAllStops() {
       let html = "";
       FIXED_STATIONS.forEach(stop => {
@@ -396,6 +420,9 @@
         `;
       });
       document.getElementById("bus-eta-container").innerHTML = html;
+      
+      // 渲染完畢後，立即檢查並調整字體大小
+      adjustBusRowsFontSize();
     }
 
     async function fetchEta() {
@@ -417,6 +444,9 @@
     fetchEta();
     updateWeather();
     
+    // 視窗大小改變時也重新計算字體，確保響應式呈現
+    window.addEventListener('resize', adjustBusRowsFontSize);
+
     // 定時器
     setInterval(updateData, 15000);
     setInterval(fetchEta, 30000);
