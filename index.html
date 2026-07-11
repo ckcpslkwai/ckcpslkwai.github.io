@@ -498,136 +498,66 @@
     <footer id="footer-text" data-zh="&copy; 2026 CKCPS WARS. 所有系統組件運行正常。" data-en="&copy; 2026 CKCPS WARS. All System Components Operational.">
         &copy; 2026 CKCPS WARS. 所有系統組件運行正常。
     </footer>
+<script>
+    let currentLang = 'zh';     
+    let currentTheme = 'cyber'; 
+    let pendingUrl = '';
+    let pendingOpenInNewTab = false;
 
-    <script>
-        let currentLang = 'zh';     
-        let currentTheme = 'cyber'; 
+    // 定義隱藏密碼
+    const SECRET_PWD = "Ckcteacher"; 
 
-        let pendingUrl = '';
-        let pendingOpenInNewTab = false;
+    function toggleTheme() {
+        currentTheme = (currentTheme === 'cyber') ? 'school' : 'cyber';
+        updateUI();
+    }
 
-        function toggleTheme() {
-            currentTheme = (currentTheme === 'cyber') ? 'school' : 'cyber';
-            updateUI();
-        }
+    function toggleLang() {
+        currentLang = (currentLang === 'zh') ? 'en' : 'zh';
+        updateUI();
+    }
 
-        function toggleLang() {
-            currentLang = (currentLang === 'zh') ? 'en' : 'zh';
-            updateUI();
-        }
+    function updateUI() {
+        // ... (保持您原有的 UI 更新邏輯)
+    }
 
-        function updateUI() {
-            const body = document.body;
-            
-            if (currentTheme === 'school') {
-                body.classList.add('school-theme');
+    // 修改後的教師登入觸發點
+    function verifyTeacherAccess(url, openInNewTab) {
+        pendingUrl = url;
+        pendingOpenInNewTab = openInNewTab;
+        document.getElementById('teacher-pwd-modal').style.display = 'flex';
+        document.getElementById('modal-password-input').value = ''; // 清空輸入框
+        document.getElementById('modal-password-input').focus();
+    }
+
+    function closeTeacherAuthModal() {
+        document.getElementById('teacher-pwd-modal').style.display = 'none';
+    }
+
+    // 驗證密碼邏輯
+    function submitTeacherAuth() {
+        const inputPwd = document.getElementById('modal-password-input').value.trim();
+        
+        if (inputPwd === SECRET_PWD) {
+            closeTeacherAuthModal();
+            if (pendingOpenInNewTab) {
+                window.open(pendingUrl, '_blank');
             } else {
-                body.classList.remove('school-theme');
+                window.location.href = pendingUrl;
             }
-            
-            const translatableElements = document.querySelectorAll('[data-zh]');
-            translatableElements.forEach(el => {
-                const targetText = el.getAttribute('data-' + currentLang);
-                if (targetText) {
-                    el.innerHTML = targetText;
-                }
-            });
-            
-            const mainTitle = document.getElementById('main-title');
-            if (currentLang === 'zh') {
-                mainTitle.innerText = (currentTheme === 'school') ? "圓玄學院陳國超興德小學 問答系統平台" : "CKCPS WARS";
-            } else {
-                mainTitle.innerText = (currentTheme === 'school') ? "YYI Chan Kwok Chiu Hing Tak Primary School Quiz Portal" : "CKCPS WARS";
-            }
-            
-            const themeText = document.getElementById('theme-btn-text');
-            const themeIcon = document.getElementById('theme-btn-icon');
-            if (currentTheme === 'school') {
-                themeText.innerText = (currentLang === 'zh') ? "切換賽博霓虹" : "Switch to Cyberpunk";
-                themeIcon.innerText = "🌌";
-            } else {
-                themeText.innerText = (currentLang === 'zh') ? "切換學校配色" : "Switch to School Style";
-                themeIcon.innerText = "🎨";
-            }
-            
-            const langText = document.getElementById('lang-btn-text');
-            langText.innerText = (currentLang === 'zh') ? "English" : "繁體中文";
+        } else {
+            const failMsg = (currentLang === 'zh') ? "❌ 密碼錯誤！" : "❌ Invalid password!";
+            alert(failMsg);
         }
+    }
 
-        /**
-         * 🔓 核心變更：暫時放行所有人直接進入
-         */
-        function verifyTeacherAccess(url, openInNewTab) {
-            // 繞過密碼彈窗，直接進行頁面跳轉或開啟新分頁
-            if (openInNewTab) {
-                window.open(url, '_blank');
-            } else {
-                window.location.href = url;
-            }
+    // 按下 Enter 鍵即可確認
+    document.getElementById('modal-password-input').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            submitTeacherAuth();
         }
-
-        function closeTeacherAuthModal() {
-            document.getElementById('teacher-pwd-modal').style.display = 'none';
-            pendingUrl = '';
-            pendingOpenInNewTab = false;
-        }
-
-        // 舊有驗證邏輯留底（目前不會被 verifyTeacherAccess 觸發）
-        async function submitTeacherAuth() {
-            const pwd = document.getElementById('modal-password-input').value.trim();
-            if (!pwd) return;
-
-            try {
-                const hiddenPath = atob('Li9wYXNzd29yZC5jc3Y='); 
-                const response = await fetch(hiddenPath);
-                if (!response.ok) throw new Error('找不到檔案');
-                
-                let text = await response.text();
-                if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
-                
-                const lines = text.trim().split('\n');
-                let isValid = false;
-
-                for (let i = 1; i < lines.length; i++) {
-                    if (!lines[i].trim()) continue;
-                    let parts = lines[i].split(',').map(s => s.replace(/"/g, '').trim());
-                    
-                    if (parts[0] === 'admin' && parts.length >= 2) { 
-                        if (parts[1] === pwd) {
-                            isValid = true; 
-                            break; 
-                        }
-                    }
-                }
-
-                if (isValid) {
-                    const target = pendingUrl;
-                    const inNewTab = pendingOpenInNewTab;
-                    closeTeacherAuthModal();
-
-                    if (inNewTab) {
-                        window.open(target, '_blank');
-                    } else {
-                        window.location.href = target;
-                    }
-                } else {
-                    const failMsg = (currentLang === 'zh') ? "❌ 密碼錯誤！拒絕存取。" : "❌ Invalid password! Access denied.";
-                    alert(failMsg);
-                }
-            } catch (err) {
-                const errMsg = (currentLang === 'zh') 
-                    ? "⚠️ 無法載入驗證檔。" 
-                    : "⚠️ Failed to load verification file.";
-                alert(errMsg);
-            }
-        }
-
-        document.getElementById('modal-password-input').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                submitTeacherAuth();
-            }
-        });
-    </script>
+    });
+</script>
 
 </body>
 </html>
