@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS - 雲端榮譽排行榜查詢v26071404</title>
+    <title>CKCPS WARS - 雲端榮譽排行榜查詢v26071417</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         
@@ -168,17 +168,8 @@
         .filter-control:focus { border-color: var(--secondary); }
         .filter-control:disabled { opacity: 0.4; cursor: not-allowed; }
 
-        /* 🔥 新增：確保 Cyberpunk 模式下，下拉選單「展開後」的選項文字為黑色 */
-        .filter-control option {
-            color: #000000;
-            background: #ffffff;
-        }
-        
-        /* 確保學校配色的展開選項維持其深藍色 */
-        body.school-theme .filter-control option {
-            color: #2d4565;
-            background: #ffffff;
-        }
+        .filter-control option { color: #000000; background: #ffffff; }
+        body.school-theme .filter-control option { color: #2d4565; background: #ffffff; }
 
         .search-action-btn {
             grid-column: 1 / -1; 
@@ -416,15 +407,20 @@
             }
 
             buildDropdown('filter-class', classesSet, '✨ 全部班級', '✨ All Classes');
-            buildDropdown('filter-subject', subjectsSet, '✨ 所有科合計', '✨ Total All Subjects');
+            buildDropdown('filter-subject', subjectsSet, '✨ 所有科合計', '✨ Total All Subjects', true);
             buildDropdown('filter-level', levelsSet, '✨ 全部程度', '✨ All Levels');
             
             executeFiltering();
         }
 
-        function buildDropdown(elementId, set, zhDefault, enDefault) {
+        function buildDropdown(elementId, set, zhDefault, enDefault, includeDetail = false) {
             const el = document.getElementById(elementId);
             el.innerHTML = `<option value="ALL" data-zh="${zhDefault}" data-en="${enDefault}">${currentLang==='zh'?zhDefault:enDefault}</option>`;
+            
+            if (includeDetail) {
+                el.innerHTML += `<option value="DETAIL" data-zh="📊 列出所有科目" data-en="📊 List All Subjects">📊 列出所有科目</option>`;
+            }
+
             Array.from(set).sort().forEach(item => {
                 if(item) {
                     const opt = document.createElement('option');
@@ -475,7 +471,8 @@
             let filteredRecords = rawDataStore.filter(item => {
                 if (cls !== 'ALL' && item.className !== cls) return false;
                 if (name !== 'ALL' && item.name !== name) return false;
-                if (sub !== 'ALL' && item.subject !== sub) return false;
+                // 若選 DETAIL，科目過濾器不生效（顯示全部）
+                if (sub !== 'ALL' && sub !== 'DETAIL' && item.subject !== sub) return false;
                 if (lvl !== 'ALL' && item.level !== lvl) return false;
                 if (mth !== 'ALL' && item.month !== mth) return false;
                 return true;
@@ -483,12 +480,14 @@
 
             let studentTotalsMap = {};
             filteredRecords.forEach(item => {
-                let uniqueKey = item.className + "|||" + item.name;
+                // 如果是 DETAIL 模式，UniqueKey 加入科目資訊，否則只加班級+姓名
+                let uniqueKey = (sub === 'DETAIL') ? item.className + "|||" + item.name + "|||" + item.subject : item.className + "|||" + item.name;
                 
                 if (!studentTotalsMap[uniqueKey]) {
                     studentTotalsMap[uniqueKey] = {
                         className: item.className,
                         name: item.name,
+                        subject: item.subject, // 儲存該筆資料的科目，方便 DETAIL 模式顯示
                         totalScore: 0,
                         attempts: 0
                     };
@@ -514,7 +513,7 @@
             sBox.style.display = 'none';
             table.style.display = 'table';
 
-            const displaySub = (sub === 'ALL') ? (currentLang==='zh'?'全科合計':'All Subjects') : sub;
+            // 調整顯示邏輯
             const displayLvl = (lvl === 'ALL') ? (currentLang==='zh'?'全程度合計':'All Levels') : lvl;
 
             let rank = 1;
@@ -525,6 +524,9 @@
                 
                 const item = aggregatedList[i];
                 const tr = document.createElement('tr');
+                
+                // DETAIL 模式顯示該科，否則顯示全科合計
+                const displaySub = (sub === 'DETAIL') ? item.subject : (currentLang==='zh'?'全科合計':'All Subjects');
                 
                 let rBadge = rank;
                 if (rank === 1) rBadge = `<span class="rank-badge rank-1">1</span>`;
