@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS - 個人檔案系統v2607121810</title>
+    <title>CKCPS WARS - 個人檔案系統</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         
@@ -289,6 +289,7 @@
     <script>
         let currentTheme = localStorage.getItem('ckcps_theme') || 'cyber'; 
         let rawDataStore = []; 
+        let globalSubjectStats = {}; // 存放全伺服器各科的最高與最低分
 
         // 欄位索引結構對齊 (Google Sheet)
         const COL_TIMESTAMP = 0; 
@@ -335,6 +336,18 @@
             return parts;
         }
 
+        // 科目名稱正規化模組
+        function getSubjectCategory(rawSubject) {
+            let rawSub = rawSubject ? rawSubject.trim() : "";
+            let subLower = rawSub.toLowerCase();
+            if (subLower === 'chinese' || subLower === 'chinese-e' || rawSub === '中文') return '中文';
+            if (subLower === 'english' || subLower === 'english-c' || rawSub === '英文') return '英文';
+            if (subLower === 'maths' || rawSub === '數學') return '數學';
+            if (subLower === 'science' || rawSub === '科學') return '科學';
+            if (subLower === 'humanities' || rawSub === '人文') return '人文';
+            return '其他';
+        }
+
         async function fetchCloudData() {
             const msgEl = document.getElementById('sync-msg');
             try {
@@ -342,6 +355,10 @@
                 if (!response.ok) throw new Error();
                 let csvText = await response.text();
                 parseGoogleCSV(csvText);
+                
+                // 載入資料後，立刻計算全服各科極端值(最高與最低分)
+                calculateGlobalStats(); 
+
                 msgEl.innerText = "🟢 雲端數據連線成功，請輸入資料登入。";
                 msgEl.style.color = "var(--accent)";
             } catch (err) {
@@ -370,6 +387,49 @@
                     });
                 }
             }
+        }
+
+        // 計算全伺服器每科的最高分與最低分(>0)
+        function calculateGlobalStats() {
+            let studentTotals = {}; 
+            
+            // 1. 先將所有玩家按「班級_姓名」統計他們各科的總分
+            rawDataStore.forEach(rec => {
+                let key = rec.className.toUpperCase() + "_" + rec.name;
+                if (!studentTotals[key]) {
+                    studentTotals[key] = { '中文': 0, '英文': 0, '數學': 0, '人文': 0, '科學': 0, '其他': 0 };
+                }
+                let subKey = getSubjectCategory(rec.subject);
+                studentTotals[key][subKey] += rec.score;
+            });
+
+            // 初始化全服統計表
+            globalSubjectStats = {
+                '中文': { max: 0, min: Infinity },
+                '英文': { max: 0, min: Infinity },
+                '數學': { max: 0, min: Infinity },
+                '人文': { max: 0, min: Infinity },
+                '科學': { max: 0, min: Infinity },
+                '其他': { max: 0, min: Infinity }
+            };
+
+            // 2. 找出各科全服的極端值
+            Object.values(studentTotals).forEach(studentData => {
+                Object.keys(studentData).forEach(sub => {
+                    let score = studentData[sub];
+                    if (score > 0) {
+                        if (score > globalSubjectStats[sub].max) globalSubjectStats[sub].max = score;
+                        if (score < globalSubjectStats[sub].min) globalSubjectStats[sub].min = score;
+                    }
+                });
+            });
+
+            // 防呆處理：如果某科沒有人玩，將 Infinity 改回 0
+            Object.keys(globalSubjectStats).forEach(sub => {
+                if (globalSubjectStats[sub].min === Infinity) {
+                    globalSubjectStats[sub].min = 0;
+                }
+            });
         }
 
         let currentStudentData = {
@@ -406,7 +466,7 @@
                 let isAuthenticated = false;
                 let studentName = "";
 
-                // 假設 password.csv 格式: 班別(0), 班號(1), 密碼1(2), 密碼2(3), 姓名(4)
+                // 假設 password.csv 格式: 班別(0), 班號(1), 姓名(2), 密碼(3)
                 for (let i = 0; i < pwdLines.length; i++) {
                     const line = pwdLines[i].trim();
                     if (!line) continue;
@@ -415,8 +475,8 @@
                     if (cols.length >= 4) {
                         const rowClass = cols[0].toUpperCase();
                         const rowClassNo = cols[1];
-                        const pass1 = cols[2];
-                        const pass2 = cols[3];
+                        const name = cols[2];
+                        const pass1 = cols[3];
                         
                         if (rowClass === inputClass && rowClassNo === inputClassNo) {
                             if (inputPassword === pass1 || inputPassword === pass2) {
@@ -446,25 +506,7 @@
                 // 處理科目分類與成績總和
                 studentRecords.forEach(rec => {
                     currentStudentData.totalScore += rec.score;
-                    
-                    let rawSub = rec.subject ? rec.subject.trim() : "";
-                    let subLower = rawSub.toLowerCase();
-                    let subKey = '其他';
-
-                    // 根據規則處理同屬性科目
-                    if (subLower === 'chinese' || subLower === 'chinese-e' || rawSub === '中文') {
-                        subKey = '中文';
-                    } else if (subLower === 'english' || subLower === 'english-c' || rawSub === '英文') {
-                        subKey = '英文';
-                    } else if (subLower === 'maths' || rawSub === '數學') {
-                        subKey = '數學';
-                    } else if (subLower === 'science' || rawSub === '科學') {
-                        subKey = '科學';
-                    } else if (subLower === 'humanities' || rawSub === '人文') {
-                        subKey = '人文';
-                    } else {
-                        subKey = '其他';
-                    }
+                    let subKey = getSubjectCategory(rec.subject);
 
                     if (!currentStudentData.subjects[subKey]) {
                         currentStudentData.subjects[subKey] = 0;
@@ -507,6 +549,25 @@
             }
         }
 
+        // 核心演算法：計算該科目得分解鎖了幾格 (基於全服最高與最低分的相對位置)
+        function getRadiusRatio(subjectName, score) {
+            if (score <= 0) return 0; // 沒做或0分：0格
+            
+            let stats = globalSubjectStats[subjectName];
+            if (!stats || stats.max === 0) return 0;
+            
+            let sMax = stats.max; // 全服最高
+            let sMin = stats.min; // 全服最低 (>0)
+            
+            if (sMax === sMin) return 1.0; // 全服只有一個成績，直接給滿格
+            
+            // 數學映射：最低分給1格 (1/5)，最高分給5格滿格 (5/5)，其餘按比例插值
+            let level = 1 + 4 * ((score - sMin) / (sMax - sMin));
+            
+            // 防止極端小數點越界，鎖定在 0 ~ 1 比例之間
+            return Math.max(0, Math.min(1.0, level / 5.0)); 
+        }
+
         // 六角雷達圖渲染
         function renderRadarChart() {
             const canvas = document.getElementById('radarCanvas');
@@ -517,9 +578,6 @@
             const centerY = canvas.height / 2;
             const radius = 120;
             const labels = ['中文', '英文', '數學', '人文', '科學', '其他'];
-            
-            let maxVal = Math.max(...Object.values(currentStudentData.radar));
-            if (maxVal === 0) maxVal = 100;
 
             const computedStyle = getComputedStyle(document.body);
             const gridColor = computedStyle.getPropertyValue('--chart-grid').trim();
@@ -527,6 +585,7 @@
             const textMain = computedStyle.getPropertyValue('--text-main').trim();
             const accentColor = computedStyle.getPropertyValue('--secondary').trim();
 
+            // 1. 繪製 5 層背景網格嵌套六角形
             for (let side = 5; side > 0; side--) {
                 let r = radius * (side / 5);
                 ctx.beginPath();
@@ -543,6 +602,7 @@
                 ctx.stroke();
             }
 
+            // 2. 繪製六軸放射線與標籤文字
             ctx.font = "bold 14px sans-serif";
             ctx.fillStyle = textMain;
             ctx.textAlign = "center";
@@ -564,11 +624,16 @@
                 ctx.fillText(labels[i], labelX, labelY);
             }
 
+            // 3. 繪製學生實際能力覆蓋多邊形面積 (套用全服排名新比例)
             ctx.beginPath();
             for (let i = 0; i < 6; i++) {
                 let angle = (i * Math.PI / 3) - Math.PI / 2;
                 let val = currentStudentData.radar[labels[i]];
-                let r = radius * (val / maxVal);
+                
+                // 取得對應的全服比例 (0 ~ 1.0)
+                let rRatio = getRadiusRatio(labels[i], val); 
+                let r = radius * rRatio;
+                
                 let x = centerX + r * Math.cos(angle);
                 let y = centerY + r * Math.sin(angle);
                 
@@ -582,10 +647,14 @@
             ctx.lineWidth = 3;
             ctx.stroke();
 
+            // 4. 繪製能力頂點小圓點圓標
             for (let i = 0; i < 6; i++) {
                 let angle = (i * Math.PI / 3) - Math.PI / 2;
                 let val = currentStudentData.radar[labels[i]];
-                let r = radius * (val / maxVal);
+                
+                let rRatio = getRadiusRatio(labels[i], val);
+                let r = radius * rRatio;
+                
                 let x = centerX + r * Math.cos(angle);
                 let y = centerY + r * Math.sin(angle);
                 
