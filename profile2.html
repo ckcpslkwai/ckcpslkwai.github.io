@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS - 個人檔案系統 v2607</title>
+    <title>CKCPS WARS - 個人檔案系統 v2607121747</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         
@@ -194,7 +194,7 @@
         .badge-lock { font-size: 0.75rem; color: var(--text-dim); font-weight: bold; }
 
         .hidden { display: none !important; }
-        .sync-status { text-align: center; color: var(--accent); font-size: 0.9rem; margin-top: 15px; }
+        .sync-status { text-align: center; color: var(--text-dim); font-size: 0.9rem; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -225,7 +225,7 @@
                 <input type="password" id="login-password" class="form-control" placeholder="請輸入密碼">
             </div>
             <button class="login-btn" onclick="executeLogin()">登入並進入個人檔案</button>
-            <div id="sync-msg" class="sync-status">🔄 正在載入雲端數據中心...</div>
+            <div id="sync-msg" class="sync-status">等待輸入憑證...</div>
         </section>
 
         <section id="dashboard-section" class="dashboard-grid hidden">
@@ -295,7 +295,6 @@
 
         window.onload = function() {
             applyTheme();
-            fetchCloudData();
         };
 
         function toggleTheme() {
@@ -328,21 +327,6 @@
             return parts;
         }
 
-        async function fetchCloudData() {
-            const msgEl = document.getElementById('sync-msg');
-            try {
-                const response = await fetch(GOOGLE_SHEET_URL);
-                if (!response.ok) throw new Error();
-                let csvText = await response.text();
-                parseGoogleCSV(csvText);
-                msgEl.innerText = "🟢 雲端數據連線成功，請輸入資料登入。";
-                msgEl.style.color = "var(--accent)";
-            } catch (err) {
-                msgEl.innerText = "🔴 連線失敗，請檢查網路或權限設定。";
-                msgEl.style.color = "var(--secondary)";
-            }
-        }
-
         function parseGoogleCSV(text) {
             const lines = text.split('\n');
             rawDataStore = [];
@@ -365,7 +349,6 @@
             }
         }
 
-        // 全局存放當前登入學生的數據統計結果
         let currentStudentData = {
             class: '', studentId: '', name: '', totalScore: 0,
             subjects: {}, 
@@ -377,6 +360,7 @@
             const inputClass = document.getElementById('login-class').value.trim().toUpperCase();
             const inputClassNo = document.getElementById('login-classno').value.trim();
             const inputPassword = document.getElementById('login-password').value.trim();
+            const msgEl = document.getElementById('sync-msg');
 
             if (!inputClass || !inputClassNo || !inputPassword) {
                 alert("請填妥班別、班號及密碼！");
@@ -384,7 +368,7 @@
             }
 
             const loginBtn = document.querySelector('.login-btn');
-            loginBtn.innerText = "驗證中...";
+            loginBtn.innerText = "身分驗證中...";
             loginBtn.disabled = true;
 
             try {
@@ -400,7 +384,8 @@
                 const pwdLines = pwdText.split('\n');
                 
                 let isAuthenticated = false;
-                let studentName = "";
+                let targetClass = "";
+                let targetName = "";
 
                 // 2. 逐行核對本地 CSV 檔案
                 for (let i = 0; i < pwdLines.length; i++) {
@@ -409,20 +394,19 @@
                     
                     const cols = parseCSVLine(line);
                     
-                    // 假設欄位順序: 0:班別, 1:班號, 2:密碼1, 3:密碼2, 4:姓名
                     if (cols.length >= 4) {
                         const rowClass = cols[0].toUpperCase();
                         const rowClassNo = cols[1];
                         const pass1 = cols[2];
                         const pass2 = cols[3];
                         
-                        // 驗證第一欄與第二欄 (班別、班號匹配)
+                        // 驗證第一欄與第二欄
                         if (rowClass === inputClass && rowClassNo === inputClassNo) {
                             // 交叉核對第三欄或第四欄的密碼
                             if (inputPassword === pass1 || inputPassword === pass2) {
                                 isAuthenticated = true;
-                                // 自動擷取對應姓名
-                                studentName = cols.length >= 5 ? cols[4] : "未知玩家";
+                                targetClass = rowClass; // 依從 CSV 獲得的班別
+                                targetName = cols.length >= 5 ? cols[4] : "未知玩家"; // 依從 CSV 獲得的姓名
                                 break;
                             }
                         }
@@ -431,21 +415,34 @@
 
                 if (!isAuthenticated) {
                     alert("登入失敗：班別、班號或密碼錯誤！");
+                    loginBtn.innerText = "登入並進入個人檔案";
+                    loginBtn.disabled = false;
+                    msgEl.innerText = "等待輸入憑證...";
                     return;
                 }
 
-                // 3. 登入成功後，使用班別與已擷取的姓名從雲端數據中找出紀錄
-                let studentRecords = rawDataStore.filter(item => item.className.toUpperCase() === inputClass && item.name === studentName);
+                // 3. 驗證成功後，才從 Google Sheet 取得數據
+                msgEl.innerText = "🟢 驗證成功！正在從雲端載入成績數據...";
+                msgEl.style.color = "var(--accent)";
+                loginBtn.innerText = "擷取成績數據中...";
+
+                const sheetResponse = await fetch(GOOGLE_SHEET_URL);
+                if (!sheetResponse.ok) throw new Error("無法連線至雲端資料庫");
+                let sheetText = await sheetResponse.text();
+                parseGoogleCSV(sheetText);
+
+                // 4. 依從 password.csv 得到的班別及名字，篩選數據
+                let studentRecords = rawDataStore.filter(item => item.className.toUpperCase() === targetClass && item.name === targetName);
 
                 // 重置統計容器
-                currentStudentData.class = inputClass;
-                currentStudentData.name = studentName;
+                currentStudentData.class = targetClass;
+                currentStudentData.name = targetName;
                 currentStudentData.studentId = studentRecords.length > 0 ? studentRecords[0].id : inputClassNo; 
                 currentStudentData.totalScore = 0;
                 currentStudentData.subjects = {};
                 currentStudentData.radar = { '中文': 0, '英文': 0, '數學': 0, '人文': 0, '科學': 0, '其他': 0 };
 
-                // 4. 開始數據分類歸納計算
+                // 5. 開始數據分類歸納計算
                 studentRecords.forEach(rec => {
                     currentStudentData.totalScore += rec.score;
                     
@@ -468,17 +465,14 @@
                         subKey = '其他';
                     }
 
-                    // 更新各科學科獨立小計
                     if (!currentStudentData.subjects[subKey]) {
                         currentStudentData.subjects[subKey] = 0;
                     }
                     currentStudentData.subjects[subKey] += rec.score;
-
-                    // 記錄至六角能力值陣列
                     currentStudentData.radar[subKey] += rec.score;
                 });
 
-                // 5. 渲染 UI 界面
+                // 6. 渲染 UI 界面
                 document.getElementById('user-class').innerText = currentStudentData.class;
                 document.getElementById('user-id').innerText = currentStudentData.studentId;
                 document.getElementById('user-name').innerText = currentStudentData.name;
@@ -506,8 +500,10 @@
                 document.getElementById('dashboard-section').classList.remove('hidden');
 
             } catch (err) {
-                alert("系統驗證發生錯誤，請確認 ./password.csv 是否存在同一目錄下或伺服器是否允許讀取檔案。");
+                alert("系統連線發生錯誤，請確認 ./password.csv 是否存在同一目錄下或伺服器/網路是否正常連線。");
                 console.error(err);
+                msgEl.innerText = "🔴 連線發生錯誤。";
+                msgEl.style.color = "var(--secondary)";
             } finally {
                 loginBtn.innerText = "登入並進入個人檔案";
                 loginBtn.disabled = false;
@@ -525,11 +521,10 @@
             const radius = 120; // 六角形最大半徑
             const labels = ['中文', '英文', '數學', '人文', '科學', '其他'];
             
-            // 計算最大權重以作為繪圖基準比例（防呆，若全為 0 則設最大基數為 100）
+            // 計算最大權重以作為繪圖基準比例
             let maxVal = Math.max(...Object.values(currentStudentData.radar));
             if (maxVal === 0) maxVal = 100;
 
-            // 獲取當前主題配色設定
             const computedStyle = getComputedStyle(document.body);
             const gridColor = computedStyle.getPropertyValue('--chart-grid').trim();
             const fillColor = computedStyle.getPropertyValue('--chart-fill').trim();
@@ -582,7 +577,7 @@
             for (let i = 0; i < 6; i++) {
                 let angle = (i * Math.PI / 3) - Math.PI / 2;
                 let val = currentStudentData.radar[labels[i]];
-                let r = radius * (val / maxVal); // 依比例計算節點延伸長度
+                let r = radius * (val / maxVal); 
                 let x = centerX + r * Math.cos(angle);
                 let y = centerY + r * Math.sin(angle);
                 
