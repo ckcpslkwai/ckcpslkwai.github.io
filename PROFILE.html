@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CKCPS WARS - 個人檔案系統 v2607</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        
+        :root {
+            --bg-gradient: linear-gradient(180deg, #060614 0%, #0a0a24 100%);
+            --header-bg: rgba(11, 11, 34, 0.85);
+            --header-border: #00f9ff;
+            --header-shadow: 0 0 25px rgba(0, 249, 255, 0.25);
+            --header-text: #ffffff;
+            --h1-font: 'Orbitron', sans-serif;
+            --h1-text-shadow: 0 0 10px #00f9ff;
+            
+            --bg-dark: #060614;
+            --card-bg: #11112a;
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            --primary: #00f9ff;     
+            --secondary: #ff00aa;   
+            --accent: #39ff14;      
+            --text-main: #ffffff;
+            --text-dim: #94a3b8;
+            --border-color: #222244;
+            --item-bg: rgba(255, 255, 255, 0.04);
+            --chart-grid: rgba(0, 249, 255, 0.15);
+            --chart-fill: rgba(255, 0, 170, 0.25);
+        }
+
+        body.school-theme {
+            --bg-gradient: linear-gradient(180deg, #faf9f8 0%, #f0f4f7 100%);
+            --header-bg: #2d4565;       
+            --header-border: #f9995d;   
+            --header-shadow: 0 4px 20px rgba(45, 69, 101, 0.15);
+            --header-text: #ffffff;
+            --h1-font: "微軟正黑體", -apple-system, sans-serif;
+            --h1-text-shadow: none;
+            
+            --bg-dark: #faf9f8;
+            --card-bg: #ffffff;
+            --card-shadow: 0 4px 20px rgba(45, 69, 101, 0.06);
+            --primary: #2d4565;         
+            --secondary: #f9995d;       
+            --accent: #71b2c4;          
+            --text-main: #2d4565;       
+            --text-dim: #5d718e;        
+            --border-color: #cbd5e1;    
+            --item-bg: #faf9f8;
+            --chart-grid: rgba(45, 69, 101, 0.15);
+            --chart-fill: rgba(249, 153, 93, 0.35);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "微軟正黑體", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .controls-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 12px;
+        }
+
+        .control-btn {
+            padding: 10px 18px;
+            background: rgba(11, 11, 34, 0.85);
+            border: 2px solid var(--secondary);
+            color: #ffffff;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+        .control-btn:hover { transform: scale(1.05); box-shadow: 0 0 25px var(--secondary); }
+        body.school-theme .control-btn { background: #ffffff; border: 2px solid #2d4565; color: #2d4565; }
+        body.school-theme .control-btn:hover { background: #2d4565; color: #ffffff; }
+
+        header {
+            background: var(--header-bg);
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 3px solid var(--header-border);
+            box-shadow: var(--header-shadow);
+            color: var(--header-text);
+        }
+        header h1 { font-family: var(--h1-font); font-size: 2rem; text-shadow: var(--h1-text-shadow); margin-bottom: 8px; }
+        .back-link { display: inline-block; margin-top: 8px; color: var(--primary); text-decoration: none; font-weight: bold; }
+
+        .main-container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 30px auto;
+            padding: 0 20px;
+            flex: 1;
+        }
+
+        /* 登入卡片樣式 */
+        .login-card {
+            max-width: 450px;
+            margin: 60px auto;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 35px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+        }
+        .login-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 25px; color: var(--secondary); }
+        .form-group { text-align: left; margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 0.95rem; font-weight: bold; margin-bottom: 8px; color: var(--text-dim); }
+        .form-control {
+            width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);
+            background: var(--item-bg); color: var(--text-main); font-size: 1rem; outline: none;
+        }
+        .form-control option { color: #000000; background: #ffffff; }
+        body.school-theme .form-control option { color: #2d4565; }
+        .login-btn {
+            width: 100%; padding: 14px; background: var(--secondary); border: none; color: white;
+            font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px;
+        }
+        body.school-theme .login-btn { background: #f9995d; }
+
+        /* 四宮格儀表板版面 */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.6fr;
+            gap: 25px;
+        }
+        @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
+
+        .dashboard-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+        }
+        .panel-title {
+            font-size: 1.15rem; font-weight: bold; margin-bottom: 20px;
+            padding-bottom: 10px; border-bottom: 2px solid var(--border-color);
+            color: var(--primary); display: flex; align-items: center; gap: 8px;
+        }
+
+        /* 1. 個人資料區 (左上) */
+        .info-container { display: flex; flex-direction: column; gap: 15px; justify-content: center; flex: 1; }
+        .info-row { display: flex; justify-content: space-between; padding: 12px; background: var(--item-bg); border-radius: 8px; }
+        .info-label { color: var(--text-dim); font-weight: bold; }
+        .info-value { color: var(--text-main); font-weight: bold; font-size: 1.1rem; }
+
+        /* 2. 總分與雷達圖區 (右上 - 較大) */
+        .chart-panel-container { display: flex; flex-direction: column; align-items: center; gap: 15px; position: relative; }
+        .total-score-banner {
+            font-size: 1.3rem; font-weight: bold; color: var(--secondary);
+            background: var(--item-bg); padding: 8px 25px; border-radius: 30px; border: 1px solid var(--border-color);
+        }
+        .total-score-banner span { font-size: 1.8rem; font-family: 'Orbitron', sans-serif; margin-left: 5px; }
+        .canvas-holder { width: 100%; max-width: 380px; aspect-ratio: 1; display: flex; justify-content: center; }
+
+        /* 3. 每科小計得分區 (左下) */
+        .subject-list { display: flex; flex-direction: column; gap: 10px; max-height: 320px; overflow-y: auto; }
+        .subject-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 16px; background: var(--item-bg); border-radius: 8px; border-left: 4px solid var(--secondary);
+        }
+        .subject-name { font-weight: bold; }
+        .subject-score { font-family: 'Orbitron', sans-serif; font-weight: bold; color: var(--accent); font-size: 1.1rem; }
+
+        /* 4. 徽章區 (右下) */
+        .badge-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 15px; justify-items: center; content-content: center; flex: 1; opacity: 0.5;
+        }
+        .badge-item {
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
+            padding: 10px; background: var(--item-bg); border: 1px dashed var(--border-color); border-radius: 8px; width: 100%;
+        }
+        .badge-icon { font-size: 2rem; filter: grayscale(100%); }
+        .badge-lock { font-size: 0.75rem; color: var(--text-dim); font-weight: bold; }
+
+        .hidden { display: none !important; }
+        .sync-status { text-align: center; color: var(--accent); font-size: 0.9rem; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <div class="controls-container">
+        <button class="control-btn" onclick="toggleTheme()">🎨 切換配色</button>
+    </div>
+
+    <header>
+        <h1 id="page-title">👤 個人檔案與能力分析</h1>
+        <a href="index.html" class="back-link">⬅️ 返回系統入口首頁</a>
+    </header>
+
+    <main class="main-container">
+        
+        <!-- 登入卡片區面 -->
+        <section id="login-section" class="login-card">
+            <div class="login-title">系統身份驗證</div>
+            <div class="form-group">
+                <label for="login-class">選擇班級</label>
+                <select id="login-class" class="form-control" onchange="onClassChanged()">
+                    <option value="">✨ 請選擇班級</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="login-name">選擇姓名</label>
+                <select id="login-name" class="form-control" disabled>
+                    <option value="">✨ 請先選擇班級</option>
+                </select>
+            </div>
+            <button class="login-btn" onclick="executeLogin()">進入個人檔案</button>
+            <div id="sync-msg" class="sync-status">🔄 正在載入雲端數據中心...</div>
+        </section>
+
+        <!-- 個人檔案儀表板 (登入後顯示) -->
+        <section id="dashboard-section" class="dashboard-grid hidden">
+            
+            <!-- 1. 個人資料區 (左上) -->
+            <div class="dashboard-panel">
+                <div class="panel-title"><span>📝</span> 基本資料</div>
+                <div class="info-container">
+                    <div class="info-row">
+                        <span class="info-label">班別</span>
+                        <span class="info-value" id="user-class">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">學號</span>
+                        <span class="info-value" id="user-id">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">學生姓名</span>
+                        <span class="info-value" id="user-name">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. 總分及六角能力圖 (右上) -->
+            <div class="dashboard-panel">
+                <div class="panel-title"><span>📊</span> 歷來總分與六角能力指標</div>
+                <div class="chart-panel-container">
+                    <div class="total-score-banner">個人累積總得分 <span id="user-total-score">0</span></div>
+                    <div class="canvas-holder">
+                        <canvas id="radarCanvas" width="360" height="360"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. 每科個別得分小計 (左下) -->
+            <div class="dashboard-panel">
+                <div class="panel-title"><span>📚</span> 各學科得分小計</div>
+                <div class="subject-list" id="user-subject-list">
+                    <!-- 動態生成學科小計 -->
+                </div>
+            </div>
+
+            <!-- 4. 徽章榮譽區 (右下) -->
+            <div class="dashboard-panel">
+                <div class="panel-title"><span>🏅</span> 榮譽徽章成就 (功能開發中)</div>
+                <div class="badge-grid">
+                    <div class="badge-item"><span class="badge-icon">🔥</span><span class="badge-lock">未解鎖</span></div>
+                    <div class="badge-item"><span class="badge-icon">👑</span><span class="badge-lock">未解鎖</span></div>
+                    <div class="badge-item"><span class="badge-icon">🌟</span><span class="badge-lock">未解鎖</span></div>
+                    <div class="badge-item"><span class="badge-icon">🚀</span><span class="badge-lock">未解鎖</span></div>
+                    <div class="badge-item"><span class="badge-icon">💡</span><span class="badge-lock">未解鎖</span></div>
+                    <div class="badge-item"><span class="badge-icon">⚔️</span><span class="badge-lock">未解鎖</span></div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <script>
+        let currentTheme = localStorage.getItem('ckcps_theme') || 'cyber'; 
+        let rawDataStore = []; 
+
+        // 欄位索引結構對齊
+        const COL_TIMESTAMP = 0; 
+        const COL_ID = 1;        // 學號欄位
+        const COL_CLASS = 2;     // 班級欄位
+        const COL_NAME = 3;      // 姓名欄位
+        const COL_SUBJECT = 4;   // 科目欄位
+        const COL_SCORE = 6;     // 分數欄位
+
+        const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1lwPiw4WVCorhjgpHycsahXoaPGPPZ7XR9OWWoImZq5g/gviz/tq?tqx=out:csv&gid=0';
+
+        window.onload = function() {
+            applyTheme();
+            fetchCloudData();
+        };
+
+        function toggleTheme() {
+            currentTheme = (currentTheme === 'cyber') ? 'school' : 'cyber';
+            localStorage.setItem('ckcps_theme', currentTheme);
+            applyTheme();
+            // 如果儀表板已載入，重新渲染能力圖以刷新配色
+            if (!document.getElementById('dashboard-section').classList.contains('hidden')) {
+                renderRadarChart();
+            }
+        }
+
+        function applyTheme() {
+            const body = document.body;
+            if (currentTheme === 'school') body.classList.add('school-theme');
+            else body.classList.remove('school-theme');
+        }
+
+        async function fetchCloudData() {
+            const msgEl = document.getElementById('sync-msg');
+            try {
+                const response = await fetch(GOOGLE_SHEET_URL);
+                if (!response.ok) throw new Error();
+                let csvText = await response.text();
+                parseGoogleCSV(csvText);
+                msgEl.innerText = "🟢 雲端連線成功，請選擇帳號登入。";
+                msgEl.style.color = "var(--accent)";
+            } catch (err) {
+                msgEl.innerText = "🔴 連線失敗，請檢查網路或權限設定。";
+                msgEl.style.color = "var(--secondary)";
+            }
+        }
+
+        function parseGoogleCSV(text) {
+            const lines = text.split('\n');
+            rawDataStore = [];
+            let classesSet = new Set();
+
+            for (let i = 1; i < lines.length; i++) {
+                let line = lines[i].trim();
+                if (!line) continue;
+
+                let parts = [];
+                let insideQuote = false;
+                let currentPart = '';
+                for (let c = 0; c < line.length; c++) {
+                    let char = line[c];
+                    if (char === '"') { insideQuote = !insideQuote; }
+                    else if (char === ',' && !insideQuote) { parts.push(currentPart.trim()); currentPart = ''; }
+                    else { currentPart += char; }
+                }
+                parts.push(currentPart.trim());
+
+                if (parts.length > Math.max(COL_CLASS, COL_SCORE)) {
+                    rawDataStore.push({
+                        id: parts[COL_ID] || '-',
+                        className: parts[COL_CLASS],
+                        name: parts[COL_NAME],
+                        subject: parts[COL_SUBJECT],
+                        score: parseFloat(parts[COL_SCORE]) || 0
+                    });
+                    if(parts[COL_CLASS]) classesSet.add(parts[COL_CLASS]);
+                }
+            }
+
+            // 建立班級選單
+            const classDropdown = document.getElementById('login-class');
+            Array.from(classesSet).sort().forEach(cls => {
+                const opt = document.createElement('option');
+                opt.value = cls; opt.innerText = cls;
+                classDropdown.appendChild(opt);
+            });
+        }
+
+        function onClassChanged() {
+            const targetClass = document.getElementById('login-class').value;
+            const nameDropdown = document.getElementById('login-name');
+
+            if (!targetClass) {
+                nameDropdown.innerHTML = `<option value="">✨ 請先選擇班級</option>`;
+                nameDropdown.disabled = true;
+                return;
+            }
+
+            nameDropdown.disabled = false;
+            let namesInClass = new Set();
+            rawDataStore.forEach(item => {
+                if (item.className === targetClass && item.name) {
+                    namesInClass.add(item.name);
+                }
+            });
+
+            nameDropdown.innerHTML = `<option value="">✨ 選擇姓名</option>`;
+            Array.from(namesInClass).sort().forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name; opt.innerText = name;
+                nameDropdown.appendChild(opt);
+            });
+        }
+
+        // 全局存放當前登入學生的數據統計結果
+        let currentStudentData = {
+            class: '', studentId: '', name: '', totalScore: 0,
+            subjects: {}, // 各科明細小計
+            radar: { '中文': 0, '英文': 0, '數學': 0, '人文': 0, '科學': 0, '其他': 0 }
+        };
+
+        function executeLogin() {
+            const cls = document.getElementById('login-class').value;
+            const name = document.getElementById('login-name').value;
+
+            if (!cls || !name) {
+                alert("請填妥班級與姓名再進行登入！");
+                return;
+            }
+
+            // 過濾並統計該生數據
+            let studentRecords = rawDataStore.filter(item => item.className === cls && item.name === name);
+
+            if (studentRecords.length === 0) {
+                alert("未找到該學生的作答紀錄。");
+                return;
+            }
+
+            // 重置統計容器
+            currentStudentData.class = cls;
+            currentStudentData.name = name;
+            currentStudentData.studentId = studentRecords[0].id; // 擷取學號
+            currentStudentData.totalScore = 0;
+            currentStudentData.subjects = {};
+            currentStudentData.radar = { '中文': 0, '英文': 0, '數學': 0, '人文': 0, '科學': 0, '其他': 0 };
+
+            // 開始數據分組與加總計算
+            studentRecords.forEach(rec => {
+                currentStudentData.totalScore += rec.score;
+                
+                // 1. 科目獨立小計
+                if (!currentStudentData.subjects[rec.subject]) {
+                    currentStudentData.subjects[rec.subject] = 0;
+                }
+                currentStudentData.subjects[rec.subject] += rec.score;
+
+                // 2. 歸納分類至六角能力值
+                let sub = rec.subject;
+                if (sub.includes('中') || sub.toLowerCase().includes('chinese')) { currentStudentData.radar['中文'] += rec.score; }
+                else if (sub.includes('英') || sub.toLowerCase().includes('english')) { currentStudentData.radar['英文'] += rec.score; }
+                else if (sub.includes('數') || sub.toLowerCase().includes('math')) { currentStudentData.radar['數學'] += rec.score; }
+                else if (sub.includes('常') || sub.includes('社') || sub.includes('人')) { currentStudentData.radar['人文'] += rec.score; }
+                else if (sub.includes('科') || sub.includes('理') || sub.includes('stem')) { currentStudentData.radar['科學'] += rec.score; }
+                else { currentStudentData.radar['其他'] += rec.score; }
+            });
+
+            // 渲染 UI 界面面
+            document.getElementById('user-class').innerText = currentStudentData.class;
+            document.getElementById('user-id').innerText = currentStudentData.studentId;
+            document.getElementById('user-name').innerText = currentStudentData.name;
+            document.getElementById('user-total-score').innerText = currentStudentData.totalScore;
+
+            // 渲染左下角各科小計
+            const subListEl = document.getElementById('user-subject-list');
+            subListEl.innerHTML = '';
+            Object.keys(currentStudentData.subjects).sort().forEach(sub => {
+                const div = document.createElement('div');
+                div.className = 'subject-item';
+                div.innerHTML = `<span class="subject-name">${sub}</span><span class="subject-score">${currentStudentData.subjects[sub]} 分</span>`;
+                subListEl.appendChild(div);
+            });
+
+            // 渲染右上角六角圖
+            renderRadarChart();
+
+            // 切換視圖
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('dashboard-section').classList.remove('hidden');
+        }
+
+        // HTML5 Canvas 輕量級六角雷達圖渲染引擎
+        function renderRadarChart() {
+            const canvas = document.getElementById('radarCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 120; // 六角形最大半徑
+            const labels = ['中文', '英文', '數學', '人文', '科學', '其他'];
+            
+            // 計算最大權重以作為繪圖基準比例（防呆，若全為 0 則設最大基數為 100）
+            let maxVal = Math.max(...Object.values(currentStudentData.radar));
+            if (maxVal === 0) maxVal = 100;
+
+            // 獲取當前主題配色設定
+            const computedStyle = getComputedStyle(document.body);
+            const gridColor = computedStyle.getPropertyValue('--chart-grid').trim();
+            const fillColor = computedStyle.getPropertyValue('--chart-fill').trim();
+            const textMain = computedStyle.getPropertyValue('--text-main').trim();
+            const accentColor = computedStyle.getPropertyValue('--secondary').trim();
+
+            // 1. 繪製 5 層背景網格嵌套六角形
+            for (let side = 5; side > 0; side--) {
+                let r = radius * (side / 5);
+                ctx.beginPath();
+                for (let i = 0; i < 6; i++) {
+                    let angle = (i * Math.PI / 3) - Math.PI / 2;
+                    let x = centerX + r * Math.cos(angle);
+                    let y = centerY + r * Math.sin(angle);
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.strokeStyle = gridColor;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+
+            // 2. 繪製六軸放射線與標籤文字
+            ctx.font = "bold 14px sans-serif";
+            ctx.fillStyle = textMain;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            for (let i = 0; i < 6; i++) {
+                let angle = (i * Math.PI / 3) - Math.PI / 2;
+                
+                // 軸線
+                let x = centerX + radius * Math.cos(angle);
+                let y = centerY + radius * Math.sin(angle);
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(x, y);
+                ctx.strokeStyle = gridColor;
+                ctx.stroke();
+
+                // 標籤文字微調定位
+                let labelX = centerX + (radius + 24) * Math.cos(angle);
+                let labelY = centerY + (radius + 15) * Math.sin(angle);
+                ctx.fillText(labels[i], labelX, labelY);
+            }
+
+            // 3. 繪製學生實際能力覆蓋多邊形面積
+            ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+                let angle = (i * Math.PI / 3) - Math.PI / 2;
+                let val = currentStudentData.radar[labels[i]];
+                let r = radius * (val / maxVal); // 依比例計算節點延伸長度
+                let x = centerX + r * Math.cos(angle);
+                let y = centerY + r * Math.sin(angle);
+                
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+            ctx.strokeStyle = accentColor;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // 4. 繪製能力頂點小圓點圓標
+            for (let i = 0; i < 6; i++) {
+                let angle = (i * Math.PI / 3) - Math.PI / 2;
+                let val = currentStudentData.radar[labels[i]];
+                let r = radius * (val / maxVal);
+                let x = centerX + r * Math.cos(angle);
+                let y = centerY + r * Math.sin(angle);
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, 2 * Math.PI);
+                ctx.fillStyle = textMain;
+                ctx.fill();
+            }
+        }
+    </script>
+</body>
+</html>
