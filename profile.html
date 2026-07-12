@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS - 個人檔案系統v2607121844</title>
+    <title>CKCPS WARS - 個人檔案系統v2607122126</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         
@@ -62,6 +62,7 @@
             display: flex;
             flex-direction: column;
             transition: background 0.3s ease, color 0.3s ease;
+            overflow-x: hidden;
         }
 
         .controls-container {
@@ -91,21 +92,23 @@
 
         header {
             background: var(--header-bg);
-            padding: 25px 20px;
+            padding: 15px 20px;
             text-align: center;
             border-bottom: 3px solid var(--header-border);
             box-shadow: var(--header-shadow);
             color: var(--header-text);
         }
-        header h1 { font-family: var(--h1-font); font-size: 2rem; text-shadow: var(--h1-text-shadow); margin-bottom: 8px; }
-        .back-link { display: inline-block; margin-top: 8px; color: var(--primary); text-decoration: none; font-weight: bold; }
+        header h1 { font-family: var(--h1-font); font-size: 1.8rem; text-shadow: var(--h1-text-shadow); margin-bottom: 5px; }
+        .back-link { display: inline-block; margin-top: 5px; color: var(--primary); text-decoration: none; font-weight: bold; font-size: 0.9rem;}
 
         .main-container {
-            max-width: 1200px;
+            max-width: 1400px; /* 為了三欄式佈局，稍微放寬容器 */
             width: 100%;
-            margin: 30px auto;
+            margin: 20px auto;
             padding: 0 20px;
-            flex: 1;
+            flex: 1; /* 讓容器撐滿剩餘高度 */
+            display: flex;
+            flex-direction: column;
         }
 
         /* 登入卡片樣式 */
@@ -134,61 +137,119 @@
         body.school-theme .login-btn { background: #f9995d; }
         .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-        /* 四宮格儀表板版面 */
+        /* ====================================================
+           核心佈局升級：四宮格儀表板 (CSS Grid Areas)
+           ==================================================== */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: 1fr 1.6fr;
-            gap: 25px;
+            gap: 20px;
+            flex: 1; /* 佔滿剩餘高度 */
+            
+            /* 【寬螢幕佈局】: 3欄式設計，完美填滿畫面不留白 */
+            grid-template-columns: 1fr 1.6fr 1fr;
+            grid-template-rows: auto 1fr;
+            grid-template-areas: 
+                "info radar badges"
+                "subjects radar badges";
+            min-height: 500px; 
         }
-        @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
+
+        /* 將四個面板指定到對應的網格區塊 */
+        .panel-info { grid-area: info; }
+        .panel-radar { grid-area: radar; }
+        .panel-subjects { grid-area: subjects; }
+        .panel-badges { grid-area: badges; }
+
+        /* 【中等螢幕佈局】: 平板 / 筆電小視窗 */
+        @media (max-width: 1100px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto;
+                grid-template-areas: 
+                    "info radar"
+                    "subjects badges";
+                height: auto; /* 允許滾動 */
+            }
+        }
+
+        /* 【手機螢幕佈局】: 智慧型手機直排式 */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                grid-template-areas: 
+                    "info"
+                    "radar"
+                    "subjects"
+                    "badges";
+                height: auto; /* 允許垂直滾動 */
+            }
+            .controls-container { top: 10px; right: 10px; transform: scale(0.85); transform-origin: top right; }
+        }
 
         .dashboard-panel {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 14px;
-            padding: 25px;
+            padding: 20px;
             box-shadow: var(--card-shadow);
             display: flex;
             flex-direction: column;
+            overflow: hidden; /* 防止內容撐破格子 */
         }
         .panel-title {
-            font-size: 1.15rem; font-weight: bold; margin-bottom: 20px;
+            font-size: 1.15rem; font-weight: bold; margin-bottom: 15px;
             padding-bottom: 10px; border-bottom: 2px solid var(--border-color);
             color: var(--primary); display: flex; align-items: center; gap: 8px;
+            flex-shrink: 0;
         }
 
-        /* 1. 個人資料區 (左上) */
-        .info-container { display: flex; flex-direction: column; gap: 15px; justify-content: center; flex: 1; }
+        /* 1. 個人資料區 */
+        .info-container { display: flex; flex-direction: column; gap: 12px; justify-content: center; flex: 1; }
         .info-row { display: flex; justify-content: space-between; padding: 12px; background: var(--item-bg); border-radius: 8px; }
         .info-label { color: var(--text-dim); font-weight: bold; }
         .info-value { color: var(--text-main); font-weight: bold; font-size: 1.1rem; }
 
-        /* 2. 總分與雷達圖區 (右上 - 較大) */
-        .chart-panel-container { display: flex; flex-direction: column; align-items: center; gap: 15px; position: relative; }
+        /* 2. 總分與雷達圖區 */
+        .chart-panel-container { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            gap: 15px; flex: 1; min-height: 250px; 
+        }
         .total-score-banner {
-            font-size: 1.3rem; font-weight: bold; color: var(--secondary);
+            font-size: 1.2rem; font-weight: bold; color: var(--secondary);
             background: var(--item-bg); padding: 8px 25px; border-radius: 30px; border: 1px solid var(--border-color);
+            flex-shrink: 0; text-align: center;
         }
         .total-score-banner span { font-size: 1.8rem; font-family: 'Orbitron', sans-serif; margin-left: 5px; }
-        .canvas-holder { width: 100%; max-width: 380px; aspect-ratio: 1; display: flex; justify-content: center; }
+        .canvas-holder { 
+            width: 100%; max-width: 360px; aspect-ratio: 1; 
+            display: flex; justify-content: center; align-items: center; 
+        }
 
-        /* 3. 每科個別得分小計區 (左下) */
-        .subject-list { display: flex; flex-direction: column; gap: 10px; max-height: 320px; overflow-y: auto; }
+        /* 3. 每科個別得分小計區 */
+        .subject-list { 
+            display: flex; flex-direction: column; gap: 10px; 
+            flex: 1; overflow-y: auto; padding-right: 5px;
+        }
+        /* 自訂滾動條樣式 */
+        .subject-list::-webkit-scrollbar, .badge-grid::-webkit-scrollbar { width: 6px; }
+        .subject-list::-webkit-scrollbar-thumb, .badge-grid::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+
         .subject-item {
             display: flex; justify-content: space-between; align-items: center;
             padding: 12px 16px; background: var(--item-bg); border-radius: 8px; border-left: 4px solid var(--secondary);
+            flex-shrink: 0;
         }
         .subject-name { font-weight: bold; }
         .subject-score { font-family: 'Orbitron', sans-serif; font-weight: bold; color: var(--accent); font-size: 1.1rem; }
 
-        /* 4. 徽章區 (右下) */
+        /* 4. 徽章區 */
         .badge-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-            gap: 15px; justify-items: center; align-content: center; flex: 1; opacity: 0.5;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+            gap: 15px; align-content: start; flex: 1; overflow-y: auto; opacity: 0.5; padding-right: 5px;
         }
         .badge-item {
             display: flex; flex-direction: column; align-items: center; gap: 6px;
-            padding: 10px; background: var(--item-bg); border: 1px dashed var(--border-color); border-radius: 8px; width: 100%;
+            padding: 15px 10px; background: var(--item-bg); border: 1px dashed var(--border-color); border-radius: 8px; width: 100%;
         }
         .badge-icon { font-size: 2rem; filter: grayscale(100%); }
         .badge-lock { font-size: 0.75rem; color: var(--text-dim); font-weight: bold; }
@@ -233,8 +294,8 @@
         <!-- 個人檔案儀表板 (登入後顯示) -->
         <section id="dashboard-section" class="dashboard-grid hidden">
             
-            <!-- 1. 個人資料區 (左上) -->
-            <div class="dashboard-panel">
+            <!-- 1. 個人資料區 (套用 panel-info) -->
+            <div class="dashboard-panel panel-info">
                 <div class="panel-title"><span id="lbl-panel1-title">📝 基本資料</span></div>
                 <div class="info-container">
                     <div class="info-row">
@@ -252,27 +313,27 @@
                 </div>
             </div>
 
-            <!-- 2. 總分及六角能力圖 (右上) -->
-            <div class="dashboard-panel">
+            <!-- 2. 總分及六角能力圖 (套用 panel-radar) -->
+            <div class="dashboard-panel panel-radar">
                 <div class="panel-title"><span id="lbl-panel2-title">📊 歷來總分與六角能力指標</span></div>
                 <div class="chart-panel-container">
                     <div class="total-score-banner"><span id="lbl-total-score-text">個人累積總得分</span> <span id="user-total-score">0</span></div>
                     <div class="canvas-holder">
-                        <canvas id="radarCanvas" width="360" height="360"></canvas>
+                        <canvas id="radarCanvas" width="360" height="360" style="max-width: 100%; max-height: 100%;"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- 3. 每科個別得分小計 (左下) -->
-            <div class="dashboard-panel">
+            <!-- 3. 每科個別得分小計 (套用 panel-subjects) -->
+            <div class="dashboard-panel panel-subjects">
                 <div class="panel-title"><span id="lbl-panel3-title">📚 各學科得分小計</span></div>
                 <div class="subject-list" id="user-subject-list">
                     <!-- 動態生成學科小計 -->
                 </div>
             </div>
 
-            <!-- 4. 徽章榮譽區 (右下) -->
-            <div class="dashboard-panel">
+            <!-- 4. 徽章榮譽區 (套用 panel-badges) -->
+            <div class="dashboard-panel panel-badges">
                 <div class="panel-title"><span id="lbl-panel4-title">🏅 榮譽徽章成就 (暫時未生效)</span></div>
                 <div class="badge-grid" id="badge-container">
                     <div class="badge-item"><span class="badge-icon">🔥</span><span class="badge-lock">未解鎖</span></div>
@@ -281,6 +342,8 @@
                     <div class="badge-item"><span class="badge-icon">🚀</span><span class="badge-lock">未解鎖</span></div>
                     <div class="badge-item"><span class="badge-icon">💡</span><span class="badge-lock">未解鎖</span></div>
                     <div class="badge-item"><span class="badge-icon">⚔️</span><span class="badge-lock">未解鎖</span></div>
+                    <div class="badge-item"><span class="badge-icon">🏆</span><span class="badge-lock">未解鎖</span></div>
+                    <div class="badge-item"><span class="badge-icon">💎</span><span class="badge-lock">未解鎖</span></div>
                 </div>
             </div>
 
@@ -289,9 +352,9 @@
 
     <script>
         let currentTheme = localStorage.getItem('ckcps_theme') || 'cyber'; 
-        let currentLang = localStorage.getItem('ckcps_lang') || 'zh'; // 'zh' 或 'en'
+        let currentLang = localStorage.getItem('ckcps_lang') || 'zh'; 
         let rawDataStore = []; 
-        let globalSubjectStats = {}; // 存放全伺服器各科的最高與最低分
+        let globalSubjectStats = {}; 
 
         // 語系文本字典
         const i18n = {
@@ -359,7 +422,6 @@
             }
         };
 
-        // 欄位索引結構對齊 (Google Sheet)
         const COL_TIMESTAMP = 0; 
         const COL_ID = 1;        
         const COL_CLASS = 2;     
@@ -373,6 +435,13 @@
             applyTheme();
             updateUIStrings();
             fetchCloudData();
+            
+            // 監聽視窗大小改變，確保重繪時雷達圖保持最佳比例
+            window.addEventListener('resize', () => {
+                if (!document.getElementById('dashboard-section').classList.contains('hidden')) {
+                    renderRadarChart();
+                }
+            });
         };
 
         function toggleTheme() {
@@ -390,20 +459,17 @@
             else body.classList.remove('school-theme');
         }
 
-        // 切換語系主函數
         function toggleLanguage() {
             currentLang = (currentLang === 'zh') ? 'en' : 'zh';
             localStorage.setItem('ckcps_lang', currentLang);
             updateUIStrings();
             
-            // 如果儀表板已經拉出來，就同步刷新學科列表和畫布
             if (!document.getElementById('dashboard-section').classList.contains('hidden')) {
                 refreshSubjectListUI();
                 renderRadarChart();
             }
         }
 
-        // 更新靜態DOM文字
         function updateUIStrings() {
             const t = i18n[currentLang];
             document.getElementById('page-title').innerText = t.pageTitle;
@@ -411,7 +477,6 @@
             document.getElementById('theme-btn').innerText = t.themeBtn;
             document.getElementById('lang-btn').innerText = t.langBtn;
             
-            // 登入區
             document.getElementById('lbl-login-title').innerText = t.loginTitle;
             document.getElementById('lbl-login-class').innerText = t.loginClass;
             document.getElementById('lbl-login-classno').innerText = t.loginClassNo;
@@ -420,7 +485,6 @@
                 document.getElementById('btn-login').innerText = t.loginBtn;
             }
 
-            // 儀表板區
             document.getElementById('lbl-panel1-title').innerText = t.panel1Title;
             document.getElementById('lbl-user-class').innerText = t.userClass;
             document.getElementById('lbl-user-id').innerText = t.userId;
@@ -430,18 +494,15 @@
             document.getElementById('lbl-panel3-title').innerText = t.panel3Title;
             document.getElementById('lbl-panel4-title').innerText = t.panel4Title;
 
-            // 徽章鎖定文字同步
             const badges = document.querySelectorAll('#badge-container .badge-lock');
             badges.forEach(b => b.innerText = t.badgeLock);
             
-            // 連線狀態文字同步
             const msgEl = document.getElementById('sync-msg');
             if (msgEl.innerText.includes('🟢')) msgEl.innerText = t.syncSuccess;
             if (msgEl.innerText.includes('🔴')) msgEl.innerText = t.syncFail;
             if (msgEl.innerText.includes('🔄')) msgEl.innerText = t.syncLoading;
         }
 
-        // 解析 CSV 單行
         function parseCSVLine(line) {
             let parts = [];
             let insideQuote = false;
@@ -456,7 +517,6 @@
             return parts;
         }
 
-        // 科目名稱正規化模組
         function getSubjectCategory(rawSubject) {
             let rawSub = rawSubject ? rawSubject.trim() : "";
             let subLower = rawSub.toLowerCase();
@@ -509,7 +569,6 @@
             }
         }
 
-        // 計算全伺服器每科的最高分與最低分(>0)
         function calculateGlobalStats() {
             let studentTotals = {}; 
             
@@ -554,7 +613,6 @@
             radar: { '中文': 0, '英文': 0, '數學': 0, '人文': 0, '科學': 0, '其他': 0 }
         };
 
-        // 登入驗證與計算
         async function executeLogin() {
             const t = i18n[currentLang];
             const inputClass = document.getElementById('login-class').value.trim().toUpperCase();
@@ -590,7 +648,7 @@
                     if (cols.length >= 4) {
                         const rowClass = cols[0].toUpperCase();
                         const rowClassNo = cols[1];
-                        const pass1 = cols[3]; // 對齊原始檔索引
+                        const pass1 = cols[3]; 
                         
                         if (rowClass === inputClass && rowClassNo === inputClassNo) {
                             if (inputPassword === pass1) {
@@ -647,7 +705,6 @@
             }
         }
 
-        // 動態重繪學科清單小計(支援中英對照)
         function refreshSubjectListUI() {
             const t = i18n[currentLang];
             const subListEl = document.getElementById('user-subject-list');
@@ -659,14 +716,13 @@
                 Object.keys(currentStudentData.subjects).sort().forEach(sub => {
                     const div = document.createElement('div');
                     div.className = 'subject-item';
-                    const displaySubName = t.subjects[sub] || sub; // 對照翻譯字典
+                    const displaySubName = t.subjects[sub] || sub; 
                     div.innerHTML = `<span class="subject-name">${displaySubName}</span><span class="subject-score">${currentStudentData.subjects[sub]} ${t.scoreUnit}</span>`;
                     subListEl.appendChild(div);
                 });
             }
         }
 
-        // 核心演算法
         function getRadiusRatio(subjectName, score) {
             if (score <= 0) return 0; 
             
@@ -682,7 +738,6 @@
             return Math.max(0, Math.min(1.0, level / 5.0)); 
         }
 
-        // 六角雷達圖渲染
         function renderRadarChart() {
             const canvas = document.getElementById('radarCanvas');
             const ctx = canvas.getContext('2d');
@@ -692,7 +747,6 @@
             const centerY = canvas.height / 2;
             const radius = 120;
             
-            // 基礎資料軸
             const baseLabels = ['中文', '英文', '數學', '人文', '科學', '其他'];
             const t = i18n[currentLang];
 
@@ -702,7 +756,6 @@
             const textMain = computedStyle.getPropertyValue('--text-main').trim();
             const accentColor = computedStyle.getPropertyValue('--secondary').trim();
 
-            // 1. 繪製 5 層背景網格嵌套六角形
             for (let side = 5; side > 0; side--) {
                 let r = radius * (side / 5);
                 ctx.beginPath();
@@ -719,7 +772,6 @@
                 ctx.stroke();
             }
 
-            // 2. 繪製六軸放射線與標籤文字 (支援語系翻譯)
             ctx.font = "bold 14px sans-serif";
             ctx.fillStyle = textMain;
             ctx.textAlign = "center";
@@ -739,12 +791,10 @@
                 let labelX = centerX + (radius + 28) * Math.cos(angle);
                 let labelY = centerY + (radius + 15) * Math.sin(angle);
                 
-                // 依據當前語言進行翻譯轉換
                 const translatedLabel = t.subjects[baseLabels[i]] || baseLabels[i];
                 ctx.fillText(translatedLabel, labelX, labelY);
             }
 
-            // 3. 繪製學生實際能力覆蓋多邊形面積
             ctx.beginPath();
             for (let i = 0; i < 6; i++) {
                 let angle = (i * Math.PI / 3) - Math.PI / 2;
@@ -766,7 +816,6 @@
             ctx.lineWidth = 3;
             ctx.stroke();
 
-            // 4. 繪製能力頂點小圓點圓標
             for (let i = 0; i < 6; i++) {
                 let angle = (i * Math.PI / 3) - Math.PI / 2;
                 let val = currentStudentData.radar[baseLabels[i]];
