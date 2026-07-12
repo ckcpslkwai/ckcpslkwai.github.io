@@ -421,7 +421,7 @@
                         if (rowClass === inputClass && rowClassNo === inputClassNo) {
                             if (inputPassword === pass1 || inputPassword === pass2) {
                                 isAuthenticated = true;
-                                studentName = cols[2] : "未知玩家";
+                                studentName = cols.length >= 4 ? cols[2] : "未知玩家";
                                 break;
                             }
                         }
