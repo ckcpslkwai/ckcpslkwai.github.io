@@ -1,4 +1,4 @@
 CKCPS WARS log
 
 20260711 Index page(0.52) uploaded. Log added. Bus ETA font adjusted. Leaderboard search added.
-20260712 Humanities questions uploaded. Total questions: 8830. Profile function added.
+20260712 Humanities questions uploaded. Total questions: 8830. Profile function added. Google form link added.
