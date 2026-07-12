@@ -126,13 +126,13 @@
             width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);
             background: var(--item-bg); color: var(--text-main); font-size: 1rem; outline: none;
         }
-        body.school-theme .form-control { color: #2d4565; }
+        .form-control option { color: #000000; background: #ffffff; }
+        body.school-theme .form-control option { color: #2d4565; }
         .login-btn {
             width: 100%; padding: 14px; background: var(--secondary); border: none; color: white;
             font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px;
         }
         body.school-theme .login-btn { background: #f9995d; }
-        .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
         /* 四宮格儀表板版面 */
         .dashboard-grid {
@@ -184,7 +184,7 @@
         /* 4. 徽章區 (右下) */
         .badge-grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-            gap: 15px; justify-items: center; align-content: center; flex: 1; opacity: 0.5;
+            gap: 15px; justify-items: center; content-content: center; flex: 1; opacity: 0.5;
         }
         .badge-item {
             display: flex; flex-direction: column; align-items: center; gap: 6px;
@@ -214,18 +214,18 @@
         <section id="login-section" class="login-card">
             <div class="login-title">系統身份驗證</div>
             <div class="form-group">
-                <label for="login-class">班別 (Class)</label>
-                <input type="text" id="login-class" class="form-control" placeholder="例如: 1A">
+                <label for="login-class">選擇班級</label>
+                <select id="login-class" class="form-control" onchange="onClassChanged()">
+                    <option value="">✨ 請選擇班級</option>
+                </select>
             </div>
             <div class="form-group">
-                <label for="login-classno">班號 (Class Number)</label>
-                <input type="number" id="login-classno" class="form-control" placeholder="例如: 15">
+                <label for="login-name">選擇姓名</label>
+                <select id="login-name" class="form-control" disabled>
+                    <option value="">✨ 請先選擇班級</option>
+                </select>
             </div>
-            <div class="form-group">
-                <label for="login-password">密碼 (E-book password)</label>
-                <input type="password" id="login-password" class="form-control" placeholder="請輸入密碼">
-            </div>
-            <button class="login-btn" onclick="executeLogin()">登入並進入個人檔案</button>
+            <button class="login-btn" onclick="executeLogin()">進入個人檔案</button>
             <div id="sync-msg" class="sync-status">🔄 正在載入雲端數據中心...</div>
         </section>
 
@@ -290,13 +290,13 @@
         let currentTheme = localStorage.getItem('ckcps_theme') || 'cyber'; 
         let rawDataStore = []; 
 
-        // 欄位索引結構對齊 (Google Sheet)
+        // 欄位索引結構對齊
         const COL_TIMESTAMP = 0; 
-        const COL_ID = 1;        
-        const COL_CLASS = 2;     
-        const COL_NAME = 3;      
-        const COL_SUBJECT = 4;   
-        const COL_SCORE = 6;     
+        const COL_ID = 1;        // 學號欄位
+        const COL_CLASS = 2;     // 班級欄位
+        const COL_NAME = 3;      // 姓名欄位
+        const COL_SUBJECT = 4;   // 科目欄位
+        const COL_SCORE = 6;     // 分數欄位
 
         const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1lwPiw4WVCorhjgpHycsahXoaPGPPZ7XR9OWWoImZq5g/gviz/tq?tqx=out:csv&gid=0';
 
@@ -309,6 +309,7 @@
             currentTheme = (currentTheme === 'cyber') ? 'school' : 'cyber';
             localStorage.setItem('ckcps_theme', currentTheme);
             applyTheme();
+            // 如果儀表板已載入，重新渲染能力圖以刷新配色
             if (!document.getElementById('dashboard-section').classList.contains('hidden')) {
                 renderRadarChart();
             }
@@ -320,21 +321,6 @@
             else body.classList.remove('school-theme');
         }
 
-        // 解析 CSV 單行 (安全處理引號內的逗號)
-        function parseCSVLine(line) {
-            let parts = [];
-            let insideQuote = false;
-            let currentPart = '';
-            for (let c = 0; c < line.length; c++) {
-                let char = line[c];
-                if (char === '"') { insideQuote = !insideQuote; }
-                else if (char === ',' && !insideQuote) { parts.push(currentPart.trim()); currentPart = ''; }
-                else { currentPart += char; }
-            }
-            parts.push(currentPart.trim());
-            return parts;
-        }
-
         async function fetchCloudData() {
             const msgEl = document.getElementById('sync-msg');
             try {
@@ -342,7 +328,7 @@
                 if (!response.ok) throw new Error();
                 let csvText = await response.text();
                 parseGoogleCSV(csvText);
-                msgEl.innerText = "🟢 雲端數據連線成功，請輸入資料登入。";
+                msgEl.innerText = "🟢 雲端連線成功，請選擇帳號登入。";
                 msgEl.style.color = "var(--accent)";
             } catch (err) {
                 msgEl.innerText = "🔴 連線失敗，請檢查網路或權限設定。";
@@ -353,12 +339,22 @@
         function parseGoogleCSV(text) {
             const lines = text.split('\n');
             rawDataStore = [];
+            let classesSet = new Set();
 
             for (let i = 1; i < lines.length; i++) {
                 let line = lines[i].trim();
                 if (!line) continue;
 
-                let parts = parseCSVLine(line);
+                let parts = [];
+                let insideQuote = false;
+                let currentPart = '';
+                for (let c = 0; c < line.length; c++) {
+                    let char = line[c];
+                    if (char === '"') { insideQuote = !insideQuote; }
+                    else if (char === ',' && !insideQuote) { parts.push(currentPart.trim()); currentPart = ''; }
+                    else { currentPart += char; }
+                }
+                parts.push(currentPart.trim());
 
                 if (parts.length > Math.max(COL_CLASS, COL_SCORE)) {
                     rawDataStore.push({
@@ -368,157 +364,119 @@
                         subject: parts[COL_SUBJECT],
                         score: parseFloat(parts[COL_SCORE]) || 0
                     });
+                    if(parts[COL_CLASS]) classesSet.add(parts[COL_CLASS]);
                 }
             }
+
+            // 建立班級選單
+            const classDropdown = document.getElementById('login-class');
+            Array.from(classesSet).sort().forEach(cls => {
+                const opt = document.createElement('option');
+                opt.value = cls; opt.innerText = cls;
+                classDropdown.appendChild(opt);
+            });
+        }
+
+        function onClassChanged() {
+            const targetClass = document.getElementById('login-class').value;
+            const nameDropdown = document.getElementById('login-name');
+
+            if (!targetClass) {
+                nameDropdown.innerHTML = `<option value="">✨ 請先選擇班級</option>`;
+                nameDropdown.disabled = true;
+                return;
+            }
+
+            nameDropdown.disabled = false;
+            let namesInClass = new Set();
+            rawDataStore.forEach(item => {
+                if (item.className === targetClass && item.name) {
+                    namesInClass.add(item.name);
+                }
+            });
+
+            nameDropdown.innerHTML = `<option value="">✨ 選擇姓名</option>`;
+            Array.from(namesInClass).sort().forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name; opt.innerText = name;
+                nameDropdown.appendChild(opt);
+            });
         }
 
         // 全局存放當前登入學生的數據統計結果
         let currentStudentData = {
             class: '', studentId: '', name: '', totalScore: 0,
-            subjects: {}, 
+            subjects: {}, // 各科明細小計
             radar: { '中文': 0, '英文': 0, '數學': 0, '人文': 0, '科學': 0, '其他': 0 }
         };
 
-        // 登入驗證與數據計算邏輯
-        async function executeLogin() {
-            const inputClass = document.getElementById('login-class').value.trim().toUpperCase();
-            const inputClassNo = document.getElementById('login-classno').value.trim();
-            const inputPassword = document.getElementById('login-password').value.trim();
+        function executeLogin() {
+            const cls = document.getElementById('login-class').value;
+            const name = document.getElementById('login-name').value;
 
-            if (!inputClass || !inputClassNo || !inputPassword) {
-                alert("請填妥班別、班號及密碼！");
+            if (!cls || !name) {
+                alert("請填妥班級與姓名再進行登入！");
                 return;
             }
 
-            const loginBtn = document.querySelector('.login-btn');
-            loginBtn.innerText = "驗證中...";
-            loginBtn.disabled = true;
+            // 過濾並統計該生數據
+            let studentRecords = rawDataStore.filter(item => item.className === cls && item.name === name);
 
-            try {
-                // 1. 透過 Base64 解碼取得檔案路徑
-                const pwdPath = atob('Li9wYXNzd29yZC5jc3Y='); // 等於 './password.csv'
-                const pwdResponse = await fetch(pwdPath);
-                
-                if (!pwdResponse.ok) {
-                    throw new Error("找不到密碼驗證檔");
-                }
-                
-                const pwdText = await pwdResponse.text();
-                const pwdLines = pwdText.split('\n');
-                
-                let isAuthenticated = false;
-                let studentName = "";
-
-                // 2. 逐行核對本地 CSV 檔案
-                for (let i = 0; i < pwdLines.length; i++) {
-                    const line = pwdLines[i].trim();
-                    if (!line) continue;
-                    
-                    const cols = parseCSVLine(line);
-                    
-                    // 假設欄位順序: 0:班別, 1:班號, 2:密碼1, 3:密碼2, 4:姓名
-                    if (cols.length >= 4) {
-                        const rowClass = cols[0].toUpperCase();
-                        const rowClassNo = cols[1];
-                        const pass1 = cols[2];
-                        const pass2 = cols[3];
-                        
-                        // 驗證第一欄與第二欄 (班別、班號匹配)
-                        if (rowClass === inputClass && rowClassNo === inputClassNo) {
-                            // 交叉核對第三欄或第四欄的密碼
-                            if (inputPassword === pass1 || inputPassword === pass2) {
-                                isAuthenticated = true;
-                                // 取得對應姓名
-                                studentName = cols.length >= 5 ? cols[4] : "未知玩家";
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (!isAuthenticated) {
-                    alert("登入失敗：班別、班號或密碼錯誤！");
-                    return;
-                }
-
-                // 3. 登入成功後，使用班別與已擷取的姓名從雲端數據中找出紀錄
-                let studentRecords = rawDataStore.filter(item => item.className.toUpperCase() === inputClass && item.name === studentName);
-
-                // 重置統計容器
-                currentStudentData.class = inputClass;
-                currentStudentData.name = studentName;
-                currentStudentData.studentId = studentRecords.length > 0 ? studentRecords[0].id : inputClassNo; 
-                currentStudentData.totalScore = 0;
-                currentStudentData.subjects = {};
-                currentStudentData.radar = { '中文': 0, '英文': 0, '數學': 0, '人文': 0, '科學': 0, '其他': 0 };
-
-                // 4. 開始數據分類歸納計算
-                studentRecords.forEach(rec => {
-                    currentStudentData.totalScore += rec.score;
-                    
-                    let rawSub = rec.subject ? rec.subject.trim() : "";
-                    let subLower = rawSub.toLowerCase();
-                    let subKey = '其他';
-
-                    // 依照要求重新指派所屬科目
-                    if (subLower === 'chinese' || subLower === 'chinese-e' || rawSub === '中文') {
-                        subKey = '中文';
-                    } else if (subLower === 'english' || subLower === 'english-c' || rawSub === '英文') {
-                        subKey = '英文';
-                    } else if (subLower === 'maths' || rawSub === '數學') {
-                        subKey = '數學';
-                    } else if (subLower === 'science' || rawSub === '科學') {
-                        subKey = '科學';
-                    } else if (subLower === 'humanities' || rawSub === '人文') {
-                        subKey = '人文';
-                    } else {
-                        subKey = '其他';
-                    }
-
-                    // 將重新定義好的 subKey 用於更新各科學科獨立小計
-                    if (!currentStudentData.subjects[subKey]) {
-                        currentStudentData.subjects[subKey] = 0;
-                    }
-                    currentStudentData.subjects[subKey] += rec.score;
-
-                    // 記錄至六角能力值
-                    currentStudentData.radar[subKey] += rec.score;
-                });
-
-                // 5. 渲染 UI 界面
-                document.getElementById('user-class').innerText = currentStudentData.class;
-                document.getElementById('user-id').innerText = currentStudentData.studentId;
-                document.getElementById('user-name').innerText = currentStudentData.name;
-                document.getElementById('user-total-score').innerText = currentStudentData.totalScore;
-
-                const subListEl = document.getElementById('user-subject-list');
-                subListEl.innerHTML = '';
-                
-                if (Object.keys(currentStudentData.subjects).length === 0) {
-                    subListEl.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-dim);">目前查無雲端作答紀錄</div>';
-                } else {
-                    Object.keys(currentStudentData.subjects).sort().forEach(sub => {
-                        const div = document.createElement('div');
-                        div.className = 'subject-item';
-                        div.innerHTML = `<span class="subject-name">${sub}</span><span class="subject-score">${currentStudentData.subjects[sub]} 分</span>`;
-                        subListEl.appendChild(div);
-                    });
-                }
-
-                // 渲染右上角六角圖
-                renderRadarChart();
-
-                // 隱藏登入區，顯示儀表板
-                document.getElementById('login-section').classList.add('hidden');
-                document.getElementById('dashboard-section').classList.remove('hidden');
-
-            } catch (err) {
-                alert("系統驗證發生錯誤，請確認 ./password.csv 是否存在同一目錄下或伺服器是否允許讀取檔案。");
-                console.error(err);
-            } finally {
-                loginBtn.innerText = "登入並進入個人檔案";
-                loginBtn.disabled = false;
+            if (studentRecords.length === 0) {
+                alert("未找到該學生的作答紀錄。");
+                return;
             }
+
+            // 重置統計容器
+            currentStudentData.class = cls;
+            currentStudentData.name = name;
+            currentStudentData.studentId = studentRecords[0].id; // 擷取學號
+            currentStudentData.totalScore = 0;
+            currentStudentData.subjects = {};
+            currentStudentData.radar = { '中文': 0, '英文': 0, '數學': 0, '人文': 0, '科學': 0, '其他': 0 };
+
+            // 開始數據分組與加總計算
+            studentRecords.forEach(rec => {
+                currentStudentData.totalScore += rec.score;
+                
+                // 1. 科目獨立小計
+                if (!currentStudentData.subjects[rec.subject]) {
+                    currentStudentData.subjects[rec.subject] = 0;
+                }
+                currentStudentData.subjects[rec.subject] += rec.score;
+
+                // 2. 歸納分類至六角能力值
+                let sub = rec.subject;
+                if (sub.includes('中') || sub.toLowerCase().includes('chinese')) { currentStudentData.radar['中文'] += rec.score; }
+                else if (sub.includes('英') || sub.toLowerCase().includes('english')) { currentStudentData.radar['英文'] += rec.score; }
+                else if (sub.includes('數') || sub.toLowerCase().includes('math')) { currentStudentData.radar['數學'] += rec.score; }
+                else if (sub.includes('常') || sub.includes('社') || sub.includes('人')) { currentStudentData.radar['人文'] += rec.score; }
+                else if (sub.includes('科') || sub.includes('理') || sub.includes('stem')) { currentStudentData.radar['科學'] += rec.score; }
+                else { currentStudentData.radar['其他'] += rec.score; }
+            });
+
+            // 渲染 UI 界面面
+            document.getElementById('user-class').innerText = currentStudentData.class;
+            document.getElementById('user-id').innerText = currentStudentData.studentId;
+            document.getElementById('user-name').innerText = currentStudentData.name;
+            document.getElementById('user-total-score').innerText = currentStudentData.totalScore;
+
+            // 渲染左下角各科小計
+            const subListEl = document.getElementById('user-subject-list');
+            subListEl.innerHTML = '';
+            Object.keys(currentStudentData.subjects).sort().forEach(sub => {
+                const div = document.createElement('div');
+                div.className = 'subject-item';
+                div.innerHTML = `<span class="subject-name">${sub}</span><span class="subject-score">${currentStudentData.subjects[sub]} 分</span>`;
+                subListEl.appendChild(div);
+            });
+
+            // 渲染右上角六角圖
+            renderRadarChart();
+
+            // 切換視圖
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('dashboard-section').classList.remove('hidden');
         }
 
         // HTML5 Canvas 輕量級六角雷達圖渲染引擎
