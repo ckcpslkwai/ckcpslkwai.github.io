@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS - 個人檔案系統v2607122126</title>
+    <title>CKCPS WARS - 個人檔案系統v3</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         
@@ -54,205 +54,65 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            background: var(--bg-gradient);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "微軟正黑體", sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            transition: background 0.3s ease, color 0.3s ease;
-            overflow-x: hidden;
-        }
+        body { background: var(--bg-gradient); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "微軟正黑體", sans-serif; min-height: 100vh; display: flex; flex-direction: column; transition: background 0.3s ease, color 0.3s ease; overflow-x: hidden; }
 
-        .controls-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            display: flex;
-            gap: 12px;
-        }
-
-        .control-btn {
-            padding: 10px 18px;
-            background: rgba(11, 11, 34, 0.85);
-            border: 2px solid var(--secondary);
-            color: #ffffff;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.9rem;
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
-        }
+        .controls-container { position: fixed; top: 20px; right: 20px; z-index: 1000; display: flex; gap: 12px; }
+        .control-btn { padding: 10px 18px; background: rgba(11, 11, 34, 0.85); border: 2px solid var(--secondary); color: #ffffff; border-radius: 30px; cursor: pointer; font-weight: bold; font-size: 0.9rem; backdrop-filter: blur(5px); transition: all 0.3s ease; }
         .control-btn:hover { transform: scale(1.05); box-shadow: 0 0 25px var(--secondary); }
         body.school-theme .control-btn { background: #ffffff; border: 2px solid #2d4565; color: #2d4565; }
         body.school-theme .control-btn:hover { background: #2d4565; color: #ffffff; }
 
-        header {
-            background: var(--header-bg);
-            padding: 15px 20px;
-            text-align: center;
-            border-bottom: 3px solid var(--header-border);
-            box-shadow: var(--header-shadow);
-            color: var(--header-text);
-        }
+        header { background: var(--header-bg); padding: 15px 20px; text-align: center; border-bottom: 3px solid var(--header-border); box-shadow: var(--header-shadow); color: var(--header-text); }
         header h1 { font-family: var(--h1-font); font-size: 1.8rem; text-shadow: var(--h1-text-shadow); margin-bottom: 5px; }
-        .back-link { display: inline-block; margin-top: 5px; color: var(--primary); text-decoration: none; font-weight: bold; font-size: 0.9rem;}
+        .back-link { display: inline-block; margin-top: 5px; color: var(--primary); text-decoration: none; font-weight: bold; font-size: 0.9rem; }
 
-        .main-container {
-            max-width: 1400px; /* 為了三欄式佈局，稍微放寬容器 */
-            width: 100%;
-            margin: 20px auto;
-            padding: 0 20px;
-            flex: 1; /* 讓容器撐滿剩餘高度 */
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* 登入卡片樣式 */
-        .login-card {
-            max-width: 450px;
-            margin: 60px auto;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 35px;
-            box-shadow: var(--card-shadow);
-            text-align: center;
-        }
+        .main-container { max-width: 1400px; width: 100%; margin: 20px auto; padding: 0 20px; flex: 1; display: flex; flex-direction: column; }
+        .login-card { max-width: 450px; margin: 60px auto; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 35px; box-shadow: var(--card-shadow); text-align: center; }
         .login-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 25px; color: var(--secondary); }
         .form-group { text-align: left; margin-bottom: 20px; }
         .form-group label { display: block; font-size: 0.95rem; font-weight: bold; margin-bottom: 8px; color: var(--text-dim); }
-        .form-control {
-            width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);
-            background: var(--item-bg); color: var(--text-main); font-size: 1rem; outline: none;
-        }
+        .form-control { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--item-bg); color: var(--text-main); font-size: 1rem; outline: none; }
         body.school-theme .form-control { color: #2d4565; }
-        .login-btn {
-            width: 100%; padding: 14px; background: var(--secondary); border: none; color: white;
-            font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px;
-        }
+        .login-btn { width: 100%; padding: 14px; background: var(--secondary); border: none; color: white; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; }
         body.school-theme .login-btn { background: #f9995d; }
         .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-        /* ====================================================
-           核心佈局升級：四宮格儀表板 (CSS Grid Areas)
-           ==================================================== */
-        .dashboard-grid {
-            display: grid;
-            gap: 20px;
-            flex: 1; /* 佔滿剩餘高度 */
-            
-            /* 【寬螢幕佈局】: 3欄式設計，完美填滿畫面不留白 */
-            grid-template-columns: 1fr 1.6fr 1fr;
-            grid-template-rows: auto 1fr;
-            grid-template-areas: 
-                "info radar badges"
-                "subjects radar badges";
-            min-height: 500px; 
-        }
+        .dashboard-grid { display: grid; gap: 20px; flex: 1; grid-template-columns: 1fr 1.6fr 1fr; grid-template-rows: auto 1fr; grid-template-areas: "info radar badges" "subjects radar badges"; min-height: 500px; }
+        .panel-info { grid-area: info; } .panel-radar { grid-area: radar; } .panel-subjects { grid-area: subjects; } .panel-badges { grid-area: badges; }
+        @media (max-width: 1100px) { .dashboard-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; grid-template-areas: "info radar" "subjects badges"; height: auto; } }
+        @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; grid-template-areas: "info" "radar" "subjects" "badges"; height: auto; } .controls-container { top: 10px; right: 10px; transform: scale(0.85); transform-origin: top right; } }
 
-        /* 將四個面板指定到對應的網格區塊 */
-        .panel-info { grid-area: info; }
-        .panel-radar { grid-area: radar; }
-        .panel-subjects { grid-area: subjects; }
-        .panel-badges { grid-area: badges; }
+        .dashboard-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 20px; box-shadow: var(--card-shadow); display: flex; flex-direction: column; overflow: hidden; }
+        .panel-title { font-size: 1.15rem; font-weight: bold; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--border-color); color: var(--primary); display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
-        /* 【中等螢幕佈局】: 平板 / 筆電小視窗 */
-        @media (max-width: 1100px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr 1fr;
-                grid-template-rows: auto auto;
-                grid-template-areas: 
-                    "info radar"
-                    "subjects badges";
-                height: auto; /* 允許滾動 */
-            }
-        }
-
-        /* 【手機螢幕佈局】: 智慧型手機直排式 */
-        @media (max-width: 768px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-                grid-template-areas: 
-                    "info"
-                    "radar"
-                    "subjects"
-                    "badges";
-                height: auto; /* 允許垂直滾動 */
-            }
-            .controls-container { top: 10px; right: 10px; transform: scale(0.85); transform-origin: top right; }
-        }
-
-        .dashboard-panel {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 20px;
-            box-shadow: var(--card-shadow);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden; /* 防止內容撐破格子 */
-        }
-        .panel-title {
-            font-size: 1.15rem; font-weight: bold; margin-bottom: 15px;
-            padding-bottom: 10px; border-bottom: 2px solid var(--border-color);
-            color: var(--primary); display: flex; align-items: center; gap: 8px;
-            flex-shrink: 0;
-        }
-
-        /* 1. 個人資料區 */
         .info-container { display: flex; flex-direction: column; gap: 12px; justify-content: center; flex: 1; }
         .info-row { display: flex; justify-content: space-between; padding: 12px; background: var(--item-bg); border-radius: 8px; }
         .info-label { color: var(--text-dim); font-weight: bold; }
         .info-value { color: var(--text-main); font-weight: bold; font-size: 1.1rem; }
-
-        /* 2. 總分與雷達圖區 */
-        .chart-panel-container { 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            gap: 15px; flex: 1; min-height: 250px; 
-        }
-        .total-score-banner {
-            font-size: 1.2rem; font-weight: bold; color: var(--secondary);
-            background: var(--item-bg); padding: 8px 25px; border-radius: 30px; border: 1px solid var(--border-color);
-            flex-shrink: 0; text-align: center;
-        }
+        
+        .chart-panel-container { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; flex: 1; min-height: 250px; }
+        .total-score-banner { font-size: 1.2rem; font-weight: bold; color: var(--secondary); background: var(--item-bg); padding: 8px 25px; border-radius: 30px; border: 1px solid var(--border-color); flex-shrink: 0; text-align: center; }
         .total-score-banner span { font-size: 1.8rem; font-family: 'Orbitron', sans-serif; margin-left: 5px; }
-        .canvas-holder { 
-            width: 100%; max-width: 360px; aspect-ratio: 1; 
-            display: flex; justify-content: center; align-items: center; 
-        }
-
-        /* 3. 每科個別得分小計區 */
-        .subject-list { 
-            display: flex; flex-direction: column; gap: 10px; 
-            flex: 1; overflow-y: auto; padding-right: 5px;
-        }
-        /* 自訂滾動條樣式 */
+        .canvas-holder { width: 100%; max-width: 360px; aspect-ratio: 1; display: flex; justify-content: center; align-items: center; }
+        
+        .subject-list { display: flex; flex-direction: column; gap: 10px; flex: 1; overflow-y: auto; padding-right: 5px; }
         .subject-list::-webkit-scrollbar, .badge-grid::-webkit-scrollbar { width: 6px; }
         .subject-list::-webkit-scrollbar-thumb, .badge-grid::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
-
-        .subject-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 16px; background: var(--item-bg); border-radius: 8px; border-left: 4px solid var(--secondary);
-            flex-shrink: 0;
-        }
+        .subject-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--item-bg); border-radius: 8px; border-left: 4px solid var(--secondary); flex-shrink: 0; }
         .subject-name { font-weight: bold; }
         .subject-score { font-family: 'Orbitron', sans-serif; font-weight: bold; color: var(--accent); font-size: 1.1rem; }
 
-        /* 4. 徽章區 */
-        .badge-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
-            gap: 15px; align-content: start; flex: 1; overflow-y: auto; opacity: 0.5; padding-right: 5px;
-        }
-        .badge-item {
-            display: flex; flex-direction: column; align-items: center; gap: 6px;
-            padding: 15px 10px; background: var(--item-bg); border: 1px dashed var(--border-color); border-radius: 8px; width: 100%;
-        }
-        .badge-icon { font-size: 2rem; filter: grayscale(100%); }
-        .badge-lock { font-size: 0.75rem; color: var(--text-dim); font-weight: bold; }
+        /* 徽章區 */
+        .badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 15px; align-content: start; flex: 1; overflow-y: auto; padding-right: 5px; }
+        .badge-item { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; padding: 15px 5px; background: var(--item-bg); border: 1px dashed var(--border-color); border-radius: 8px; width: 100%; opacity: 0.4; transition: all 0.3s ease; }
+        .badge-item.unlocked { opacity: 1; border: 1px solid var(--secondary); background: rgba(255, 0, 170, 0.05); box-shadow: 0 4px 10px rgba(255, 0, 170, 0.15); }
+        body.school-theme .badge-item.unlocked { background: rgba(249, 153, 93, 0.1); border-color: var(--secondary); box-shadow: 0 4px 10px rgba(249, 153, 93, 0.15); }
+        .badge-icon { font-size: 2.2rem; filter: grayscale(100%); transition: filter 0.3s ease; margin-bottom: 5px;}
+        .badge-item.unlocked .badge-icon { filter: none; }
+        .badge-text { font-size: 0.75rem; font-weight: bold; line-height: 1.2; }
+        .badge-item:not(.unlocked) .badge-text { color: var(--text-dim); }
+        .badge-item.unlocked .badge-text { color: var(--accent); }
+        body.school-theme .badge-item.unlocked .badge-text { color: var(--secondary); }
 
         .hidden { display: none !important; }
         .sync-status { text-align: center; color: var(--accent); font-size: 0.9rem; margin-top: 15px; }
@@ -271,13 +131,11 @@
     </header>
 
     <main class="main-container">
-        
-        <!-- 登入卡片區面 -->
         <section id="login-section" class="login-card">
             <div class="login-title" id="lbl-login-title">系統身份驗證</div>
             <div class="form-group">
                 <label for="login-class" id="lbl-login-class">班別 (Class)</label>
-                <input type="text" id="login-class" class="form-control" placeholder="例如: 1A">
+                <input type="text" id="login-class" class="form-control" placeholder="例如: 1A 或 3G">
             </div>
             <div class="form-group">
                 <label for="login-classno" id="lbl-login-classno">班號 (Class Number)</label>
@@ -291,235 +149,162 @@
             <div id="sync-msg" class="sync-status">🔄 正在載入雲端數據中心...</div>
         </section>
 
-        <!-- 個人檔案儀表板 (登入後顯示) -->
         <section id="dashboard-section" class="dashboard-grid hidden">
-            
-            <!-- 1. 個人資料區 (套用 panel-info) -->
             <div class="dashboard-panel panel-info">
                 <div class="panel-title"><span id="lbl-panel1-title">📝 基本資料</span></div>
                 <div class="info-container">
-                    <div class="info-row">
-                        <span class="info-label" id="lbl-user-class">班別</span>
-                        <span class="info-value" id="user-class">-</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label" id="lbl-user-id">學號</span>
-                        <span class="info-value" id="user-id">-</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label" id="lbl-user-name">學生姓名</span>
-                        <span class="info-value" id="user-name">-</span>
-                    </div>
+                    <div class="info-row"><span class="info-label" id="lbl-user-class">班別</span><span class="info-value" id="user-class">-</span></div>
+                    <div class="info-row"><span class="info-label" id="lbl-user-id">學號</span><span class="info-value" id="user-id">-</span></div>
+                    <div class="info-row"><span class="info-label" id="lbl-user-name">學生姓名</span><span class="info-value" id="user-name">-</span></div>
+                    <div class="info-row"><span class="info-label">連續登入</span><span class="info-value" id="user-streak" style="color:var(--secondary)">0 天</span></div>
                 </div>
             </div>
 
-            <!-- 2. 總分及六角能力圖 (套用 panel-radar) -->
             <div class="dashboard-panel panel-radar">
                 <div class="panel-title"><span id="lbl-panel2-title">📊 歷來總分與六角能力指標</span></div>
                 <div class="chart-panel-container">
-                    <div class="total-score-banner"><span id="lbl-total-score-text">個人累積總得分</span> <span id="user-total-score">0</span></div>
-                    <div class="canvas-holder">
-                        <canvas id="radarCanvas" width="360" height="360" style="max-width: 100%; max-height: 100%;"></canvas>
-                    </div>
+                    <div class="total-score-banner"><span id="lbl-total-score-text">累積總分</span> <span id="user-total-score">0</span></div>
+                    <div class="canvas-holder"><canvas id="radarCanvas" width="360" height="360" style="max-width: 100%; max-height: 100%;"></canvas></div>
                 </div>
             </div>
 
-            <!-- 3. 每科個別得分小計 (套用 panel-subjects) -->
             <div class="dashboard-panel panel-subjects">
                 <div class="panel-title"><span id="lbl-panel3-title">📚 各學科得分小計</span></div>
-                <div class="subject-list" id="user-subject-list">
-                    <!-- 動態生成學科小計 -->
-                </div>
+                <div class="subject-list" id="user-subject-list"></div>
             </div>
 
-            <!-- 4. 徽章榮譽區 (套用 panel-badges) -->
             <div class="dashboard-panel panel-badges">
-                <div class="panel-title"><span id="lbl-panel4-title">🏅 榮譽徽章成就 (暫時未生效)</span></div>
+                <div class="panel-title"><span id="lbl-panel4-title">🏅 榮譽徽章成就</span></div>
                 <div class="badge-grid" id="badge-container">
-                    <div class="badge-item"><span class="badge-icon">🔥</span><span class="badge-lock">未解鎖</span></div>
-                    <div class="badge-item"><span class="badge-icon">👑</span><span class="badge-lock">未解鎖</span></div>
-                    <div class="badge-item"><span class="badge-icon">🌟</span><span class="badge-lock">未解鎖</span></div>
-                    <div class="badge-item"><span class="badge-icon">🚀</span><span class="badge-lock">未解鎖</span></div>
-                    <div class="badge-item"><span class="badge-icon">💡</span><span class="badge-lock">未解鎖</span></div>
-                    <div class="badge-item"><span class="badge-icon">⚔️</span><span class="badge-lock">未解鎖</span></div>
-                    <div class="badge-item"><span class="badge-icon">🏆</span><span class="badge-lock">未解鎖</span></div>
-                    <div class="badge-item"><span class="badge-icon">💎</span><span class="badge-lock">未解鎖</span></div>
+                    <!-- JS 動態生成 -->
                 </div>
             </div>
-
         </section>
     </main>
 
     <script>
+        // ==========================================
+        // ⚠️ CSV 欄位對應設定 (請依據您的 Google Sheet 實際欄位修改)
+        // 假設您的表單：[0]時間戳記, [1]ID, [2]班別, [3]姓名, [4]科目, [5]關卡(例如P4), [6]分數, [7]模式(Time/Normal, [8]時間(Target))
+        // ==========================================
+        const COL_DATE = 0; 
+        const COL_ID = 1; 
+        const COL_CLASS = 2; 
+        const COL_NAME = 3; 
+        const COL_SUBJECT = 4; 
+        const COL_LEVEL = 5;  // 需包含 P1~P6 字眼，用以判斷越級挑戰
+        const COL_SCORE = 6;
+        const COL_TYPE = 7;   // 需標示 "Time" 等字眼，用以判斷速度型選手
+        const COL_TARGET = 8;   // 需標示 "Time" 等字眼，用以判斷速度型選手
+        
+        const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1lwPiw4WVCorhjgpHycsahXoaPGPPZ7XR9OWWoImZq5g/gviz/tq?tqx=out:csv&gid=0';
+
         let currentTheme = localStorage.getItem('ckcps_theme') || 'cyber'; 
         let currentLang = localStorage.getItem('ckcps_lang') || 'zh'; 
         let rawDataStore = []; 
         let globalSubjectStats = {}; 
+        let percentileThresholds = { total: 0, subjects: {} };
+        
+        // 儲存全校每人的各科總分，供計算 percentile 使用
+        let globalScoreArrays = { total: [], '中文': [], '英文': [], '數學': [], '人文': [], '科學': [] };
 
-        // 語系文本字典
+        // ==========================================
+        // 徽章解鎖條件設定區 (包含新增的徽章)
+        // ==========================================
+        const BADGES_CONFIG = [
+            { id: 'novice', icon: '🌱', nameZh: '新手徽章', nameEn: 'Novice Badge', condition: (u, g) => ['中文', '英文', '數學', '人文', '科學'].every(sub => (u.subjects[sub] || 0) >= 500) },
+            { id: 'top_scholar', icon: '👑', nameZh: '學霸徽章', nameEn: 'Top Scholar', condition: (u, g) => u.totalScore > 0 && u.totalScore >= g.total },
+            { id: 'chinese_king', icon: '✍️', nameZh: '中文王', nameEn: 'Chinese King', condition: (u, g) => (u.subjects['中文'] || 0) > 0 && (u.subjects['中文'] || 0) >= g.subjects['中文'] },
+            { id: 'english_king', icon: '💬', nameZh: '英文王', nameEn: 'English King', condition: (u, g) => (u.subjects['英文'] || 0) > 0 && (u.subjects['英文'] || 0) >= g.subjects['英文'] },
+            { id: 'math_king', icon: '📐', nameZh: '數學王', nameEn: 'Math King', condition: (u, g) => (u.subjects['數學'] || 0) > 0 && (u.subjects['數學'] || 0) >= g.subjects['數學'] },
+            { id: 'science_king', icon: '🔬', nameZh: '科學王', nameEn: 'Science King', condition: (u, g) => (u.subjects['科學'] || 0) > 0 && (u.subjects['科學'] || 0) >= g.subjects['科學'] },
+            { id: 'humanity_king', icon: '🌍', nameZh: '人文王', nameEn: 'Humanity King', condition: (u, g) => (u.subjects['人文'] || 0) > 0 && (u.subjects['人文'] || 0) >= g.subjects['人文'] },
+            { id: 'effort', icon: '🔥', nameZh: '努力徽章', nameEn: 'Effort Badge', condition: (u, g) => u.highScoreCount >= 100 },
+            
+            // --- 以下為新增的徽章 ---
+            { id: 'over_level', icon: '🚀', nameZh: '越級挑戰', nameEn: 'Over-level Challenge', condition: (u) => u.flags.hasOverLevel },
+            { id: 'streak_7', icon: '📅', nameZh: '連續登入7日', nameEn: '7-Day Streak', condition: (u) => u.flags.maxLoginStreak >= 7 },
+            { id: 'streak_14', icon: '🗓️', nameZh: '連續登入14日', nameEn: '14-Day Streak', condition: (u) => u.flags.maxLoginStreak >= 14 },
+            { id: 'streak_30', icon: '🏆', nameZh: '連續登入30日', nameEn: '30-Day Streak', condition: (u) => u.flags.maxLoginStreak >= 30 },
+            { id: 'balanced', icon: '⚖️', nameZh: '平均型選手', nameEn: 'Balanced Player',
+                condition: (u) => {
+                    const req = ['中文', '英文', '數學', '人文', '科學'];
+                    if (!req.every(sub => (u.subjects[sub] || 0) >= 1000)) return false;
+                    let percentiles = req.map(sub => getStudentPercentile(sub, u.subjects[sub]));
+                    let maxP = Math.max(...percentiles); let minP = Math.min(...percentiles);
+                    return (maxP - minP) <= 15;
+                }
+            },
+            { id: 'speed_player', icon: '⚡', nameZh: '速度型選手', nameEn: 'Speed Player', condition: (u) => u.flags.hasSpeedPlayer }
+        ];
+
+        // 動態生成 5 科的進步徽章 (自我突破 5 次)
+        ['中文', '英文', '數學', '人文', '科學'].forEach(sub => {
+            BADGES_CONFIG.push({
+                id: `improve_${sub}`, icon: '📈', nameZh: `${sub}科進步`, nameEn: `${sub} Improvement`,
+                condition: (u) => u.flags.subjectProgress && u.flags.subjectProgress[sub] >= 5
+            });
+        });
+
         const i18n = {
             zh: {
-                pageTitle: "👤 個人檔案與能力分析",
-                backLink: "⬅️ 返回系統入口首頁",
-                themeBtn: "🎨 切換配色",
-                langBtn: "🌐 English",
-                loginTitle: "系統身份驗證",
-                loginClass: "班別 (Class)",
-                loginClassNo: "班號 (Class Number)",
-                loginPassword: "密碼 (E-book password)",
-                loginBtn: "登入並進入個人檔案",
-                syncLoading: "🔄 正在載入雲端數據中心...",
-                syncSuccess: "🟢 雲端數據連線成功，請輸入資料登入。",
-                syncFail: "🔴 連線失敗，請檢查網路。",
-                alertEmpty: "請填妥班別、班號及密碼！",
-                alertVerifying: "驗證中...",
-                alertPwdErr: "登入失敗：班別、班號或密碼錯誤！",
-                alertSysErr: "系統驗證發生錯誤，請確認 ./password.csv 檔案路徑與存取權限。",
-                panel1Title: "📝 基本資料",
-                userClass: "班別",
-                userId: "班號(學號)",
-                userName: "學生姓名",
-                panel2Title: "📊 歷來總分與六角能力指標",
-                totalScoreText: "個人累積總得分",
-                panel3Title: "📚 各學科得分小計",
-                panel4Title: "🏅 榮譽徽章成就 (暫時未生效)",
-                badgeLock: "未解鎖",
-                noRecord: "目前查無雲端作答紀錄",
-                scoreUnit: "分",
-                unknownPlayer: "未知玩家",
+                pageTitle: "👤 個人檔案與能力分析", backLink: "⬅️ 返回系統入口首頁", themeBtn: "🎨 切換配色", langBtn: "🌐 English",
+                loginTitle: "系統身份驗證", loginClass: "班別 (Class)", loginClassNo: "班號 (Class Number)", loginPassword: "密碼 (E-book password)", loginBtn: "登入並進入個人檔案",
+                syncLoading: "🔄 正在載入雲端數據中心...", syncSuccess: "🟢 雲端數據連線成功，請輸入資料登入。", syncFail: "🔴 連線失敗，請檢查網路。",
+                alertEmpty: "請填妥班別、班號及密碼！", alertVerifying: "驗證中...", alertPwdErr: "登入失敗：班別、班號或密碼錯誤！", alertSysErr: "系統發生錯誤。",
+                panel1Title: "📝 基本資料", userClass: "班別", userId: "班號(學號)", userName: "學生姓名",
+                panel2Title: "📊 歷來總分與六角能力指標", totalScoreText: "個人累積總得分", panel3Title: "📚 各學科得分小計", panel4Title: "🏅 榮譽徽章成就",
+                badgeLock: "未解鎖", noRecord: "目前查無雲端作答紀錄", scoreUnit: "分", unknownPlayer: "未知玩家",
                 subjects: { '中文': '中文', '英文': '英文', '數學': '數學', '人文': '人文', '科學': '科學', '其他': '其他' }
             },
             en: {
-                pageTitle: "👤 Profile & Competency Analysis",
-                backLink: "⬅️ Back to Main Portal",
-                themeBtn: "🎨 Switch Theme",
-                langBtn: "🌐 中文",
-                loginTitle: "System Authentication",
-                loginClass: "Class",
-                loginClassNo: "Class Number",
-                loginPassword: "E-book Password",
-                loginBtn: "Login to Profile",
-                syncLoading: "🔄 Loading cloud data center...",
-                syncSuccess: "🟢 Cloud data sync successful. Please login.",
-                syncFail: "🔴 Sync failed. Please check network.",
-                alertEmpty: "Please fill in Class, Class Number, and Password!",
-                alertVerifying: "Verifying...",
-                alertPwdErr: "Login Failed: Incorrect Class, Number, or Password!",
-                alertSysErr: "System error occurred. Please check ./password.csv path and permissions.",
-                panel1Title: "📝 Profile Information",
-                userClass: "Class",
-                userId: "Class No.",
-                userName: "Student Name",
-                panel2Title: "📊 Total Score & Radar Analytics",
-                totalScoreText: "Cumulative Score",
-                panel3Title: "📚 Subject Score Breakdown",
-                panel4Title: "🏅 Achievements & Badges (Disabled)",
-                badgeLock: "Locked",
-                noRecord: "No cloud quiz records found.",
-                scoreUnit: "pts",
-                unknownPlayer: "Unknown Player",
+                pageTitle: "👤 Profile & Competency Analysis", backLink: "⬅️ Back to Main Portal", themeBtn: "🎨 Switch Theme", langBtn: "🌐 中文",
+                loginTitle: "System Authentication", loginClass: "Class", loginClassNo: "Class Number", loginPassword: "E-book Password", loginBtn: "Login to Profile",
+                syncLoading: "🔄 Loading cloud data center...", syncSuccess: "🟢 Cloud data sync successful. Please login.", syncFail: "🔴 Sync failed. Please check network.",
+                alertEmpty: "Please fill in Class, Class Number, and Password!", alertVerifying: "Verifying...", alertPwdErr: "Login Failed!", alertSysErr: "System error occurred.",
+                panel1Title: "📝 Profile Information", userClass: "Class", userId: "Class No.", userName: "Student Name",
+                panel2Title: "📊 Total Score & Radar Analytics", totalScoreText: "Cumulative Score", panel3Title: "📚 Subject Score Breakdown", panel4Title: "🏅 Achievements & Badges",
+                badgeLock: "Locked", noRecord: "No records found.", scoreUnit: "pts", unknownPlayer: "Unknown Player",
                 subjects: { '中文': 'Chinese', '英文': 'English', '數學': 'Maths', '人文': 'Humanities', '科學': 'Science', '其他': 'Others' }
             }
         };
 
-        const COL_TIMESTAMP = 0; 
-        const COL_ID = 1;        
-        const COL_CLASS = 2;     
-        const COL_NAME = 3;      
-        const COL_SUBJECT = 4;   
-        const COL_SCORE = 6;     
-
-        const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1lwPiw4WVCorhjgpHycsahXoaPGPPZ7XR9OWWoImZq5g/gviz/tq?tqx=out:csv&gid=0';
-
         window.onload = function() {
-            applyTheme();
-            updateUIStrings();
-            fetchCloudData();
-            
-            // 監聽視窗大小改變，確保重繪時雷達圖保持最佳比例
-            window.addEventListener('resize', () => {
-                if (!document.getElementById('dashboard-section').classList.contains('hidden')) {
-                    renderRadarChart();
-                }
-            });
+            applyTheme(); updateUIStrings(); fetchCloudData();
+            window.addEventListener('resize', () => { if (!document.getElementById('dashboard-section').classList.contains('hidden')) renderRadarChart(); });
         };
 
-        function toggleTheme() {
-            currentTheme = (currentTheme === 'cyber') ? 'school' : 'cyber';
-            localStorage.setItem('ckcps_theme', currentTheme);
-            applyTheme();
-            if (!document.getElementById('dashboard-section').classList.contains('hidden')) {
-                renderRadarChart();
-            }
-        }
-
-        function applyTheme() {
-            const body = document.body;
-            if (currentTheme === 'school') body.classList.add('school-theme');
-            else body.classList.remove('school-theme');
-        }
-
-        function toggleLanguage() {
-            currentLang = (currentLang === 'zh') ? 'en' : 'zh';
-            localStorage.setItem('ckcps_lang', currentLang);
-            updateUIStrings();
-            
-            if (!document.getElementById('dashboard-section').classList.contains('hidden')) {
-                refreshSubjectListUI();
-                renderRadarChart();
-            }
-        }
+        function toggleTheme() { currentTheme = (currentTheme === 'cyber') ? 'school' : 'cyber'; localStorage.setItem('ckcps_theme', currentTheme); applyTheme(); if (!document.getElementById('dashboard-section').classList.contains('hidden')) renderRadarChart(); }
+        function applyTheme() { const body = document.body; if (currentTheme === 'school') body.classList.add('school-theme'); else body.classList.remove('school-theme'); }
+        function toggleLanguage() { currentLang = (currentLang === 'zh') ? 'en' : 'zh'; localStorage.setItem('ckcps_lang', currentLang); updateUIStrings(); if (!document.getElementById('dashboard-section').classList.contains('hidden')) { refreshSubjectListUI(); renderRadarChart(); renderBadges(); } }
 
         function updateUIStrings() {
             const t = i18n[currentLang];
-            document.getElementById('page-title').innerText = t.pageTitle;
-            document.getElementById('back-link').innerText = t.backLink;
-            document.getElementById('theme-btn').innerText = t.themeBtn;
-            document.getElementById('lang-btn').innerText = t.langBtn;
-            
-            document.getElementById('lbl-login-title').innerText = t.loginTitle;
-            document.getElementById('lbl-login-class').innerText = t.loginClass;
-            document.getElementById('lbl-login-classno').innerText = t.loginClassNo;
-            document.getElementById('lbl-login-password').innerText = t.loginPassword;
-            if (document.getElementById('btn-login').innerText !== i18n.zh.alertVerifying && document.getElementById('btn-login').innerText !== i18n.en.alertVerifying) {
-                document.getElementById('btn-login').innerText = t.loginBtn;
-            }
-
-            document.getElementById('lbl-panel1-title').innerText = t.panel1Title;
-            document.getElementById('lbl-user-class').innerText = t.userClass;
-            document.getElementById('lbl-user-id').innerText = t.userId;
-            document.getElementById('lbl-user-name').innerText = t.userName;
-            document.getElementById('lbl-panel2-title').innerText = t.panel2Title;
-            document.getElementById('lbl-total-score-text').innerText = t.totalScoreText;
-            document.getElementById('lbl-panel3-title').innerText = t.panel3Title;
-            document.getElementById('lbl-panel4-title').innerText = t.panel4Title;
-
-            const badges = document.querySelectorAll('#badge-container .badge-lock');
-            badges.forEach(b => b.innerText = t.badgeLock);
-            
+            document.getElementById('page-title').innerText = t.pageTitle; document.getElementById('back-link').innerText = t.backLink;
+            document.getElementById('theme-btn').innerText = t.themeBtn; document.getElementById('lang-btn').innerText = t.langBtn;
+            document.getElementById('lbl-login-title').innerText = t.loginTitle; document.getElementById('lbl-login-class').innerText = t.loginClass;
+            document.getElementById('lbl-login-classno').innerText = t.loginClassNo; document.getElementById('lbl-login-password').innerText = t.loginPassword;
+            if (document.getElementById('btn-login').innerText !== i18n.zh.alertVerifying && document.getElementById('btn-login').innerText !== i18n.en.alertVerifying) document.getElementById('btn-login').innerText = t.loginBtn;
+            document.getElementById('lbl-panel1-title').innerText = t.panel1Title; document.getElementById('lbl-user-class').innerText = t.userClass;
+            document.getElementById('lbl-user-id').innerText = t.userId; document.getElementById('lbl-user-name').innerText = t.userName;
+            document.getElementById('lbl-panel2-title').innerText = t.panel2Title; document.getElementById('lbl-total-score-text').innerText = t.totalScoreText;
+            document.getElementById('lbl-panel3-title').innerText = t.panel3Title; document.getElementById('lbl-panel4-title').innerText = t.panel4Title;
             const msgEl = document.getElementById('sync-msg');
-            if (msgEl.innerText.includes('🟢')) msgEl.innerText = t.syncSuccess;
-            if (msgEl.innerText.includes('🔴')) msgEl.innerText = t.syncFail;
-            if (msgEl.innerText.includes('🔄')) msgEl.innerText = t.syncLoading;
+            if (msgEl.innerText.includes('🟢')) msgEl.innerText = t.syncSuccess; if (msgEl.innerText.includes('🔴')) msgEl.innerText = t.syncFail; if (msgEl.innerText.includes('🔄')) msgEl.innerText = t.syncLoading;
         }
 
         function parseCSVLine(line) {
-            let parts = [];
-            let insideQuote = false;
-            let currentPart = '';
+            let parts = []; let insideQuote = false; let currentPart = '';
             for (let c = 0; c < line.length; c++) {
                 let char = line[c];
-                if (char === '"') { insideQuote = !insideQuote; }
-                else if (char === ',' && !insideQuote) { parts.push(currentPart.trim()); currentPart = ''; }
-                else { currentPart += char; }
-            }
-            parts.push(currentPart.trim());
-            return parts;
+                if (char === '"') insideQuote = !insideQuote;
+                else if (char === ',' && !insideQuote) { parts.push(currentPart.trim()); currentPart = ''; } 
+                else currentPart += char;
+            } parts.push(currentPart.trim()); return parts;
         }
 
         function getSubjectCategory(rawSubject) {
-            let rawSub = rawSubject ? rawSubject.trim() : "";
-            let subLower = rawSub.toLowerCase();
+            let rawSub = rawSubject ? rawSubject.trim() : ""; let subLower = rawSub.toLowerCase();
             if (subLower === 'chinese' || subLower === 'chinese-e' || rawSub === '中文') return '中文';
             if (subLower === 'english' || subLower === 'english-c' || rawSub === '英文') return '英文';
             if (subLower === 'maths' || rawSub === '數學') return '數學';
@@ -528,42 +313,51 @@
             return '其他';
         }
 
+        // 計算百分位數的數值門檻 (用於 Top 5% 學霸徽章)
+        function getPercentileValue(arr, percentile) {
+            if (arr.length === 0) return Infinity;
+            let sorted = [...arr].sort((a, b) => a - b);
+            let index = Math.ceil((percentile / 100) * sorted.length) - 1;
+            return sorted[index];
+        }
+
+        // 查詢該學生某科成績在全校的百分位排名 (0~100，越高代表贏過越多人)
+        function getStudentPercentile(subject, score) {
+            let arr = globalScoreArrays[subject];
+            if (!arr || arr.length === 0) return 0;
+            let countBelow = arr.filter(s => s <= score).length;
+            return (countBelow / arr.length) * 100;
+        }
+
         async function fetchCloudData() {
-            const t = i18n[currentLang];
-            const msgEl = document.getElementById('sync-msg');
+            const t = i18n[currentLang]; const msgEl = document.getElementById('sync-msg');
             try {
                 const response = await fetch(GOOGLE_SHEET_URL);
                 if (!response.ok) throw new Error();
-                let csvText = await response.text();
-                parseGoogleCSV(csvText);
-                
+                parseGoogleCSV(await response.text());
                 calculateGlobalStats(); 
-
-                msgEl.innerText = t.syncSuccess;
-                msgEl.style.color = "var(--accent)";
-            } catch (err) {
-                msgEl.innerText = t.syncFail;
-                msgEl.style.color = "var(--secondary)";
-            }
+                msgEl.innerText = t.syncSuccess; msgEl.style.color = "var(--accent)";
+            } catch (err) { msgEl.innerText = t.syncFail; msgEl.style.color = "var(--secondary)"; }
         }
 
         function parseGoogleCSV(text) {
-            const lines = text.split('\n');
-            rawDataStore = [];
-
+            const lines = text.split('\n'); rawDataStore = [];
             for (let i = 1; i < lines.length; i++) {
-                let line = lines[i].trim();
-                if (!line) continue;
-
+                let line = lines[i].trim(); if (!line) continue;
                 let parts = parseCSVLine(line);
-
                 if (parts.length > Math.max(COL_CLASS, COL_SCORE)) {
-                    rawDataStore.push({
-                        id: parts[COL_ID] || '-',
-                        className: parts[COL_CLASS],
-                        name: parts[COL_NAME],
-                        subject: parts[COL_SUBJECT],
-                        score: parseFloat(parts[COL_SCORE]) || 0
+                    // 解析時間戳記字串為 YYYY-MM-DD
+                    let dateStr = parts[COL_DATE] ? parts[COL_DATE].split(' ')[0] : '';
+                    rawDataStore.push({ 
+                        dateStr: dateStr,
+                        id: parts[COL_ID] || '-', 
+                        className: parts[COL_CLASS] || '', 
+                        name: parts[COL_NAME] || '', 
+                        subject: parts[COL_SUBJECT] || '', 
+                        level: parts[COL_LEVEL] || '',
+                        type: parts[COL_TYPE] || '',
+                        type: parts[COL_TARGET] || '',
+                        score: parseFloat(parts[COL_SCORE]) || 0 
                     });
                 }
             }
@@ -571,47 +365,39 @@
 
         function calculateGlobalStats() {
             let studentTotals = {}; 
+            globalScoreArrays = { total: [], '中文': [], '英文': [], '數學': [], '人文': [], '科學': [] };
             
             rawDataStore.forEach(rec => {
                 let key = rec.className.toUpperCase() + "_" + rec.name;
-                if (!studentTotals[key]) {
-                    studentTotals[key] = { '中文': 0, '英文': 0, '數學': 0, '人文': 0, '科學': 0, '其他': 0 };
-                }
+                if (!studentTotals[key]) studentTotals[key] = { '中文': 0, '英文': 0, '數學': 0, '人文': 0, '科學': 0, '其他': 0, total: 0 };
                 let subKey = getSubjectCategory(rec.subject);
                 studentTotals[key][subKey] += rec.score;
+                studentTotals[key].total += rec.score;
             });
 
-            globalSubjectStats = {
-                '中文': { max: 0, min: Infinity },
-                '英文': { max: 0, min: Infinity },
-                '數學': { max: 0, min: Infinity },
-                '人文': { max: 0, min: Infinity },
-                '科學': { max: 0, min: Infinity },
-                '其他': { max: 0, min: Infinity }
-            };
+            globalSubjectStats = { '中文': { max: 0, min: Infinity }, '英文': { max: 0, min: Infinity }, '數學': { max: 0, min: Infinity }, '人文': { max: 0, min: Infinity }, '科學': { max: 0, min: Infinity }, '其他': { max: 0, min: Infinity } };
 
-            Object.values(studentTotals).forEach(studentData => {
-                Object.keys(studentData).forEach(sub => {
-                    let score = studentData[sub];
-                    if (score > 0) {
-                        if (score > globalSubjectStats[sub].max) globalSubjectStats[sub].max = score;
-                        if (score < globalSubjectStats[sub].min) globalSubjectStats[sub].min = score;
+            Object.values(studentTotals).forEach(sd => {
+                globalScoreArrays.total.push(sd.total);
+                ['中文', '英文', '數學', '人文', '科學'].forEach(sub => {
+                    let s = sd[sub];
+                    if (s > 0) {
+                        globalScoreArrays[sub].push(s);
+                        if (s > globalSubjectStats[sub].max) globalSubjectStats[sub].max = s;
+                        if (s < globalSubjectStats[sub].min) globalSubjectStats[sub].min = s;
                     }
                 });
             });
 
-            Object.keys(globalSubjectStats).forEach(sub => {
-                if (globalSubjectStats[sub].min === Infinity) {
-                    globalSubjectStats[sub].min = 0;
-                }
+            Object.keys(globalSubjectStats).forEach(sub => { if (globalSubjectStats[sub].min === Infinity) globalSubjectStats[sub].min = 0; });
+
+            percentileThresholds.total = getPercentileValue(globalScoreArrays.total, 95);
+            ['中文', '英文', '數學', '人文', '科學'].forEach(sub => {
+                percentileThresholds.subjects[sub] = getPercentileValue(globalScoreArrays[sub], 95);
             });
         }
 
-        let currentStudentData = {
-            class: '', studentId: '', name: '', totalScore: 0,
-            subjects: {}, 
-            radar: { '中文': 0, '英文': 0, '數學': 0, '人文': 0, '科學': 0, '其他': 0 }
-        };
+        let currentStudentData = { class: '', studentId: '', name: '', totalScore: 0, highScoreCount: 0, subjects: {}, radar: {}, flags: {} };
 
         async function executeLogin() {
             const t = i18n[currentLang];
@@ -619,70 +405,76 @@
             const inputClassNo = document.getElementById('login-classno').value.trim();
             const inputPassword = document.getElementById('login-password').value.trim();
 
-            if (!inputClass || !inputClassNo || !inputPassword) {
-                alert(t.alertEmpty);
-                return;
-            }
-
-            const loginBtn = document.querySelector('.login-btn');
-            loginBtn.innerText = t.alertVerifying;
-            loginBtn.disabled = true;
+            if (!inputClass || !inputClassNo || !inputPassword) { alert(t.alertEmpty); return; }
+            const loginBtn = document.querySelector('.login-btn'); loginBtn.innerText = t.alertVerifying; loginBtn.disabled = true;
 
             try {
                 const pwdPath = atob('Li9wYXNzd29yZC5jc3Y='); 
                 const pwdResponse = await fetch(pwdPath);
-                
                 if (!pwdResponse.ok) throw new Error();
+                const pwdLines = (await pwdResponse.text()).split('\n');
                 
-                const pwdText = await pwdResponse.text();
-                const pwdLines = pwdText.split('\n');
-                
-                let isAuthenticated = false;
-                let studentName = "";
-
+                let isAuthenticated = false; let studentName = "";
                 for (let i = 0; i < pwdLines.length; i++) {
-                    const line = pwdLines[i].trim();
-                    if (!line) continue;
-                    
+                    const line = pwdLines[i].trim(); if (!line) continue;
                     const cols = parseCSVLine(line);
-                    if (cols.length >= 4) {
-                        const rowClass = cols[0].toUpperCase();
-                        const rowClassNo = cols[1];
-                        const pass1 = cols[3]; 
-                        
-                        if (rowClass === inputClass && rowClassNo === inputClassNo) {
-                            if (inputPassword === pass1) {
-                                isAuthenticated = true;
-                                studentName = cols.length >= 4 ? cols[2] : t.unknownPlayer;
-                                break;
-                            }
-                        }
+                    if (cols.length >= 4 && cols[0].toUpperCase() === inputClass && cols[1] === inputClassNo && inputPassword === cols[3]) {
+                        isAuthenticated = true; studentName = cols.length >= 4 ? cols[2] : t.unknownPlayer; break;
                     }
                 }
+                if (!isAuthenticated) { alert(t.alertPwdErr); return; }
 
-                if (!isAuthenticated) {
-                    alert(t.alertPwdErr);
-                    return;
-                }
+                // 篩選該學生的所有紀錄並按日期排序
+                let records = rawDataStore.filter(item => item.className.toUpperCase() === inputClass && item.name === studentName);
+                records.sort((a, b) => new Date(a.dateStr) - new Date(b.dateStr));
 
-                let studentRecords = rawDataStore.filter(item => item.className.toUpperCase() === inputClass && item.name === studentName);
+                // 抓取班級級別數值 (例如 "3G" -> 3)
+                let classLevel = parseInt((inputClass.match(/\d+/) || [1])[0]);
 
-                currentStudentData.class = inputClass;
-                currentStudentData.name = studentName;
-                currentStudentData.studentId = inputClassNo; 
-                currentStudentData.totalScore = 0;
-                currentStudentData.subjects = {};
-                currentStudentData.radar = { '中文': 0, '英文': 0, '數學': 0, '人文': 0, '科學': 0, '其他': 0 };
+                currentStudentData = {
+                    class: inputClass, name: studentName, studentId: inputClassNo, totalScore: 0, highScoreCount: 0,
+                    subjects: {}, radar: { '中文': 0, '英文': 0, '數學': 0, '人文': 0, '科學': 0, '其他': 0 },
+                    flags: { hasOverLevel: false, hasSpeedPlayer: false, maxLoginStreak: 0, subjectProgress: {}, maxScores: {} }
+                };
 
-                studentRecords.forEach(rec => {
+                let uniqueDates = [...new Set(records.map(r => r.dateStr).filter(d => d))].sort();
+                let maxStreak = 0; let currStreak = 0; let prevD = null;
+                uniqueDates.forEach(dStr => {
+                    let currD = new Date(dStr);
+                    if (!prevD) currStreak = 1;
+                    else {
+                        let diffDays = Math.round(Math.abs(currD - prevD) / (1000 * 60 * 60 * 24));
+                        if (diffDays === 1) currStreak++; else currStreak = 1;
+                    }
+                    if (currStreak > maxStreak) maxStreak = currStreak;
+                    prevD = currD;
+                });
+                currentStudentData.flags.maxLoginStreak = maxStreak;
+                document.getElementById('user-streak').innerText = `${maxStreak} 天`;
+
+                records.forEach(rec => {
                     currentStudentData.totalScore += rec.score;
                     let subKey = getSubjectCategory(rec.subject);
-
-                    if (!currentStudentData.subjects[subKey]) {
-                        currentStudentData.subjects[subKey] = 0;
-                    }
+                    
+                    if (!currentStudentData.subjects[subKey]) currentStudentData.subjects[subKey] = 0;
                     currentStudentData.subjects[subKey] += rec.score;
                     currentStudentData.radar[subKey] += rec.score;
+
+                    if (rec.score >= 10) currentStudentData.highScoreCount++;
+
+                    // 判斷越級挑戰與速度選手
+                    let recLevelNum = parseInt((rec.level.match(/\d+/) || [classLevel])[0]); // 若無填則預設為自己班級
+                    if (recLevelNum > classLevel && rec.score >= 100) currentStudentData.flags.hasOverLevel = true;
+                    if (recLevelNum >= classLevel && rec.score >= 150 && rec.type.toLowerCase().includes('time')) currentStudentData.flags.hasSpeedPlayer = true;
+
+                    // 計算各科自我突破次數
+                    if (currentStudentData.flags.maxScores[subKey] === undefined) {
+                        currentStudentData.flags.maxScores[subKey] = rec.score; // 第一次紀錄為初始最高分
+                        currentStudentData.flags.subjectProgress[subKey] = 0;
+                    } else if (rec.score > currentStudentData.flags.maxScores[subKey]) {
+                        currentStudentData.flags.maxScores[subKey] = rec.score;
+                        currentStudentData.flags.subjectProgress[subKey]++;
+                    }
                 });
 
                 document.getElementById('user-class').innerText = currentStudentData.class;
@@ -690,146 +482,73 @@
                 document.getElementById('user-name').innerText = currentStudentData.name;
                 document.getElementById('user-total-score').innerText = currentStudentData.totalScore;
 
-                refreshSubjectListUI();
-                renderRadarChart();
+                refreshSubjectListUI(); renderRadarChart(); renderBadges();
+                document.getElementById('login-section').classList.add('hidden'); document.getElementById('dashboard-section').classList.remove('hidden');
 
-                document.getElementById('login-section').classList.add('hidden');
-                document.getElementById('dashboard-section').classList.remove('hidden');
+            } catch (err) { alert(t.alertSysErr); console.error(err); } 
+            finally { loginBtn.innerText = t.loginBtn; loginBtn.disabled = false; }
+        }
 
-            } catch (err) {
-                alert(t.alertSysErr);
-                console.error(err);
-            } finally {
-                loginBtn.innerText = t.loginBtn;
-                loginBtn.disabled = false;
-            }
+        function renderBadges() {
+            const container = document.getElementById('badge-container');
+            container.innerHTML = '';
+            BADGES_CONFIG.forEach(badge => {
+                const isUnlocked = badge.condition(currentStudentData, percentileThresholds);
+                const displayName = isUnlocked ? (currentLang === 'zh' ? badge.nameZh : badge.nameEn) : i18n[currentLang].badgeLock;
+                const cssClass = isUnlocked ? 'badge-item unlocked' : 'badge-item';
+                container.insertAdjacentHTML('beforeend', `<div class="${cssClass}"><span class="badge-icon">${badge.icon}</span><span class="badge-text">${displayName}</span></div>`);
+            });
         }
 
         function refreshSubjectListUI() {
-            const t = i18n[currentLang];
-            const subListEl = document.getElementById('user-subject-list');
-            subListEl.innerHTML = '';
-            
+            const t = i18n[currentLang]; const subListEl = document.getElementById('user-subject-list'); subListEl.innerHTML = '';
             if (Object.keys(currentStudentData.subjects).length === 0) {
                 subListEl.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-dim);">${t.noRecord}</div>`;
             } else {
                 Object.keys(currentStudentData.subjects).sort().forEach(sub => {
-                    const div = document.createElement('div');
-                    div.className = 'subject-item';
-                    const displaySubName = t.subjects[sub] || sub; 
-                    div.innerHTML = `<span class="subject-name">${displaySubName}</span><span class="subject-score">${currentStudentData.subjects[sub]} ${t.scoreUnit}</span>`;
+                    const div = document.createElement('div'); div.className = 'subject-item';
+                    div.innerHTML = `<span class="subject-name">${t.subjects[sub] || sub}</span><span class="subject-score">${currentStudentData.subjects[sub]} ${t.scoreUnit}</span>`;
                     subListEl.appendChild(div);
                 });
             }
         }
 
-        function getRadiusRatio(subjectName, score) {
+        function getRadiusRatio(sub, score) {
             if (score <= 0) return 0; 
-            
-            let stats = globalSubjectStats[subjectName];
+            let stats = globalSubjectStats[sub];
             if (!stats || stats.max === 0) return 0;
-            
-            let sMax = stats.max; 
-            let sMin = stats.min; 
-            
-            if (sMax === sMin) return 1.0; 
-            
-            let level = 1 + 4 * ((score - sMin) / (sMax - sMin));
+            if (stats.max === stats.min) return 1.0; 
+            let level = 1 + 4 * ((score - stats.min) / (stats.max - stats.min));
             return Math.max(0, Math.min(1.0, level / 5.0)); 
         }
 
         function renderRadarChart() {
-            const canvas = document.getElementById('radarCanvas');
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const radius = 120;
-            
-            const baseLabels = ['中文', '英文', '數學', '人文', '科學', '其他'];
-            const t = i18n[currentLang];
-
-            const computedStyle = getComputedStyle(document.body);
-            const gridColor = computedStyle.getPropertyValue('--chart-grid').trim();
-            const fillColor = computedStyle.getPropertyValue('--chart-fill').trim();
-            const textMain = computedStyle.getPropertyValue('--text-main').trim();
-            const accentColor = computedStyle.getPropertyValue('--secondary').trim();
+            const canvas = document.getElementById('radarCanvas'); const ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = canvas.width / 2; const centerY = canvas.height / 2; const radius = 120; const baseLabels = ['中文', '英文', '數學', '人文', '科學', '其他']; const t = i18n[currentLang];
+            const computedStyle = getComputedStyle(document.body); const gridColor = computedStyle.getPropertyValue('--chart-grid').trim(); const fillColor = computedStyle.getPropertyValue('--chart-fill').trim(); const textMain = computedStyle.getPropertyValue('--text-main').trim(); const accentColor = computedStyle.getPropertyValue('--secondary').trim();
 
             for (let side = 5; side > 0; side--) {
-                let r = radius * (side / 5);
-                ctx.beginPath();
-                for (let i = 0; i < 6; i++) {
-                    let angle = (i * Math.PI / 3) - Math.PI / 2;
-                    let x = centerX + r * Math.cos(angle);
-                    let y = centerY + r * Math.sin(angle);
-                    if (i === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
-                }
-                ctx.closePath();
-                ctx.strokeStyle = gridColor;
-                ctx.lineWidth = 1;
-                ctx.stroke();
+                let r = radius * (side / 5); ctx.beginPath();
+                for (let i = 0; i < 6; i++) { let angle = (i * Math.PI / 3) - Math.PI / 2; let x = centerX + r * Math.cos(angle); let y = centerY + r * Math.sin(angle); if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
+                ctx.closePath(); ctx.strokeStyle = gridColor; ctx.lineWidth = 1; ctx.stroke();
             }
 
-            ctx.font = "bold 14px sans-serif";
-            ctx.fillStyle = textMain;
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-
+            ctx.font = "bold 14px sans-serif"; ctx.fillStyle = textMain; ctx.textAlign = "center"; ctx.textBaseline = "middle";
             for (let i = 0; i < 6; i++) {
-                let angle = (i * Math.PI / 3) - Math.PI / 2;
-                
-                let x = centerX + radius * Math.cos(angle);
-                let y = centerY + radius * Math.sin(angle);
-                ctx.beginPath();
-                ctx.moveTo(centerX, centerY);
-                ctx.lineTo(x, y);
-                ctx.strokeStyle = gridColor;
-                ctx.stroke();
-
-                let labelX = centerX + (radius + 28) * Math.cos(angle);
-                let labelY = centerY + (radius + 15) * Math.sin(angle);
-                
-                const translatedLabel = t.subjects[baseLabels[i]] || baseLabels[i];
-                ctx.fillText(translatedLabel, labelX, labelY);
+                let angle = (i * Math.PI / 3) - Math.PI / 2; let x = centerX + radius * Math.cos(angle); let y = centerY + radius * Math.sin(angle);
+                ctx.beginPath(); ctx.moveTo(centerX, centerY); ctx.lineTo(x, y); ctx.strokeStyle = gridColor; ctx.stroke();
+                let labelX = centerX + (radius + 28) * Math.cos(angle); let labelY = centerY + (radius + 15) * Math.sin(angle); ctx.fillText(t.subjects[baseLabels[i]] || baseLabels[i], labelX, labelY);
             }
 
             ctx.beginPath();
             for (let i = 0; i < 6; i++) {
-                let angle = (i * Math.PI / 3) - Math.PI / 2;
-                let val = currentStudentData.radar[baseLabels[i]];
-                
-                let rRatio = getRadiusRatio(baseLabels[i], val); 
-                let r = radius * rRatio;
-                
-                let x = centerX + r * Math.cos(angle);
-                let y = centerY + r * Math.sin(angle);
-                
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
+                let angle = (i * Math.PI / 3) - Math.PI / 2; let r = radius * getRadiusRatio(baseLabels[i], currentStudentData.radar[baseLabels[i]]); let x = centerX + r * Math.cos(angle); let y = centerY + r * Math.sin(angle);
+                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
             }
-            ctx.closePath();
-            ctx.fillStyle = fillColor;
-            ctx.fill();
-            ctx.strokeStyle = accentColor;
-            ctx.lineWidth = 3;
-            ctx.stroke();
-
+            ctx.closePath(); ctx.fillStyle = fillColor; ctx.fill(); ctx.strokeStyle = accentColor; ctx.lineWidth = 3; ctx.stroke();
             for (let i = 0; i < 6; i++) {
-                let angle = (i * Math.PI / 3) - Math.PI / 2;
-                let val = currentStudentData.radar[baseLabels[i]];
-                
-                let rRatio = getRadiusRatio(baseLabels[i], val);
-                let r = radius * rRatio;
-                
-                let x = centerX + r * Math.cos(angle);
-                let y = centerY + r * Math.sin(angle);
-                
-                ctx.beginPath();
-                ctx.arc(x, y, 4, 0, 2 * Math.PI);
-                ctx.fillStyle = textMain;
-                ctx.fill();
+                let angle = (i * Math.PI / 3) - Math.PI / 2; let r = radius * getRadiusRatio(baseLabels[i], currentStudentData.radar[baseLabels[i]]); let x = centerX + r * Math.cos(angle); let y = centerY + r * Math.sin(angle);
+                ctx.beginPath(); ctx.arc(x, y, 4, 0, 2 * Math.PI); ctx.fillStyle = textMain; ctx.fill();
             }
         }
     </script>
