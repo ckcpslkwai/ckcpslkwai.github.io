@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>排行榜 V2607131035🏆</title>
+  <title>排行榜 V2607111211🏆</title>
   <style>
     /* 基礎變數 (預設暗色) */
     :root {
@@ -74,46 +74,8 @@
     header { text-align: center; padding: 5px 0; flex-shrink: 0; }
     h1 { font-size: 2rem; font-weight: 900; color: var(--accent); text-shadow: 0 0 10px rgba(0,0,0,0.1); }
     
-    /* 主容器佈局：左側 QR 佔 10% (1fr)，右側排行榜佔 90% (9fr) */
-    .main-wrapper { 
-      display: grid; 
-      grid-template-columns: 1fr 9fr; 
-      gap: 12px; 
-      flex-grow: 1; 
-      margin-top: 4px; 
-      margin-bottom: 10px; 
-      min-height: 0; 
-    }
-
-    /* 左側 QR 面板 */
-    .qr-panel { 
-      background: var(--panel-bg); 
-      border: 2px solid var(--border-color); 
-      border-radius: 15px; 
-      padding: 10px; 
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      justify-content: center; 
-      transition: background 0.3s, border-color 0.3s; 
-    }
-    .qr-panel iframe { 
-      width: 100%; 
-      aspect-ratio: 1; 
-      border: none; 
-      border-radius: 8px; 
-      background: #ffffff; 
-    }
-    .qr-text { 
-      margin-top: 10px; 
-      text-align: center; 
-      color: var(--text-main); 
-      font-size: clamp(0.9rem, 1.2vw, 1.2rem); 
-      line-height: 1.3; 
-    }
-
-    /* 排行榜網格 (放在右側 9fr 內部) */
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; min-height: 0; }
+    /* 排行榜網格 */
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; flex-grow: 1; margin-top: 4px; margin-bottom: 10px; min-height: 0; }
     
     /* 排行榜面板內部與行距 */
     .panel { background: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 15px; padding: 6px 10px; display: flex; flex-direction: column; overflow: hidden; transition: background 0.3s, border-color 0.3s; }
@@ -132,7 +94,30 @@
     .rank-2 td { background: linear-gradient(135deg, #ffffff 0%, #94a3b8 50%, #e2e8f0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .rank-3 td { background: linear-gradient(135deg, #ffedd5 0%, #ea580c 50%, #b45309 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     
-    #bus-eta-container { height: 11vh; background: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 12px; margin-bottom: 8px; display: flex; flex-direction: column; justify-content: center; padding: 6px 15px; gap: 4px; flex-shrink: 0; transition: background 0.3s; }
+    /* 底部佈局區塊 (QR + 巴士/跑馬燈) */
+    .bottom-section { display: flex; gap: 10px; flex-shrink: 0; }
+    
+    /* 左側 QR Code 區塊 */
+    .qr-container { 
+      flex: 0 0 12%; 
+      min-width: 130px; 
+      background: var(--panel-bg); 
+      border: 2px solid var(--border-color); 
+      border-radius: 12px; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; 
+      padding: 8px; 
+      transition: background 0.3s, border-color 0.3s; 
+    }
+    .qr-image { width: 100%; max-height: 65%; object-fit: contain; border-radius: 8px; background: white; }
+    .qr-text { margin-top: 8px; font-size: 1.2rem; color: var(--accent); text-align: center; line-height: 1.2; font-weight: 900; }
+
+    /* 右側 巴士與跑馬燈 區塊 */
+    .bottom-right-panel { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+
+    #bus-eta-container { height: 11vh; background: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 12px; display: flex; flex-direction: column; justify-content: center; padding: 6px 15px; gap: 4px; flex-shrink: 0; transition: background 0.3s; }
     .bus-station-row { display: flex; align-items: center; gap: 15px; width: 100%; overflow: hidden; white-space: nowrap; }
     .bus-station-name { font-size: 1.3rem; color: var(--accent); border-right: 1px solid var(--border-color); padding-right: 10px; flex-shrink: 0; font-weight: bold; }
     .bus-route-item { display: inline-flex; align-items: center; background: rgba(128,128,128,0.1); padding: 4px 10px; border-radius: 8px; gap: 8px; font-size: 1.3rem; }
@@ -166,27 +151,26 @@
     <h1 id="main-title">載入中...</h1>
   </header>
 
-  <!-- 新增的主容器 Wrapper -->
-  <div class="main-wrapper">
-    <!-- 最左側 QR 空間 -->
-    <aside class="qr-panel">
-      <iframe src="QR.html" title="QR Code"></iframe>
-      <div class="qr-text">
-        掃瞄加入<br>Scan to join
+  <main class="grid" id="gridPanels"></main>
+
+  <div class="bottom-section">
+    
+    <div class="qr-container">
+      <img src="QR.png" alt="QR Code" class="qr-image">
+      <div class="qr-text">掃瞄加入<br>Scan to join</div>
+    </div>
+
+    <div class="bottom-right-panel">
+      <div id="bus-eta-container">
+        <div class="bus-station-row"><span style="color: var(--text-dim); font-size: 1.2rem;">正在加載 嶺南大學 巴士時間...</span></div>
+        <div class="bus-station-row"><span style="color: var(--text-dim); font-size: 1.2rem;">正在加載 學校大門 巴士時間...</span></div>
       </div>
-    </aside>
 
-    <!-- 原本的排行榜網格 -->
-    <main class="grid" id="gridPanels"></main>
-  </div>
+      <div id="marquee-container">
+        <div id="marquee-text">資料載入中...</div>
+      </div>
+    </div>
 
-  <div id="bus-eta-container">
-    <div class="bus-station-row"><span style="color: var(--text-dim); font-size: 1.2rem;">正在加載 嶺南大學 巴士時間...</span></div>
-    <div class="bus-station-row"><span style="color: var(--text-dim); font-size: 1.2rem;">正在加載 學校大門 巴士時間...</span></div>
-  </div>
-
-  <div id="marquee-container">
-    <div id="marquee-text">資料載入中...</div>
   </div>
 
   <script>
