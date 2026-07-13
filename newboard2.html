@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>排行榜 V2607111211🏆</title>
+  <title>排行榜 V2607131031🏆</title>
   <style>
     /* 基礎變數 (預設暗色) */
     :root {
@@ -74,8 +74,46 @@
     header { text-align: center; padding: 5px 0; flex-shrink: 0; }
     h1 { font-size: 2rem; font-weight: 900; color: var(--accent); text-shadow: 0 0 10px rgba(0,0,0,0.1); }
     
-    /* 排行榜網格 */
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; flex-grow: 1; margin-top: 4px; margin-bottom: 10px; min-height: 0; }
+    /* 主容器佈局：左側 QR 佔 10% (1fr)，右側排行榜佔 90% (9fr) */
+    .main-wrapper { 
+      display: grid; 
+      grid-template-columns: 1fr 9fr; 
+      gap: 12px; 
+      flex-grow: 1; 
+      margin-top: 4px; 
+      margin-bottom: 10px; 
+      min-height: 0; 
+    }
+
+    /* 左側 QR 面板 */
+    .qr-panel { 
+      background: var(--panel-bg); 
+      border: 2px solid var(--border-color); 
+      border-radius: 15px; 
+      padding: 10px; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; 
+      transition: background 0.3s, border-color 0.3s; 
+    }
+    .qr-panel iframe { 
+      width: 100%; 
+      aspect-ratio: 1; 
+      border: none; 
+      border-radius: 8px; 
+      background: #ffffff; 
+    }
+    .qr-text { 
+      margin-top: 10px; 
+      text-align: center; 
+      color: var(--text-main); 
+      font-size: clamp(0.9rem, 1.2vw, 1.2rem); 
+      line-height: 1.3; 
+    }
+
+    /* 排行榜網格 (放在右側 9fr 內部) */
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; min-height: 0; }
     
     /* 排行榜面板內部與行距 */
     .panel { background: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 15px; padding: 6px 10px; display: flex; flex-direction: column; overflow: hidden; transition: background 0.3s, border-color 0.3s; }
@@ -128,7 +166,19 @@
     <h1 id="main-title">載入中...</h1>
   </header>
 
-  <main class="grid" id="gridPanels"></main>
+  <!-- 新增的主容器 Wrapper -->
+  <div class="main-wrapper">
+    <!-- 最左側 QR 空間 -->
+    <aside class="qr-panel">
+      <iframe src="QR.html" title="QR Code"></iframe>
+      <div class="qr-text">
+        掃瞄加入<br>Scan to join
+      </div>
+    </aside>
+
+    <!-- 原本的排行榜網格 -->
+    <main class="grid" id="gridPanels"></main>
+  </div>
 
   <div id="bus-eta-container">
     <div class="bus-station-row"><span style="color: var(--text-dim); font-size: 1.2rem;">正在加載 嶺南大學 巴士時間...</span></div>
