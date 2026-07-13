@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>排行榜 V2607131046🏆</title>
+  <title>排行榜 V2607131049🏆</title>
   <style>
     /* 基礎變數 (預設暗色) */
     :root {
@@ -74,8 +74,16 @@
     header { text-align: center; padding: 5px 0; flex-shrink: 0; }
     h1 { font-size: 2rem; font-weight: 900; color: var(--accent); text-shadow: 0 0 10px rgba(0,0,0,0.1); }
     
-    /* 排行榜網格 */
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; flex-grow: 1; margin-top: 4px; margin-bottom: 10px; min-height: 0; }
+    /* 新增佈局容器 */
+    .main-layout { display: flex; flex-direction: row; gap: 10px; flex-grow: 1; min-height: 0; margin-bottom: 10px; }
+    
+    /* QR 區域 */
+    .qr-side { width: 15%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 15px; padding: 10px; }
+    .qr-side img { width: 100%; max-width: 150px; height: auto; border-radius: 8px; }
+    .qr-text { margin-top: 10px; text-align: center; font-size: 1.2rem; line-height: 1.4; color: var(--text-main); }
+
+    /* 排行榜網格 (縮窄) */
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; flex-grow: 1; min-height: 0; }
     
     /* 排行榜面板內部與行距 */
     .panel { background: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 15px; padding: 6px 10px; display: flex; flex-direction: column; overflow: hidden; transition: background 0.3s, border-color 0.3s; }
@@ -94,30 +102,7 @@
     .rank-2 td { background: linear-gradient(135deg, #ffffff 0%, #94a3b8 50%, #e2e8f0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .rank-3 td { background: linear-gradient(135deg, #ffedd5 0%, #ea580c 50%, #b45309 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     
-    /* 底部佈局區塊 (QR + 巴士/跑馬燈) */
-    .bottom-section { display: flex; gap: 10px; flex-shrink: 0; }
-    
-    /* 左側 QR Code 區塊 */
-    .qr-container { 
-      flex: 0 0 12%; 
-      min-width: 130px; 
-      background: var(--panel-bg); 
-      border: 2px solid var(--border-color); 
-      border-radius: 12px; 
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      justify-content: center; 
-      padding: 8px; 
-      transition: background 0.3s, border-color 0.3s; 
-    }
-    .qr-image { width: 100%; max-height: 65%; object-fit: contain; border-radius: 8px; background: white; }
-    .qr-text { margin-top: 8px; font-size: 1.2rem; color: var(--accent); text-align: center; line-height: 1.2; font-weight: 900; }
-
-    /* 右側 巴士與跑馬燈 區塊 */
-    .bottom-right-panel { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-
-    #bus-eta-container { height: 11vh; background: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 12px; display: flex; flex-direction: column; justify-content: center; padding: 6px 15px; gap: 4px; flex-shrink: 0; transition: background 0.3s; }
+    #bus-eta-container { height: 11vh; background: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 12px; margin-bottom: 8px; display: flex; flex-direction: column; justify-content: center; padding: 6px 15px; gap: 4px; flex-shrink: 0; transition: background 0.3s; }
     .bus-station-row { display: flex; align-items: center; gap: 15px; width: 100%; overflow: hidden; white-space: nowrap; }
     .bus-station-name { font-size: 1.3rem; color: var(--accent); border-right: 1px solid var(--border-color); padding-right: 10px; flex-shrink: 0; font-weight: bold; }
     .bus-route-item { display: inline-flex; align-items: center; background: rgba(128,128,128,0.1); padding: 4px 10px; border-radius: 8px; gap: 8px; font-size: 1.3rem; }
@@ -151,26 +136,21 @@
     <h1 id="main-title">載入中...</h1>
   </header>
 
-  <main class="grid" id="gridPanels"></main>
-
-  <div class="bottom-section">
-    
-    <div class="qr-container">
-      <img src="QR.png" alt="QR Code" class="qr-image">
-      <div class="qr-text">掃瞄加入Scan to join</div>
+  <div class="main-layout">
+    <div class="qr-side">
+      <img src="QR.png" alt="QR Code">
+      <div class="qr-text">掃瞄加入<br>Scan to join</div>
     </div>
+    <main class="grid" id="gridPanels"></main>
+  </div>
 
-    <div class="bottom-right-panel">
-      <div id="bus-eta-container">
-        <div class="bus-station-row"><span style="color: var(--text-dim); font-size: 1.2rem;">正在加載 嶺南大學 巴士時間...</span></div>
-        <div class="bus-station-row"><span style="color: var(--text-dim); font-size: 1.2rem;">正在加載 學校大門 巴士時間...</span></div>
-      </div>
+  <div id="bus-eta-container">
+    <div class="bus-station-row"><span style="color: var(--text-dim); font-size: 1.2rem;">正在加載 嶺南大學 巴士時間...</span></div>
+    <div class="bus-station-row"><span style="color: var(--text-dim); font-size: 1.2rem;">正在加載 學校大門 巴士時間...</span></div>
+  </div>
 
-      <div id="marquee-container">
-        <div id="marquee-text">資料載入中...</div>
-      </div>
-    </div>
-
+  <div id="marquee-container">
+    <div id="marquee-text">資料載入中...</div>
   </div>
 
   <script>
@@ -409,20 +389,16 @@
       }).sort((a,b) => String(a.route).localeCompare(String(b.route), "en", {numeric:true}));
     }
 
-    // 自動縮小字體的函數（最左面巴士站名稱不包含在內）
+    // 自動縮小字體的函數
     function adjustBusRowsFontSize() {
       const rows = document.querySelectorAll('.bus-station-row');
       rows.forEach(row => {
-        // 1. 強制將巴士站名稱固定為原始大小 1.3rem，不參與縮小
         const stationName = row.querySelector('.bus-station-name');
         if (stationName) stationName.style.fontSize = '1.3rem';
-        
-        // 2. 獲取後面所有的巴士路線卡片
         const routeItems = row.querySelectorAll('.bus-route-item');
         routeItems.forEach(item => item.style.fontSize = '1.3rem');
         
         let currentSize = 1.3;
-        // 當內容超出時，只針對路線卡片（.bus-route-item）每次縮小 0.1rem
         while (row.scrollWidth > row.clientWidth && currentSize > 0.6) {
           currentSize -= 0.1;
           routeItems.forEach(item => {
@@ -452,8 +428,6 @@
         `;
       });
       document.getElementById("bus-eta-container").innerHTML = html;
-      
-      // 渲染完畢後，立即檢查並調整字體大小
       adjustBusRowsFontSize();
     }
 
@@ -470,16 +444,13 @@
       } catch (err) { console.error("讀取九巴 API 失敗", err); }
     }
 
-    // 初始化執行
     createPanels();
     updateData(); 
     fetchEta();
     updateWeather();
     
-    // 視窗大小改變時也重新計算字體，確保響應式呈現
     window.addEventListener('resize', adjustBusRowsFontSize);
 
-    // 定時器
     setInterval(updateData, 15000);
     setInterval(fetchEta, 30000);
     setInterval(updateWeather, 60000); 
