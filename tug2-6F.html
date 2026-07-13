@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS V2607121604</title>
+    <title>CKCPS WARS V2607131702</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
       
@@ -266,21 +266,20 @@
             line-height: 1.8;
         }
 
-        /* 改良後：排行榜格子設定 */
         .solo-leaderboard-grid {
-display: grid !important; /* 使用 !important 確保樣式優先 */
-    grid-template-columns: 1fr 1fr; /* 強制分為兩欄 */
-    gap: 20px;
-    width: 100%;
-    box-sizing: border-box;
-    margin-top: 10px;
-}
-        /* 確保手機版時恢復為單欄 */
-@media (max-width: 600px) {
-    .solo-leaderboard-grid {
-        grid-template-columns: 1fr;
-    }
-}
+            display: grid !important;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 600px) {
+            .solo-leaderboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
         .solo-left-col, .solo-right-col {
             border: 2px solid #334155;
             padding: 15px;
@@ -481,27 +480,28 @@ display: grid !important; /* 使用 !important 確保樣式優先 */
             </div>
         </div>
 
-<div id="game-screen" class="screen">
-    <div class="leaderboard">
-        <h3 id="leaderboard-title" style="color:#ff00aa; margin-top:0;">🏆 LEADERBOARD 🏆</h3>
-        <div id="leaderboard" style="text-align:left;"></div>
-    </div>
+        <div id="game-screen" class="screen">
+            <div class="leaderboard">
+                <h3 id="leaderboard-title" style="color:#ff00aa; margin-top:0;">🏆 LEADERBOARD 🏆</h3>
+                <div id="leaderboard" style="text-align:left;"></div>
+            </div>
 
-    <div class="game-controls">
-        <div class="game-controls-info">
-            <strong id="game-info" style="color:#00f9ff;"></strong>
-        </div>
-        <div class="game-controls-center">
-            <span id="timer-display" style="font-size:15px; background:#12122e; padding:6px 12px; border-radius:6px; border:2px solid #ff00aa; display:none;"></span>
-            <button id="pause-btn" onclick="togglePause()" style="padding:10px 20px; font-size:13px; border-color:#ff00aa; margin: 0;">⏸️ PAUSE</button>
-        </div>
-        <div class="game-controls-right">
-            <button onclick="endGame()" style="padding:10px 20px; font-size:13px; margin: 0;">END GAME</button>
+            <div class="game-controls">
+                <div class="game-controls-info">
+                    <strong id="game-info" style="color:#00f9ff;"></strong>
+                </div>
+                <div class="game-controls-center">
+                    <span id="timer-display" style="font-size:15px; background:#12122e; padding:6px 12px; border-radius:6px; border:2px solid #ff00aa; display:none;"></span>
+                    <button id="pause-btn" onclick="togglePause()" style="padding:10px 20px; font-size:13px; border-color:#ff00aa; margin: 0;">⏸️ PAUSE</button>
+                </div>
+                <div class="game-controls-right">
+                    <button onclick="endGame()" style="padding:10px 20px; font-size:13px; margin: 0;">END GAME</button>
+                </div>
+            </div>
+            
+            <div id="team-grid" class="team-grid"></div>
         </div>
     </div>
-    
-    <div id="team-grid" class="team-grid"></div>
-</div>
 
     <script>
         window.onerror = function(message, source, lineno, colno, error) {
@@ -792,13 +792,13 @@ display: grid !important; /* 使用 !important 確保樣式優先 */
                 const selectedSubject = document.getElementById('subject').value;
                 const selectedLevel = document.getElementById('level').value;
                 customQuestions = filterQuestionsBySubjectLevel(allParsed, selectedSubject, selectedLevel);
+                
                 if (customQuestions.length === 0) {
-                    alert(`⚠️ ${selectedLevel} ${selectedSubject} 的題目尚在準備中，現改為載入全題庫 ${allParsed.length}條問題. \nQuestions in ${selectedLevel} ${selectedSubject} are still being prepared. All ${allParsed.length} questions in the database are loaded.`);
-                    customQuestions = allParsed;
-                } else {
-
-                alert(`✅ 預設題庫已成功載入！共 ${customQuestions.length} 題匹配 ${selectedSubject} - ${selectedLevel}\nDefault database loaded.There are ${customQuestions.length} questions matching ${selectedSubject} - ${selectedLevel}.`);
+                    alert(`⚠️ ${selectedLevel} ${selectedSubject} 的題目尚在準備中，無法啟動遊戲。\n(No questions found for ${selectedLevel} ${selectedSubject}.)`);
+                    return; // 中斷遊戲啟動
                 }
+
+                alert(`✅ 預設題庫已成功載入！共 ${customQuestions.length} 題匹配 ${selectedSubject} - ${selectedLevel}\nDefault database loaded.`);
                 startGame();
             } catch (err) {
                 alert('❌ 無法載入 default.csv\n可能原因：檔案不在相同資料夾，或是瀏覽器阻擋了本地檔案讀取。請改用「上載」按鈕匯入。');
@@ -814,7 +814,13 @@ display: grid !important; /* 使用 !important 確保樣式優先 */
                 const selectedSubject = document.getElementById('subject').value;
                 const selectedLevel = document.getElementById('level').value;
                 customQuestions = filterQuestionsBySubjectLevel(allParsed, selectedSubject, selectedLevel);
-                if (customQuestions.length === 0) customQuestions = allParsed;
+                
+                if (customQuestions.length === 0) {
+                    alert(`⚠️ 匯入失敗：此 CSV 中沒有 ${selectedSubject} - ${selectedLevel} 的題目。`);
+                    customQuestions = [];
+                    return; // 中斷啟動
+                }
+                
                 alert(`✅ CSV 題庫已成功載入！\n共 ${customQuestions.length} 題匹配 ${selectedSubject} - ${selectedLevel}`);
             };
             reader.readAsText(file);
@@ -878,9 +884,14 @@ display: grid !important; /* 使用 !important 確保樣式優先 */
             pausedRemainingTime = 0;
             const pauseBtn = document.getElementById('pause-btn');
             if (pauseBtn) {
-                pauseBtn.innerHTML = '⏸️ PAUSE';
-                pauseBtn.style.borderColor = '#ff00aa';
-                pauseBtn.style.display = 'inline-block';
+                // 修改邏輯：Solo 模式隱藏 Pause 鍵
+                if (window.currentSoloPlayer) {
+                    pauseBtn.style.display = 'none';
+                } else {
+                    pauseBtn.innerHTML = '⏸️ PAUSE';
+                    pauseBtn.style.borderColor = '#ff00aa';
+                    pauseBtn.style.display = 'inline-block';
+                }
             }
 
             if (endMode === 'time') {
@@ -1177,7 +1188,6 @@ display: grid !important; /* 使用 !important 確保樣式優先 */
             const statusEl = document.getElementById(`status-${teamId}`);
             const buttons = document.querySelectorAll(`#options-${teamId} .option-btn`);
            
-            // 停用所有按鈕以防止連點
             buttons.forEach((btn, idx) => {
                 btn.disabled = true;
             });
@@ -1187,8 +1197,7 @@ display: grid !important; /* 使用 !important 確保樣式優先 */
             teams[teamIndex].multiplier = 1; 
 
             if (isCorrect) {
-                // 正確的情況
-                buttons[q.ans].style.borderColor = '#39ff14'; // 保持綠色邊框
+                buttons[q.ans].style.borderColor = '#39ff14';
                 teams[teamIndex].score += ptsToAdd;
                 statusEl.innerHTML = `<span style="color:#39ff14">✅ CORRECT! +${ptsToAdd}</span>`;
                 
@@ -1198,7 +1207,6 @@ display: grid !important; /* 使用 !important 確保樣式優先 */
                 
                 if (!window.currentSoloPlayer) updateLeaderboard();
                 
-                // 檢查是否結束遊戲
                 if (endMode === 'score' && teams[teamIndex].score >= targetScore) {
                     setTimeout(() => { 
                         if (window.currentSoloPlayer) alert(`🎉 Finished!`);
@@ -1208,7 +1216,6 @@ display: grid !important; /* 使用 !important 確保樣式優先 */
                     return;
                 }
 
-                // 處理連鎖獎勵 (Lucky Draw)
                 const crossed50 = Math.floor(teams[teamIndex].score / 50) > Math.floor(oldScore / 50);
                 pendingResultTimeouts[teamId] = setTimeout(() => {
                     if (isCorrect && crossed50 && !window.currentSoloPlayer) {
@@ -1221,19 +1228,15 @@ display: grid !important; /* 使用 !important 確保樣式優先 */
                 }, 1600);
 
             } else {
-                // 錯誤的情況：螢光強調 + 3秒暫停
                 const wrongBtn = buttons[selectedIndex];
                 
-                // 設定螢光色強調 (Neon Red/Pink)
                 wrongBtn.style.background = '#ff0055'; 
                 wrongBtn.style.boxShadow = '0 0 20px #ff0055';
                 wrongBtn.style.border = '2px solid #fff';
                 wrongBtn.style.color = '#fff';
                 
-                // 顯示錯誤訊息
                 statusEl.innerHTML = `<span style="color:#ff00aa">❌ Wrong! 凍結 3 秒!</span>`;
 
-                // 設定 3000ms (3秒) 的延遲懲罰
                 pendingResultTimeouts[teamId] = setTimeout(() => {
                     currentQuestions[teamIndex] = getRandomQuestion();
                     renderTeamQuestion(teamId, teamIndex);
