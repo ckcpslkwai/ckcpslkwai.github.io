@@ -398,10 +398,10 @@
 
             Object.keys(globalSubjectStats).forEach(sub => { if (globalSubjectStats[sub].min === Infinity) globalSubjectStats[sub].min = 0; });
 
-            // 計算 Top 5% 門檻 (即 95th Percentile)
-            percentileThresholds.total = getPercentileValue(arrays.total, 97);
+            // 計算 Top 3% 門檻 (即 98th Percentile)
+            percentileThresholds.total = getPercentileValue(arrays.total, 98);
             ['中文', '英文', '數學', '人文', '科學'].forEach(sub => {
-                percentileThresholds.subjects[sub] = getPercentileValue(arrays[sub], 97);
+                percentileThresholds.subjects[sub] = getPercentileValue(arrays[sub], 98);
             });
         }
 
