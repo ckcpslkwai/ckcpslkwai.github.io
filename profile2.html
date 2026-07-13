@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKCPS WARS - 個人檔案系統v2607122126</title>
+    <title>CKCPS WARS - 個人檔案系統v2607131649</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         
@@ -399,9 +399,9 @@
             Object.keys(globalSubjectStats).forEach(sub => { if (globalSubjectStats[sub].min === Infinity) globalSubjectStats[sub].min = 0; });
 
             // 計算 Top 5% 門檻 (即 95th Percentile)
-            percentileThresholds.total = getPercentileValue(arrays.total, 95);
+            percentileThresholds.total = getPercentileValue(arrays.total, 97);
             ['中文', '英文', '數學', '人文', '科學'].forEach(sub => {
-                percentileThresholds.subjects[sub] = getPercentileValue(arrays[sub], 95);
+                percentileThresholds.subjects[sub] = getPercentileValue(arrays[sub], 97);
             });
         }
 
