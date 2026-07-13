@@ -356,7 +356,7 @@
                         subject: parts[COL_SUBJECT] || '', 
                         level: parts[COL_LEVEL] || '',
                         type: parts[COL_TYPE] || '',
-                        type: parts[COL_TARGET] || '',
+                        target: parseFloat(parts[COL_TARGET]) || 9999, // 新增這行 (預設給個極大值避免空欄位誤判)
                         score: parseFloat(parts[COL_SCORE]) || 0 
                     });
                 }
@@ -465,7 +465,9 @@
                     // 判斷越級挑戰與速度選手
                     let recLevelNum = parseInt((rec.level.match(/\d+/) || [classLevel])[0]); // 若無填則預設為自己班級
                     if (recLevelNum > classLevel && rec.score >= 100) currentStudentData.flags.hasOverLevel = true;
-                    if (recLevelNum >= classLevel && rec.score >= 150 && rec.type.toLowerCase().includes('time')) currentStudentData.flags.hasSpeedPlayer = true;
+                    if (recLevelNum >= classLevel && rec.score >= 150 && rec.mode.toLowerCase().includes('time') && rec.duration <= 60) {
+    currentStudentData.flags.hasSpeedPlayer = true;
+}
 
                     // 計算各科自我突破次數
                     if (currentStudentData.flags.maxScores[subKey] === undefined) {
