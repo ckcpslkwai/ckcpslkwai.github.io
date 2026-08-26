@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圓玄學院陳國超興德小學 - AI穿越尋龍記</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+            user-select: none;
+        }
+
+        /* 清雅白青仙風背景：月白、水青與飄渺雲霧漸變 */
+        body {
+            background: linear-gradient(135deg, #e0f2fe 0%, #ccfbf1 35%, #a7f3d0 70%, #34d399 100%);
+            color: #064e3b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 畫面打擊與回饋動畫 */
+        @keyframes shake {
+            0% { transform: translate(0, 0); }
+            20% { transform: translate(-8px, 5px); }
+            40% { transform: translate(8px, -5px); }
+            60% { transform: translate(-5px, 3px); }
+            80% { transform: translate(5px, -3px); }
+            100% { transform: translate(0, 0); }
+        }
+        .anim-shake {
+            animation: shake 0.25s ease-in-out;
+        }
+
+        @keyframes flash-green {
+            0% { background-color: rgba(16, 185, 129, 0.4); }
+            100% { background-color: transparent; }
+        }
+        .anim-flash-correct {
+            animation: flash-green 0.3s ease-out;
+        }
+
+        @keyframes flash-red {
+            0% { background-color: rgba(239, 68, 68, 0.4); }
+            100% { background-color: transparent; }
+        }
+        .anim-flash-wrong {
+            animation: flash-red 0.35s ease-out;
+        }
+
+        .bg-decoration {
+            position: absolute;
+            font-size: 38px;
+            opacity: 0.45;
+            animation: float 7s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(8deg); }
+        }
+
+        .top-controls {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.75);
+            border: 2px solid #059669;
+            color: #064e3b;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 13px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.15);
+            transition: all 0.2s ease;
+        }
+        .control-btn:hover {
+            background: #059669;
+            color: #ffffff;
+        }
+
+        .game-layout {
+            display: flex;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(25px);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            border-radius: 32px;
+            width: 100%;
+            max-width: 920px;
+            box-shadow: 0 20px 50px rgba(6, 78, 59, 0.12), 0 0 35px rgba(255, 255, 255, 0.8);
+            overflow: hidden;
+            position: relative;
+            z-index: 10;
+        }
+
+        .sidebar {
+            width: 330px;
+            background: rgba(240, 253, 250, 0.75);
+            border-right: 1px solid rgba(5, 150, 105, 0.2);
+            padding: 22px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+
+        .sidebar-section {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(5, 150, 105, 0.25);
+            border-radius: 20px;
+            padding: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: #047857;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .reward-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            text-align: left;
+        }
+        .reward-table th, .reward-table td {
+            padding: 7px 4px;
+            border-bottom: 1px solid rgba(5, 150, 105, 0.15);
+            color: #064e3b;
+        }
+        .reward-table th {
+            color: #047857;
+            font-weight: 800;
+        }
+        .rank-tag {
+            padding: 3px 8px;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 800;
+            font-size: 10px;
+            display: inline-block;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .rules-list {
+            font-size: 12px;
+            line-height: 1.7;
+            color: #065f46;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px 28px 32px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .school-name {
+            font-size: 15px;
+            font-weight: 800;
+            color: #047857;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+            line-height: 1.3;
+        }
+
+        .school-name.en-name {
+            font-size: 11.5px;
+            font-weight: 700;
+        }
+
+        h1 {
+            background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #0d9488 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 28px;
+            font-weight: 900;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: #065f46;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: #fff;
+            border: 2px solid #a7f3d0;
+            padding: 16px 24px;
+            font-size: 17px;
+            font-weight: 800;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(5, 150, 105, 0.25);
+            transition: all 0.2s ease;
+            width: 100%;
+            margin-top: 12px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(5, 150, 105, 0.4);
+        }
+
+        .grade-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .grade-btn {
+            padding: 12px 8px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(5, 150, 105, 0.3);
+            border-radius: 16px;
+            color: #064e3b;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+        .grade-btn:hover {
+            border-color: #059669;
+            color: #059669;
+            background: #ffffff;
+        }
+        .grade-btn.active {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            border-color: #a7f3d0;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 800;
+        }
+        .status-badge {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(5, 150, 105, 0.3);
+            color: #064e3b;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .combo-meter {
+            width: 100%;
+            height: 6px;
+            background: rgba(5, 150, 105, 0.15);
+            border-radius: 10px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .combo-fill {
+            height: 100%;
+            width: 100%;
+            background: #059669;
+            transition: width 0.05s linear;
+        }
+
+        .timer-bg {
+            width: 100%;
+            height: 12px;
+            background: rgba(5, 150, 105, 0.15);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .timer-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #10b981, #f59e0b, #ef4444);
+            transition: width 0.1s linear;
+        }
+
+        .question-card {
+            background: rgba(255, 255, 255, 0.85);
+            border: 2px dashed #059669;
+            border-radius: 24px;
+            padding: 28px 16px;
+            margin-bottom: 20px;
+            min-height: 130px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(6, 78, 59, 0.06);
+        }
+        .question-text {
+            font-size: 28px;
+            font-weight: 800;
+            color: #064e3b;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .option-btn {
+            background: rgba(255, 255, 255, 0.85);
+            border: 2px solid rgba(5, 150, 105, 0.3);
+            border-radius: 18px;
+            color: #064e3b;
+            font-size: 24px;
+            font-weight: 800;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+        .option-btn:hover {
+            border-color: #059669;
+            color: #ffffff;
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(5, 150, 105, 0.3);
+        }
+
+        .dragon-avatar {
+            font-size: 56px;
+            margin: 8px 0;
+        }
+
+        @media (max-width: 768px) {
+            .game-layout {
+                flex-direction: column-reverse;
+            }
+            .sidebar {
+                width: 100%;
+                max-height: none;
+            }
+            .top-controls {
+                top: 10px;
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-decoration" style="top: 8%; left: 5%;">⚡</div>
+<div class="bg-decoration" style="top: 15%; right: 8%; animation-delay: 1s;">☯️</div>
+<div class="bg-decoration" style="bottom: 12%; left: 10%; animation-delay: 2s;">🔮</div>
+<div class="bg-decoration" style="bottom: 8%; right: 6%; animation-delay: 3s;">☁️</div>
+
+<div class="game-layout" id="game-card">
+    <div class="top-controls">
+        <button class="control-btn" onclick="toggleBGM()" id="music-btn">🪈 音樂: 關</button>
+        <button class="control-btn" onclick="toggleLanguage()" id="lang-btn">🌐 English</button>
+    </div>
+
+    <div class="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title" id="t-rules-title">📜 靈山修煉法則</div>
+            <div class="rules-list" id="t-rules-content">
+                <p>• <strong>限時試煉：</strong> 依難度提供 45~75 秒倒數。</p>
+                <p>• <strong>連擊加成：</strong> 答對 +100 靈力，Combo 每加一次多 +25 靈力！</p>
+                <p>• <strong>連擊倒數：</strong> 3秒內未答對，Combo 能量條歸零。</p>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title" id="t-rewards-title">🏆 龍族封印獎勵表</div>
+            <table class="reward-table">
+                <thead>
+                    <tr>
+                        <th id="th-realm">境界</th>
+                        <th id="th-mana">靈力</th>
+                        <th id="th-dragon">解封神龍</th>
+                        <th id="th-title">稱號</th>
+                    </tr>
+                </thead>
+                <tbody id="reward-table-body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="school-name" id="t-school-name">🏫 圓玄學院陳國超興德小學</div>
+        <h1 id="t-main-title">🐉 AI穿越尋龍記</h1>
+        <div class="subtitle" id="t-subtitle">極速心算 · 解封古老東方神龍</div>
+
+        <div id="start-screen" class="screen active">
+            <div class="dragon-avatar">🐲</div>
+            <p style="margin-bottom: 14px; color: #065f46; font-size: 14px; font-weight: 600;" id="t-select-realm">請選擇修行境界：</p>
+            
+            <div class="grade-grid">
+                <button class="grade-btn active" onclick="setGrade('k1', this)" id="g-k1">練氣期 (數圖 1-10 · 45s)</button>
+                <button class="grade-btn" onclick="setGrade('k2', this)" id="g-k2">築基期 (圖形規律 · 45s)</button>
+                <button class="grade-btn" onclick="setGrade('easy', this)" id="g-easy">金丹期 (20內加減 · 45s)</button>
+                <button class="grade-btn" onclick="setGrade('medium', this)" id="g-medium">元嬰期 (乘除運算 · 60s)</button>
+                <button class="grade-btn" style="grid-column: span 2;" onclick="setGrade('hard', this)" id="g-hard">化神期 (四則混合運算 · 1m 15s)</button>
+            </div>
+
+            <button class="btn" onclick="startGame()" id="t-start-btn">⚔️ 開啟靈山試煉！</button>
+        </div>
+
+        <div id="game-screen" class="screen">
+            <div class="status-bar">
+                <div class="status-badge"><span id="lbl-mana">靈力</span> <span id="score-text" style="color: #047857;">0</span></div>
+                <div style="color: #047857; font-weight: 800; font-size: 16px;" id="combo-text">Combo x0</div>
+                <div class="status-badge"><span id="lbl-time">時間</span> <span id="time-text" style="color: #0d9488;">45</span>s</div>
+            </div>
+            
+            <div class="combo-meter">
+                <div id="combo-bar" class="combo-fill"></div>
+            </div>
+
+            <div class="timer-bg">
+                <div id="timer-bar" class="timer-fill"></div>
+            </div>
+
+            <div class="question-card">
+                <div class="question-text" id="question-text">🥚 🥚 🥚 = ?</div>
+            </div>
+
+            <div class="options-grid">
+                <button class="option-btn" onclick="checkAnswer(0)"></button>
+                <button class="option-btn" onclick="checkAnswer(1)"></button>
+                <button class="option-btn" onclick="checkAnswer(2)"></button>
+                <button class="option-btn" onclick="checkAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div id="end-screen" class="screen">
+            <h2 style="font-size: 22px; color: #064e3b; margin-bottom: 12px;" id="t-end-title">🎉 試煉出關！</h2>
+            
+            <div style="background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(5, 150, 105, 0.3); border-radius: 20px; padding: 18px; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.04);">
+                <span id="reward-rank-badge" class="rank-tag" style="background: #94a3b8; font-size: 13px; padding: 4px 14px;">入門境界</span>
+                <div class="dragon-avatar" id="dragon-icon">🥚</div>
+                <h3 id="dragon-name" style="color: #047857; font-size: 20px;">靈石龍蛋</h3>
+                <p id="player-title" style="color: #065f46; font-size: 14px; font-weight: 700; margin-top: 4px;">稱號：尋道者</p>
+            </div>
+
+            <div style="display: flex; justify-content: space-around; font-size: 13px; margin-bottom: 16px; background: rgba(255, 255, 255, 0.85); padding: 12px; border-radius: 14px; border: 1px solid rgba(5, 150, 105, 0.25); color: #064e3b;">
+                <div><span id="lbl-end-mana">靈力</span>: <strong id="final-score" style="color: #047857;">0</strong></div>
+                <div><span id="lbl-end-correct">答對</span>: <strong id="correct-count" style="color: #0d9488;">0</strong> <span id="lbl-end-pts">題</span></div>
+                <div><span id="lbl-end-combo">最高連擊</span>: <strong id="max-combo" style="color: #059669;">0</strong></div>
+            </div>
+
+            <button class="btn" onclick="startGame()" id="t-restart-btn">再次挑戰</button>
+            <button class="btn" style="background: rgba(255, 255, 255, 0.8); color: #064e3b; border: 1px solid rgba(5, 150, 105, 0.3); box-shadow: none; margin-top: 10px;" onclick="showStartScreen()" id="t-home-btn">返回主頁</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentLang = 'zh';
+    let currentGrade = 'k1';
+    let score = 0;
+    let combo = 0;
+    let maxCombo = 0;
+    let correctCount = 0;
+    let timeLeft = 45;
+    let totalTime = 45;
+    let timer = null;
+    let comboTimer = null;
+    let comboTimeLeft = 100;
+    let currentAnswer = "";
+    let isMusicPlaying = false;
+
+    // Web Audio API 系統
+    let audioCtx = null;
+    let bgmTimeout = null;
+    let melodyIndex = 0;
+
+    function initAudioContext() {
+        if (!audioCtx) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            audioCtx = new AudioContext();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+    }
+
+    document.addEventListener('click', function unlockAudio() {
+        initAudioContext();
+    }, { once: false });
+
+    // 加快速度且緊密相連的樂句設定
+    const fluteMelodyLoop = [
+        // 第一樂段：清幽幽谷 (極速連音)
+        { f: 196.00, d: 0.45 }, { f: 220.00, d: 0.35 }, { f: 261.63, d: 0.50 }, 
+        { f: 293.66, d: 0.40 }, { f: 329.63, d: 0.35 }, { f: 261.63, d: 0.45 }, { f: 220.00, d: 0.55 },
+        { f: 196.00, d: 0.50 }, { f: 220.00, d: 0.30 }, { f: 261.63, d: 0.60 }, 
+        { f: 329.63, d: 0.40 }, { f: 392.00, d: 0.45 }, { f: 329.63, d: 0.35 }, { f: 293.66, d: 0.50 },
+        { f: 261.63, d: 0.40 }, { f: 220.00, d: 0.40 }, { f: 196.00, d: 0.65 },
+
+        // 第二樂段：雲起靈山 (快步流雲)
+        { f: 220.00, d: 0.35 }, { f: 261.63, d: 0.30 }, { f: 293.66, d: 0.45 }, { f: 329.63, d: 0.50 },
+        { f: 392.00, d: 0.35 }, { f: 440.00, d: 0.40 }, { f: 392.00, d: 0.45 }, { f: 329.63, d: 0.55 },
+        { f: 293.66, d: 0.35 }, { f: 329.63, d: 0.30 }, { f: 392.00, d: 0.50 }, 
+        { f: 440.00, d: 0.45 }, { f: 523.25, d: 0.40 }, { f: 440.00, d: 0.35 }, { f: 392.00, d: 0.50 },
+        { f: 329.63, d: 0.40 }, { f: 293.66, d: 0.45 }, { f: 261.63, d: 0.60 },
+
+        // 第三樂段：龍吟九霄 (飛龍迅影)
+        { f: 329.63, d: 0.45 }, { f: 392.00, d: 0.35 }, { f: 440.00, d: 0.50 }, { f: 523.25, d: 0.40 },
+        { f: 587.33, d: 0.45 }, { f: 523.25, d: 0.35 }, { f: 440.00, d: 0.50 }, { f: 392.00, d: 0.40 },
+        { f: 329.63, d: 0.50 }, { f: 293.66, d: 0.35 }, { f: 261.63, d: 0.55 }, 
+        { f: 220.00, d: 0.40 }, { f: 261.63, d: 0.35 }, { f: 293.66, d: 0.45 }, { f: 329.63, d: 0.50 },
+        { f: 261.63, d: 0.45 }, { f: 220.00, d: 0.40 }, { f: 196.00, d: 0.70 }
+    ];
+
+    function playSoftFluteNote(freq, duration = 0.5, volume = 0.05) {
+        if (!audioCtx || freq <= 0) return;
+
+        const osc = audioCtx.createOscillator();
+        const subOsc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'triangle';
+        subOsc.type = 'sine';
+
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        subOsc.frequency.setValueAtTime(freq * 1.002, audioCtx.currentTime);
+
+        const attackTime = 0.04;
+        const releaseDuration = duration * 0.8;
+
+        gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(volume, audioCtx.currentTime + attackTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration + releaseDuration);
+
+        osc.connect(gain);
+        subOsc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        subOsc.start();
+        osc.stop(audioCtx.currentTime + duration + releaseDuration);
+        subOsc.stop(audioCtx.currentTime + duration + releaseDuration);
+    }
+
+    function scheduleNextFluteNote() {
+        if (!isMusicPlaying || !audioCtx) return;
+
+        let noteObj = fluteMelodyLoop[melodyIndex % fluteMelodyLoop.length];
+        let noteDuration = noteObj.d;
+        let noteFreq = noteObj.f;
+
+        if (noteFreq > 0) {
+            playSoftFluteNote(noteFreq, noteDuration, 0.05);
+        }
+
+        melodyIndex++;
+        bgmTimeout = setTimeout(scheduleNextFluteNote, noteDuration * 700);
+    }
+
+    function startSyntheticBGM() {
+        initAudioContext();
+        stopSyntheticBGM();
+        melodyIndex = 0;
+        scheduleNextFluteNote();
+    }
+
+    function stopSyntheticBGM() {
+        if (bgmTimeout) {
+            clearTimeout(bgmTimeout);
+            bgmTimeout = null;
+        }
+    }
+
+    function playCorrectSound() {
+        initAudioContext();
+        if (!audioCtx) return;
+        
+        playSoftFluteNote(392.00, 0.25, 0.08);
+        setTimeout(() => playSoftFluteNote(523.25, 0.35, 0.1), 40);
+    }
+
+    function playWrongSound() {
+        initAudioContext();
+        if (!audioCtx) return;
+
+        playSoftFluteNote(196.00, 0.45, 0.09);
+    }
+
+    const gradeTimeMap = {
+        'k1': 45,
+        'k2': 45,
+        'easy': 45,
+        'medium': 60,
+        'hard': 75
+    };
+
+    const emojiIcons = ['🍑', '🍎', '⭐', '🐲', '🎋', '🍵', '🍪', '🐱'];
+
+    const i18n = {
+        zh: {
+            langBtn: '🌐 English',
+            musicBtnOn: '🪈 音樂: 開',
+            musicBtnOff: '🪈 音樂: 關',
+            schoolName: '🏫 圓玄學院陳國超興德小學',
+            mainTitle: '🐉 AI穿越尋龍記',
+            subtitle: '極速心算 · 解封古老東方神龍',
+            rulesTitle: '📜 靈山修煉法則',
+            rulesContent: `<p>• <strong>限時試煉：</strong> 依難度提供 45~75 秒倒數。</p>
+                           <p>• <strong>連擊加成：</strong> 答對 +100 靈力，Combo 每加一次多 +25 靈力！</p>
+                           <p>• <strong>連擊倒數：</strong> 3秒內未答對，Combo 能量條歸零。</p>`,
+            rewardsTitle: '🏆 龍族封印獎勵表',
+            thRealm: '境界', thMana: '靈力', thDragon: '解封神龍', thTitle: '稱號',
+            selectRealm: '請選擇修行境界：',
+            gK1: '練氣期 (數圖 1-10 · 45s)',
+            gK2: '築基期 (圖形規律 · 45s)',
+            gEasy: '金丹期 (20內加減 · 45s)',
+            gMedium: '元嬰期 (乘除運算 · 60s)',
+            gHard: '化神期 (四則混合運算 · 1m 15s)',
+            startBtn: '⚔️ 開啟靈山試煉！',
+            lblMana: '靈力', lblTime: '時間',
+            endTitle: '🎉 試煉出關！',
+            lblEndMana: '靈力', lblEndCorrect: '答對', lblEndPts: '題', lblEndCombo: '最高連擊',
+            restartBtn: '再次挑戰', homeBtn: '返回主頁',
+            rewardsData: [
+                { realm: '渡劫', color: 'linear-gradient(135deg, #f59e0b, #ef4444)', min: 4000, dragon: '☯️🐉 太極九天龍', title: '萬法至尊' },
+                { realm: '破空', color: '#b45309', min: 2800, dragon: '🔥🐲 赤焰應龍', title: '心算宗師' },
+                { realm: '覆海', color: '#0284c7', min: 1800, dragon: '🌊🐉 蒼藍蛟龍', title: '解題奇才' },
+                { realm: '靈山', color: '#059669', min: 800, dragon: '🎋🦕 螭龍幼崽', title: '修行新秀' },
+                { realm: '入門', color: '#94a3b8', min: 0, dragon: '🥚 靈石龍蛋', title: '尋道者' }
+            ]
+        },
+        en: {
+            langBtn: '🌐 繁體中文',
+            musicBtnOn: '🪈 Music: ON',
+            musicBtnOff: '🪈 Music: OFF',
+            schoolName: '🏫 The Yuen Yuen Institute Chan Kwok Chiu Hing Tak Primary School',
+            mainTitle: '🐉 Dragon Quest Math Trial',
+            subtitle: 'Speed Math · Unseal Ancient Eastern Dragons',
+            rulesTitle: '📜 Trial Rules',
+            rulesContent: `<p>• <strong>Time Limit:</strong> 45~75s countdown based on level.</p>
+                           <p>• <strong>Combo Bonus:</strong> Correct answer = +100 Mana. Each Combo adds extra +25 Mana!</p>
+                           <p>• <strong>Combo Meter:</strong> Answer within 3s or Combo resets!</p>`,
+            rewardsTitle: '🏆 Dragon Seal Rewards',
+            thRealm: 'Level', thMana: 'Mana', thDragon: 'Unsealed Dragon', thTitle: 'Title',
+            selectRealm: 'Select Difficulty Level:',
+            gK1: 'Level 1 (Counting · 45s)',
+            gK2: 'Level 2 (Patterns · 45s)',
+            gEasy: 'Level 3 (+ / - under 20 · 45s)',
+            gMedium: 'Level 4 (× / ÷ · 60s)',
+            gHard: 'Level 5 (Mixed Math · 1m 15s)',
+            startBtn: '⚔️ Begin the Trial!',
+            lblMana: 'Mana', lblTime: 'Time',
+            endTitle: '🎉 Trial Completed!',
+            lblEndMana: 'Mana', lblEndCorrect: 'Correct', lblEndPts: 'Qns', lblEndCombo: 'Max Combo',
+            restartBtn: 'Try Again', homeBtn: 'Main Menu',
+            rewardsData: [
+                { realm: 'Level 5', color: 'linear-gradient(135deg, #f59e0b, #ef4444)', min: 4000, dragon: '☯️🐉 Taiji Dragon', title: 'Grand Master' },
+                { realm: 'Level 4', color: '#b45309', min: 2800, dragon: '🔥🐲 Fire Dragon', title: 'Math Master' },
+                { realm: 'Level 3', color: '#0284c7', min: 1800, dragon: '🌊🐉 Ice Dragon', title: 'Genius Solver' },
+                { realm: 'Level 2', color: '#059669', min: 800, dragon: '🎋🦕 Baby Dragon', title: 'Rising Star' },
+                { realm: 'Level 1', color: '#94a3b8', min: 0, dragon: '🥚 Dragon Egg', title: 'Beginner' }
+            ]
+        }
+    };
+
+    function toggleBGM() {
+        initAudioContext();
+        const musicBtn = document.getElementById('music-btn');
+        if (isMusicPlaying) {
+            isMusicPlaying = false;
+            stopSyntheticBGM();
+            musicBtn.innerText = i18n[currentLang].musicBtnOff;
+        } else {
+            isMusicPlaying = true;
+            startSyntheticBGM();
+            musicBtn.innerText = i18n[currentLang].musicBtnOn;
+        }
+    }
+
+    function updateLanguage() {
+        const lang = i18n[currentLang];
+        document.getElementById('lang-btn').innerText = lang.langBtn;
+        document.getElementById('music-btn').innerText = isMusicPlaying ? lang.musicBtnOn : lang.musicBtnOff;
+        
+        const schoolElem = document.getElementById('t-school-name');
+        schoolElem.innerText = lang.schoolName;
+        if (currentLang === 'en') {
+            schoolElem.classList.add('en-name');
+        } else {
+            schoolElem.classList.remove('en-name');
+        }
+
+        document.getElementById('t-main-title').innerText = lang.mainTitle;
+        document.getElementById('t-subtitle').innerText = lang.subtitle;
+        document.getElementById('t-rules-title').innerText = lang.rulesTitle;
+        document.getElementById('t-rules-content').innerHTML = lang.rulesContent;
+        document.getElementById('t-rewards-title').innerText = lang.rewardsTitle;
+        
+        document.getElementById('th-realm').innerText = lang.thRealm;
+        document.getElementById('th-mana').innerText = lang.thMana;
+        document.getElementById('th-dragon').innerText = lang.thDragon;
+        document.getElementById('th-title').innerText = lang.thTitle;
+        
+        document.getElementById('t-select-realm').innerText = lang.selectRealm;
+        document.getElementById('g-k1').innerText = lang.gK1;
+        document.getElementById('g-k2').innerText = lang.gK2;
+        document.getElementById('g-easy').innerText = lang.gEasy;
+        document.getElementById('g-medium').innerText = lang.gMedium;
+        document.getElementById('g-hard').innerText = lang.gHard;
+        document.getElementById('t-start-btn').innerText = lang.startBtn;
+
+        document.getElementById('lbl-mana').innerText = lang.lblMana;
+        document.getElementById('lbl-time').innerText = lang.lblTime;
+
+        document.getElementById('t-end-title').innerText = lang.endTitle;
+        document.getElementById('lbl-end-mana').innerText = lang.lblEndMana;
+        document.getElementById('lbl-end-correct').innerText = lang.lblEndCorrect;
+        document.getElementById('lbl-end-pts').innerText = lang.lblEndPts;
+        document.getElementById('lbl-end-combo').innerText = lang.lblEndCombo;
+        document.getElementById('t-restart-btn').innerText = lang.restartBtn;
+        document.getElementById('t-home-btn').innerText = lang.homeBtn;
+
+        renderRewardTable();
+    }
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'zh' ? 'en' : 'zh';
+        updateLanguage();
+    }
+
+    function renderRewardTable() {
+        const tbody = document.getElementById('reward-table-body');
+        tbody.innerHTML = '';
+        i18n[currentLang].rewardsData.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><span class="rank-tag" style="background: ${item.color}">${item.realm}</span></td>
+                <td>${item.min}+</td>
+                <td>${item.dragon}</td>
+                <td>${item.title}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    function showStartScreen() {
+        if (timer) clearInterval(timer);
+        if (comboTimer) clearInterval(comboTimer);
+        stopSyntheticBGM();
+        showScreen('start-screen');
+    }
+
+    function setGrade(grade, element) {
+        currentGrade = grade;
+        document.querySelectorAll('.grade-btn').forEach(btn => btn.classList.remove('active'));
+        element.classList.add('active');
+    }
+
+    function resetComboTimer() {
+        if (comboTimer) clearInterval(comboTimer);
+        comboTimeLeft = 100;
+        const comboBar = document.getElementById('combo-bar');
+        comboBar.style.width = '100%';
+
+        comboTimer = setInterval(() => {
+            comboTimeLeft -= 4;
+            if (comboTimeLeft <= 0) {
+                comboTimeLeft = 0;
+                combo = 0;
+                document.getElementById('combo-text').innerText = 'Combo x0';
+                clearInterval(comboTimer);
+            }
+            comboBar.style.width = comboTimeLeft + '%';
+        }, 100);
+    }
+
+    function startGame() {
+        initAudioContext();
+        if (!isMusicPlaying) {
+            toggleBGM();
+        }
+
+        score = 0;
+        combo = 0;
+        maxCombo = 0;
+        correctCount = 0;
+        
+        totalTime = gradeTimeMap[currentGrade] || 45;
+        timeLeft = totalTime;
+
+        document.getElementById('score-text').innerText = score;
+        document.getElementById('combo-text').innerText = 'Combo x0';
+        document.getElementById('time-text').innerText = timeLeft;
+        document.getElementById('timer-bar').style.width = '100%';
+        document.getElementById('timer-bar').style.background = 'linear-gradient(90deg, #10b981, #f59e0b, #ef4444)';
+
+        showScreen('game-screen');
+        generateQuestion();
+        resetComboTimer();
+
+        clearInterval(timer);
+        timer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('time-text').innerText = timeLeft;
+            
+            let percentage = (timeLeft / totalTime) * 100;
+            let timerBar = document.getElementById('timer-bar');
+            timerBar.style.width = percentage + '%';
+
+            if (timeLeft <= 10) {
+                timerBar.style.background = '#ef4444';
+            }
+
+            if (timeLeft <= 0) {
+                endGame();
+            }
+        }, 1000);
+    }
+
+    function generateQuestion() {
+        let questionStr, answer, options = [];
+        
+        if (currentGrade === 'k1') {
+            let num = Math.floor(Math.random() * 10) + 1;
+            let icon = emojiIcons[Math.floor(Math.random() * emojiIcons.length)];
+            questionStr = Array(num).fill(icon).join(' ');
+            answer = num.toString();
+
+            options = [answer];
+            while (options.length < 4) {
+                let offset = (Math.floor(Math.random() * 4) + 1) * (Math.random() > 0.5 ? 1 : -1);
+                let wrongAnswer = (num + offset).toString();
+                if (parseInt(wrongAnswer) > 0 && !options.includes(wrongAnswer)) {
+                    options.push(wrongAnswer);
+                }
+            }
+        } else if (currentGrade === 'k2') {
+            let type = Math.floor(Math.random() * 2);
+            let a = emojiIcons[Math.floor(Math.random() * 4)];
+            let b = emojiIcons[Math.floor(Math.random() * 4) + 4];
+            
+            if (type === 0) {
+                questionStr = `${a} ${b} ${a} ${b} ❓`;
+                answer = a;
+            } else {
+                questionStr = `${a} ${a} ${b} ${a} ${a} ❓`;
+                answer = b;
+            }
+
+            options = [answer];
+            for (let icon of emojiIcons) {
+                if (!options.includes(icon) && options.length < 4) {
+                    options.push(icon);
+                }
+            }
+        } else if (currentGrade === 'easy') {
+            let num1 = Math.floor(Math.random() * 20) + 1;
+            let num2 = Math.floor(Math.random() * 20) + 1;
+            let isSub = Math.random() > 0.5 && num1 >= num2;
+            let numAns = isSub ? num1 - num2 : num1 + num2;
+            questionStr = isSub ? `${num1} - ${num2} = ?` : `${num1} + ${num2} = ?`;
+            answer = numAns.toString();
+
+            options = [answer];
+            while (options.length < 4) {
+                let offset = (Math.floor(Math.random() * 4) + 1) * (Math.random() > 0.5 ? 1 : -1);
+                let wrong = (numAns + offset).toString();
+                if (parseInt(wrong) >= 0 && !options.includes(wrong)) {
+                    options.push(wrong);
+                }
+            }
+        } else if (currentGrade === 'medium') {
+            let num1 = Math.floor(Math.random() * 12) + 2;
+            let num2 = Math.floor(Math.random() * 12) + 2;
+            let isDiv = Math.random() > 0.5;
+            let numAns = isDiv ? num2 : num1 * num2;
+            questionStr = isDiv ? `${num1 * num2} ÷ ${num1} = ?` : `${num1} × ${num2} = ?`;
+            answer = numAns.toString();
+
+            options = [answer];
+            while (options.length < 4) {
+                let offset = (Math.floor(Math.random() * 4) + 1) * (Math.random() > 0.5 ? 1 : -1);
+                let wrong = (numAns + offset).toString();
+                if (parseInt(wrong) > 0 && !options.includes(wrong)) {
+                    options.push(wrong);
+                }
+            }
+        } else {
+            let num1 = Math.floor(Math.random() * 15) + 1;
+            let num2 = Math.floor(Math.random() * 6) + 2;
+            let num3 = Math.floor(Math.random() * 10) + 1;
+            let numAns = num1 + (num2 * num3);
+            questionStr = `${num1} + ${num2} × ${num3} = ?`;
+            answer = numAns.toString();
+
+            options = [answer];
+            while (options.length < 4) {
+                let offset = (Math.floor(Math.random() * 4) + 1) * (Math.random() > 0.5 ? 1 : -1);
+                let wrong = (numAns + offset).toString();
+                if (parseInt(wrong) > 0 && !options.includes(wrong)) {
+                    options.push(wrong);
+                }
+            }
+        }
+
+        currentAnswer = answer;
+        document.getElementById('question-text').innerText = questionStr;
+        options.sort(() => Math.random() - 0.5);
+
+        let optionBtns = document.querySelectorAll('.option-btn');
+        options.forEach((opt, idx) => {
+            optionBtns[idx].innerText = opt;
+        });
+    }
+
+    function checkAnswer(selectedIndex) {
+        let selectedValue = document.querySelectorAll('.option-btn')[selectedIndex].innerText;
+        let card = document.getElementById('game-card');
+
+        card.classList.remove('anim-shake', 'anim-flash-correct', 'anim-flash-wrong');
+        void card.offsetWidth;
+        
+        if (selectedValue === currentAnswer) {
+            combo++;
+            if (combo > maxCombo) maxCombo = combo;
+            correctCount++;
+            let addScore = 100 + (combo - 1) * 25;
+            score += addScore;
+
+            playCorrectSound();
+            card.classList.add('anim-flash-correct');
+
+            document.getElementById('score-text').innerText = score;
+            document.getElementById('combo-text').innerText = `Combo x${combo}`;
+            resetComboTimer();
+        } else {
+            combo = 0;
+            playWrongSound();
+            card.classList.add('anim-shake', 'anim-flash-wrong');
+            document.getElementById('combo-text').innerText = 'Combo x0';
+        }
+
+        generateQuestion();
+    }
+
+    function endGame() {
+        clearInterval(timer);
+        if (comboTimer) clearInterval(comboTimer);
+        stopSyntheticBGM();
+        showScreen('end-screen');
+
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('correct-count').innerText = correctCount;
+        document.getElementById('max-combo').innerText = maxCombo;
+
+        const rewards = i18n[currentLang].rewardsData;
+        let reward = rewards[rewards.length - 1];
+
+        for (let r of rewards) {
+            if (score >= r.min) {
+                reward = r;
+                break;
+            }
+        }
+
+        let badge = document.getElementById('reward-rank-badge');
+        badge.innerText = reward.realm;
+        badge.style.background = reward.color;
+
+        document.getElementById('dragon-icon').innerText = reward.dragon.split(' ')[0];
+        document.getElementById('dragon-name').innerText = reward.dragon;
+        document.getElementById('player-title').innerText = (currentLang === 'zh' ? '稱號：' : 'Title: ') + reward.title;
+    }
+
+    updateLanguage();
+</script>
+
+</body>
+</html>

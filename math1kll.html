@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Yuen Yuen Institute Chan Kwok Chiu Hing Tak Primary School - 雙語數學嘉年華</title>
+  <!-- 引入 Confetti 彩帶效果庫 -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      font-family: "PingFang HK", "MicroSoft JhengHei", "Fredoka One", cursive, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 15px 10px;
+      background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #feada6 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .carnival-bg {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      background-image: 
+        radial-gradient(#ffffff 15%, transparent 16%),
+        radial-gradient(#ffe4e6 15%, transparent 16%);
+      background-size: 60px 60px;
+      background-position: 0 0, 30px 30px;
+      opacity: 0.3;
+      z-index: 0;
+    }
+
+    /* ===== 全局頂部橫幅：突出放大校名 ===== */
+    .top-school-banner {
+      z-index: 20;
+      width: 100%;
+      max-width: 1280px;
+      background: linear-gradient(135deg, #fffbeb, #fef08a);
+      border: 4px solid #f59e0b;
+      border-radius: 20px;
+      padding: 12px 15px;
+      margin-bottom: 15px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+    }
+
+    .school-title-main {
+      color: #78350f;
+      font-size: clamp(1.2rem, 4vw, 1.8rem);
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      text-shadow: 1px 1px 0px #ffffff;
+      line-height: 1.3;
+      word-break: break-word;
+    }
+
+    .game-subtitle {
+      color: #d97706;
+      font-size: clamp(1rem, 3vw, 1.25rem);
+      font-weight: 800;
+      margin-top: 4px;
+    }
+
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 1280px;
+      gap: 15px;
+      z-index: 10;
+    }
+
+    /* 平板及桌上型電腦 (768px 以上) 自動切換為雙欄 */
+    @media (min-width: 768px) {
+      .app-container {
+        flex-direction: row;
+        align-items: stretch;
+      }
+    }
+
+    /* ===== 左欄：選關與控制面板 ===== */
+    .left-sidebar {
+      width: 100%;
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 10px 25px rgba(255, 105, 180, 0.2);
+      border: 5px solid #fbbf24;
+    }
+
+    @media (min-width: 768px) {
+      .left-sidebar {
+        width: 320px;
+        flex-shrink: 0;
+      }
+    }
+
+    /* 語言切換按鈕區 */
+    .lang-switcher {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .lang-btn {
+      flex: 1;
+      padding: 8px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      background: #f8fafc;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .lang-btn.active {
+      background: #3b82f6;
+      color: white;
+      border-color: #1d4ed8;
+      box-shadow: 0 3px 0 #1e40af;
+    }
+
+    .section-label {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: #475569;
+      margin-bottom: 4px;
+    }
+
+    .level-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .level-tab {
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      border: 3px solid #e2e8f0;
+      border-radius: 16px;
+      background: #f8fafc;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .level-tab.active {
+      border-color: #ec4899;
+      background: #fce7f3;
+      color: #be185d;
+      box-shadow: 0 4px 0 #be185d;
+    }
+
+    .stages-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+
+    .stage-btn {
+      aspect-ratio: 1;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: 3px solid #cbd5e1;
+      border-radius: 12px;
+      background: #f1f5f9;
+      color: #475569;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.15s;
+    }
+
+    .stage-btn.active {
+      background: #facc15;
+      border-color: #eab308;
+      color: #854d0e;
+      box-shadow: 0 4px 0 #ca8a04;
+    }
+
+    .status-panel {
+      background: #f0fdf4;
+      border: 3px solid #4ade80;
+      border-radius: 16px;
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: #166534;
+    }
+
+    .timer-badge {
+      background: #ef4444;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 16px;
+      font-size: 0.95rem;
+      box-shadow: 0 3px 0 #b91c1c;
+    }
+
+    .action-btn {
+      width: 100%;
+      padding: 12px;
+      font-size: 1.1rem;
+      font-weight: 900;
+      background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #15803d;
+      transition: all 0.1s;
+      margin-top: 5px;
+    }
+
+    .action-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #15803d;
+    }
+
+    /* ===== 右欄：嘉年華遊戲區 ===== */
+    .right-gameplay {
+      flex: 1;
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      border: 5px solid #38bdf8;
+      position: relative;
+      min-height: 420px;
+    }
+
+    .stage-banner {
+      background: linear-gradient(90deg, #38bdf8, #818cf8);
+      border: 3px solid #2563eb;
+      padding: 8px 15px;
+      border-radius: 30px;
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      font-weight: 900;
+      color: white;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(56, 189, 248, 0.3);
+    }
+
+    .question-card {
+      width: 100%;
+      flex: 1;
+      margin: 12px 0;
+      background: #fffbebf5;
+      border: 4px dashed #f59e0b;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+      gap: 12px;
+      position: relative;
+      min-height: 180px;
+    }
+
+    .q-prompt {
+      font-size: clamp(1.2rem, 3vw, 1.5rem);
+      font-weight: 900;
+      color: #1e293b;
+      text-align: center;
+    }
+
+    .graphics-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      max-width: 100%;
+    }
+
+    .item-emoji {
+      font-size: clamp(2.5rem, 8vw, 3.5rem);
+    }
+
+    .math-expr {
+      font-size: clamp(2.2rem, 7vw, 3.5rem);
+      font-weight: 900;
+      color: #4338ca;
+      letter-spacing: 2px;
+      text-align: center;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      width: 100%;
+      min-height: 120px;
+    }
+
+    .option-card {
+      background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%);
+      border: 3px solid #0284c7;
+      border-radius: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: clamp(1.5rem, 5vw, 2rem);
+      font-weight: 900;
+      color: #0369a1;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #0284c7;
+      padding: 10px;
+      transition: all 0.1s;
+    }
+
+    .option-card:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #0284c7;
+    }
+
+    .overlay-message {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      padding: 15px;
+    }
+
+    .overlay-message p {
+      font-size: clamp(1.1rem, 3vw, 1.4rem);
+      font-weight: 900;
+      color: #334155;
+      text-align: center;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    /* 彈窗 */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      padding: 15px;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 25px 20px;
+      border-radius: 24px;
+      text-align: center;
+      border: 6px solid #facc15;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-title {
+      font-size: clamp(1.5rem, 5vw, 2rem);
+      color: #d97706;
+      margin: 0 0 10px 0;
+      font-weight: 900;
+    }
+
+    .modal-desc {
+      font-size: 1.1rem;
+      color: #475569;
+      margin-bottom: 20px;
+      line-height: 1.5;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="carnival-bg"></div>
+
+  <!-- ===== 頂部突出放大校名區 ===== -->
+  <div class="top-school-banner">
+    <div class="school-title-main" id="uiSchoolTitle">圓玄學院陳國超興德小學</div>
+    <div class="game-subtitle" id="uiGameTitle">🎪 雙語數學嘉年華大闖關 🎡</div>
+  </div>
+
+  <div class="app-container">
+    
+    <!-- ===== 左欄：控制面板 ===== -->
+    <div class="left-sidebar">
+      
+      <!-- 語言切換器 -->
+      <div class="lang-switcher">
+        <button class="lang-btn active" onclick="switchLanguage('chinese', this)">廣東話 (中文)</button>
+        <button class="lang-btn" onclick="switchLanguage('english', this)">English</button>
+      </div>
+
+      <div>
+        <div class="section-label" id="uiSelectLevelLabel">📌 1. 選擇 Level：</div>
+        <div class="level-group">
+          <button class="level-tab active" onclick="selectLevel('low', this)">
+            <span id="uiLvlLow">🐣 初級 Level (K1)</span>
+            <small id="uiLvlLowSub">數數與方向</small>
+          </button>
+          <button class="level-tab" onclick="selectLevel('mid', this)">
+            <span id="uiLvlMid">🐥 中級 Level (K2)</span>
+            <small id="uiLvlMidSub">加法與規律</small>
+          </button>
+          <button class="level-tab" onclick="selectLevel('high', this)">
+            <span id="uiLvlHigh">🦅 高級 Level (K3)</span>
+            <small id="uiLvlHighSub">加減與邏輯推理</small>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label" id="uiSelectStageLabel">🎮 2. 選擇關卡 (1-5)：</div>
+        <div class="stages-grid" id="stagesContainer">
+          <button class="stage-btn active" onclick="selectStage(1, this)">1</button>
+          <button class="stage-btn" onclick="selectStage(2, this)">2</button>
+          <button class="stage-btn" onclick="selectStage(3, this)">3</button>
+          <button class="stage-btn" onclick="selectStage(4, this)">4</button>
+          <button class="stage-btn" onclick="selectStage(5, this)">5</button>
+        </div>
+      </div>
+
+      <div class="status-panel">
+        <div><span id="uiProgressLabel">進度</span>：<span id="scoreText" style="font-size:1.2rem; color:#d97706;">0</span> / 5</div>
+        <div class="timer-badge" id="timerBadge">⏱️ 30s</div>
+      </div>
+
+      <button class="action-btn" id="startBtn" onclick="toggleGame()">🎈 開始 30 秒挑戰</button>
+    </div>
+
+    <!-- ===== 右欄：嘉年華遊戲主畫面 ===== -->
+    <div class="right-gameplay">
+      <div class="stage-banner" id="stageBannerTitle">
+        初級 Level - 關卡 1：嘉年華水果數數
+      </div>
+
+      <div class="question-card" id="questionCard">
+        <div class="overlay-message" id="startOverlay">
+          <p id="uiWelcomeMsg">🎪 歡迎來到數學嘉年華！<br>請先選擇關卡<br>然後點擊「開始 30 秒挑戰」</p>
+        </div>
+
+        <div class="q-prompt" id="qPromptText">Ready?</div>
+        <div class="graphics-container" id="qGraphics"></div>
+      </div>
+
+      <div class="options-grid" id="optionsGrid">
+        <div class="option-card">?</div>
+        <div class="option-card">?</div>
+        <div class="option-card">?</div>
+        <div class="option-card">?</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 結果彈窗 -->
+  <div class="modal" id="resultModal">
+    <div class="modal-content">
+      <h2 class="modal-title" id="modalTitle">🎉 挑戰成功！</h2>
+      <div class="modal-desc" id="modalDesc">太棒了！獲得興德小學精美小禮品！</div>
+      <button class="action-btn" id="uiRestartBtn" onclick="closeModal()">再玩一次 🎠</button>
+    </div>
+  </div>
+
+  <script>
+    let currentLang = 'chinese';
+
+    const uiI18n = {
+      chinese: {
+        schoolTitle: "圓玄學院陳國超興德小學",
+        gameTitle: "🎪 雙語數學嘉年華大闖關 🎡",
+        selectLevelLabel: "📌 1. 選擇 Level：",
+        lvlLow: "🐣 初級 Level (K1)",
+        lvlLowSub: "數數與方向",
+        lvlMid: "🐥 中級 Level (K2)",
+        lvlMidSub: "加法與規律",
+        lvlHigh: "🦅 高級 Level (K3)",
+        lvlHighSub: "加減與邏輯推理",
+        selectStageLabel: "🎮 2. 選擇關卡 (1-5)：",
+        progressLabel: "進度",
+        startBtn: "🎈 開始 30 秒挑戰",
+        stopBtn: "⏹️ 結束遊戲",
+        welcomeMsg: "🎪 歡迎來到數學嘉年華！<br>請先選擇關卡<br>然後點擊「開始 30 秒挑戰」",
+        restartBtn: "再玩一次 🎠",
+        correctFeedback: "答對了！太厲害了！",
+        wrongFeedback: "再試一次吧！",
+        timeUpFeedback: "時間到！繼續加油！",
+        winFeedback: "恭喜通關！你真是數學小達人！",
+        winTitle: "🏆 恭喜通關！",
+        winDesc: (score) => `太棒了！你成功答對 ${score} 題！\n請向圓玄學院陳國超興德小學攤位領取嘉年華禮品！`,
+        timeUpTitle: "⏰ 時間到！",
+        timeUpDesc: (score) => `你在 30 秒內答對了 ${score} 題！\n再接再厲，再來挑戰一次吧！`
+      },
+      english: {
+        schoolTitle: "The Yuen Yuen Institute Chan Kwok Chiu Hing Tak Primary School",
+        gameTitle: "🎪 Math Carnival Challenge 🎡",
+        selectLevelLabel: "📌 1. Select Level:",
+        lvlLow: "🐣 Beginner (K1)",
+        lvlLowSub: "Counting & Direction",
+        lvlMid: "🐥 Intermediate (K2)",
+        lvlMidSub: "Addition & Patterns",
+        lvlHigh: "🦅 Advanced (K3)",
+        lvlHighSub: "Math & Logic",
+        selectStageLabel: "🎮 2. Select Stage (1-5):",
+        progressLabel: "Score",
+        startBtn: "🎈 Start 30s Challenge",
+        stopBtn: "⏹️ End Game",
+        welcomeMsg: "🎪 Welcome to Math Carnival!<br>Select a level and click<br>'Start 30s Challenge'",
+        restartBtn: "Play Again 🎠",
+        correctFeedback: "Great job! That's correct!",
+        wrongFeedback: "Try again!",
+        timeUpFeedback: "Time is up! Keep going!",
+        winFeedback: "Congratulations! You completed the challenge!",
+        winTitle: "🏆 Congratulations!",
+        winDesc: (score) => `Awesome! You solved ${score} questions correctly!\nPlease claim your prize at our booth!`,
+        timeUpTitle: "⏰ Time's Up!",
+        timeUpDesc: (score) => `You answered ${score} questions correctly in 30 seconds!\nTry again for a higher score!`
+      }
+    };
+
+    const stageInfo = {
+      low: [
+        { name: { chinese: "關卡 1：嘉年華水果數數 (1-3)", english: "Stage 1: Fruit Counting (1-3)" }, type: "count_easy" },
+        { name: { chinese: "關卡 2：歡樂氣球數數 (1-5)", english: "Stage 2: Balloon Counting (1-5)" }, type: "count_mid" },
+        { name: { chinese: "關卡 3：左右方向大冒險", english: "Stage 3: Left & Right Direction" }, type: "direction_lr" },
+        { name: { chinese: "關卡 4：上下中間位位通", english: "Stage 4: Up, Down & Middle" }, type: "direction_ud" },
+        { name: { chinese: "關卡 5：小動物數量比一比", english: "Stage 5: Animal Quantity Comparison" }, type: "compare_count" }
+      ],
+      mid: [
+        { name: { chinese: "關卡 1：攤位小吃點數 (6-10)", english: "Stage 1: Carnival Food Counting (6-10)" }, type: "count_hard" },
+        { name: { chinese: "關卡 2：5 以內歡樂加法", english: "Stage 2: Addition within 5" }, type: "add_5" },
+        { name: { chinese: "關卡 3：嘉年華圖案規律", english: "Stage 3: Pattern Recognition" }, type: "pattern" },
+        { name: { chinese: "關卡 4：10 以內驚喜加法", english: "Stage 4: Addition within 10" }, type: "add_10" },
+        { name: { chinese: "關卡 5：數字大小擂台", english: "Stage 5: Number Comparison" }, type: "compare_num" }
+      ],
+      high: [
+        { name: { chinese: "關卡 1：10 以內減法遊戲", english: "Stage 1: Subtraction within 10" }, type: "sub_10" },
+        { name: { chinese: "關卡 2：加減法大挑戰", english: "Stage 2: Addition & Subtraction" }, type: "mix_add_sub" },
+        { name: { chinese: "關卡 3：天平比輕重推理", english: "Stage 3: Weight Logic" }, type: "logic_weight" },
+        { name: { chinese: "關卡 4：神奇湊十法", english: "Stage 4: Making 10" }, type: "make_ten" },
+        { name: { chinese: "關卡 5：嘉年華智力總動員", english: "Stage 5: Brain Teaser Logic" }, type: "logic_mix" }
+      ]
+    };
+
+    const carnivalEmojis = ['🍎', '🍌', '🍓', '🎈', '🎁', '🍦', '🍩', '🐱', '🐶', '🐰', '🦁', '🐻', '🚗', '⭐', '🐼', '🐯', '🦊', '🍇', '🍊', '🍔'];
+
+    let currentLevel = 'low';
+    let currentStage = 1;
+    let score = 0;
+    let timeLeft = 30;
+    let timer = null;
+    let isPlaying = false;
+    let currentAnswer = null;
+    let currentQData = null;
+    let usedHistory = new Set();
+
+    function switchLanguage(lang, btn) {
+      currentLang = lang;
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const t = uiI18n[currentLang];
+      document.getElementById('uiSchoolTitle').innerText = t.schoolTitle;
+      document.getElementById('uiGameTitle').innerText = t.gameTitle;
+      document.getElementById('uiSelectLevelLabel').innerText = t.selectLevelLabel;
+      document.getElementById('uiLvlLow').innerText = t.lvlLow;
+      document.getElementById('uiLvlLowSub').innerText = t.lvlLowSub;
+      document.getElementById('uiLvlMid').innerText = t.lvlMid;
+      document.getElementById('uiLvlMidSub').innerText = t.lvlMidSub;
+      document.getElementById('uiLvlHigh').innerText = t.lvlHigh;
+      document.getElementById('uiLvlHighSub').innerText = t.lvlHighSub;
+      document.getElementById('uiSelectStageLabel').innerText = t.selectStageLabel;
+      document.getElementById('uiProgressLabel').innerText = t.progressLabel;
+      document.getElementById('uiWelcomeMsg').innerHTML = t.welcomeMsg;
+      document.getElementById('uiRestartBtn').innerText = t.restartBtn;
+
+      if (!isPlaying) {
+        document.getElementById('startBtn').innerText = t.startBtn;
+      } else {
+        document.getElementById('startBtn').innerText = t.stopBtn;
+      }
+
+      updateStageBanner();
+
+      if (isPlaying && currentQData) {
+        document.getElementById('qPromptText').innerText = currentQData.prompt[currentLang];
+        speak(currentQData.speakText ? currentQData.speakText[currentLang] : currentQData.prompt[currentLang]);
+      }
+    }
+
+    function selectLevel(lvl, btn) {
+      if (isPlaying) return;
+      currentLevel = lvl;
+      document.querySelectorAll('.level-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectStage(1, document.querySelectorAll('.stage-btn')[0]);
+    }
+
+    function selectStage(stg, btn) {
+      if (isPlaying) return;
+      currentStage = stg;
+      document.querySelectorAll('.stage-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      updateStageBanner();
+    }
+
+    function updateStageBanner() {
+      const info = stageInfo[currentLevel][currentStage - 1];
+      const lvlName = currentLang === 'chinese' 
+        ? (currentLevel === 'low' ? '初級 Level' : (currentLevel === 'mid' ? '中級 Level' : '高級 Level'))
+        : (currentLevel === 'low' ? 'Beginner' : (currentLevel === 'mid' ? 'Intermediate' : 'Advanced'));
+      
+      document.getElementById('stageBannerTitle').innerText = `${lvlName} - ${info.name[currentLang]}`;
+    }
+
+    function toggleGame() {
+      if (isPlaying) {
+        stopGame();
+      } else {
+        startGame();
+      }
+    }
+
+    function startGame() {
+      isPlaying = true;
+      score = 0;
+      timeLeft = 30;
+      usedHistory.clear();
+      
+      const t = uiI18n[currentLang];
+      document.getElementById('scoreText').innerText = score;
+      document.getElementById('startOverlay').style.display = 'none';
+      document.getElementById('startBtn').innerText = t.stopBtn;
+      document.getElementById('startBtn').style.background = 'linear-gradient(180deg, #ef4444 0%, #dc2626 100%)';
+
+      clearInterval(timer);
+      updateTimerDisplay();
+      timer = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        if (timeLeft <= 0) {
+          endGame(false);
+        }
+      }, 1000);
+
+      generateQuestion();
+    }
+
+    function stopGame() {
+      isPlaying = false;
+      clearInterval(timer);
+      const t = uiI18n[currentLang];
+      document.getElementById('startOverlay').style.display = 'flex';
+      document.getElementById('startBtn').innerText = t.startBtn;
+      document.getElementById('startBtn').style.background = 'linear-gradient(180deg, #22c55e 0%, #16a34a 100%)';
+      document.getElementById('timerBadge').innerText = '⏱️ 30s';
+    }
+
+    function updateTimerDisplay() {
+      const timerBadge = document.getElementById('timerBadge');
+      timerBadge.innerText = `⏱️ ${timeLeft}s`;
+    }
+
+    function generateQuestion() {
+      if (!isPlaying) return;
+
+      const qPrompt = document.getElementById('qPromptText');
+      const qGraphics = document.getElementById('qGraphics');
+      qGraphics.innerHTML = '';
+
+      const info = stageInfo[currentLevel][currentStage - 1];
+      let qData = null;
+      let attempts = 0;
+
+      while (!qData || (usedHistory.has(qData.key) && attempts < 100)) {
+        qData = createQuestionData(info.type);
+        attempts++;
+      }
+
+      usedHistory.add(qData.key);
+      currentQData = qData;
+      currentAnswer = qData.answer;
+
+      qPrompt.innerText = qData.prompt[currentLang];
+      speak(qData.speakText ? qData.speakText[currentLang] : qData.prompt[currentLang]);
+
+      if (qData.html) {
+        qGraphics.innerHTML = qData.html;
+      } else if (qData.items) {
+        qData.items.forEach(item => {
+          const span = document.createElement('span');
+          span.className = 'item-emoji';
+          span.innerText = item;
+          qGraphics.appendChild(span);
+        });
+      }
+
+      renderOptions(qData.options);
+    }
+
+    function createQuestionData(type) {
+      let key, prompt = {}, speakText = {}, answer, options, html, items;
+
+      if (type === 'count_easy' || type === 'count_mid' || type === 'count_hard') {
+        const min = type === 'count_easy' ? 1 : (type === 'count_mid' ? 1 : 6);
+        const max = type === 'count_easy' ? 3 : (type === 'count_mid' ? 5 : 10);
+        const count = Math.floor(Math.random() * (max - min + 1)) + min;
+        const icon = carnivalEmojis[Math.floor(Math.random() * carnivalEmojis.length)];
+        
+        key = `count_${icon}_${count}`;
+        prompt = { chinese: "數一數，這裡有多少個？", english: "How many are there?" };
+        speakText = prompt;
+        answer = count;
+        items = Array(count).fill(icon);
+        options = generateOptions(answer, 1, 10);
+      }
+      else if (type === 'direction_lr') {
+        const availableIcons = ['🐱', '🐶', '🐰', '🦊', '🦁', '🐻', '🐼', '🐯'].sort(() => Math.random() - 0.5);
+        const icons = availableIcons.slice(0, 3);
+        const posChinese = ['最左邊', '中間', '最右邊'];
+        const posEnglish = ['leftmost', 'middle', 'rightmost'];
+        const idx = Math.floor(Math.random() * 3);
+        
+        key = `dir_lr_${icons.join('')}_${idx}`;
+        prompt = { 
+          chinese: `請問在「 ${posChinese[idx]} 」的是什麼？`, 
+          english: `Which one is at the ${posEnglish[idx]}?` 
+        };
+        speakText = prompt;
+        answer = icons[idx];
+        items = icons;
+        options = icons.concat(availableIcons[3]).sort(() => Math.random() - 0.5);
+      }
+      else if (type === 'direction_ud') {
+        const availableIcons = ['🎈', '⭐', '🎁', '🍦', '🍩', '🍎'].sort(() => Math.random() - 0.5);
+        const icons = availableIcons.slice(0, 3);
+        const posChinese = ['最上面', '中間', '最下面'];
+        const posEnglish = ['top', 'middle', 'bottom'];
+        const idx = Math.floor(Math.random() * 3);
+
+        key = `dir_ud_${icons.join('')}_${idx}`;
+        prompt = { 
+          chinese: `請問在「 ${posChinese[idx]} 」的是什麼？`, 
+          english: `Which one is at the ${posEnglish[idx]}?` 
+        };
+        speakText = prompt;
+        answer = icons[idx];
+        html = `<div style="display:flex; flex-direction:column; align-items:center; gap:5px;">
+                  <span class="item-emoji">${icons[0]}</span>
+                  <span class="item-emoji">${icons[1]}</span>
+                  <span class="item-emoji">${icons[2]}</span>
+                </div>`;
+        options = icons.concat(availableIcons[3]).sort(() => Math.random() - 0.5);
+      }
+      else if (type === 'compare_count') {
+        const countA = Math.floor(Math.random() * 4) + 1;
+        let countB = Math.floor(Math.random() * 4) + 1;
+        while(countB === countA) countB = Math.floor(Math.random() * 4) + 1;
+
+        const fruitPair = [['🍎', '🍌'], ['🍓', '🍇'], ['🍊', '🍏']][Math.floor(Math.random() * 3)];
+        const iconA = fruitPair[0];
+        const iconB = fruitPair[1];
+        const isMore = Math.random() > 0.5;
+
+        key = `comp_cnt_${iconA}_${countA}_${countB}_${isMore}`;
+        prompt = {
+          chinese: isMore ? "哪種水果比較多？" : "哪種水果比較少？",
+          english: isMore ? "Which fruit has MORE?" : "Which fruit has LESS?"
+        };
+        speakText = prompt;
+        answer = (isMore ? countA > countB : countA < countB) ? iconA : iconB;
+        html = `<div style="display:flex; gap:20px; align-items:center; font-size:1.8rem;">
+                  <div>${iconA.repeat(countA)}</div>
+                  <div style="font-size:1.2rem; font-weight:bold; color:#cbd5e1;">VS</div>
+                  <div>${iconB.repeat(countB)}</div>
+                </div>`;
+        options = [iconA, iconB].sort(() => Math.random() - 0.5);
+      }
+      else if (type === 'add_5' || type === 'add_10') {
+        const max = type === 'add_5' ? 5 : 10;
+        const a = Math.floor(Math.random() * (max - 1)) + 1;
+        const b = Math.floor(Math.random() * (max - a)) + 1;
+
+        key = `add_${a}_${b}`;
+        prompt = { chinese: "算一算，合共是多少？", english: "What is the sum?" };
+        speakText = { chinese: `${a} 加 ${b} 等於多少？`, english: `What is ${a} plus ${b}?` };
+        answer = a + b;
+        html = `<div class="math-expr">${a} + ${b} = ?</div>`;
+        options = generateOptions(answer, 1, 10);
+      }
+      else if (type === 'sub_10') {
+        const a = Math.floor(Math.random() * 9) + 2;
+        const b = Math.floor(Math.random() * (a - 1)) + 1;
+
+        key = `sub_${a}_${b}`;
+        prompt = { chinese: "算一算，減去後是多少？", english: "What is the answer?" };
+        speakText = { chinese: `${a} 減 ${b} 等於多少？`, english: `What is ${a} minus ${b}?` };
+        answer = a - b;
+        html = `<div class="math-expr">${a} - ${b} = ?</div>`;
+        options = generateOptions(answer, 0, 10);
+      }
+      else if (type === 'pattern') {
+        const patterns = [
+          { seq: ['🔴', '🔵', '🔴', '🔵', '?'], ans: '🔴', key: 'p1' },
+          { seq: ['⭐', '⭐', '🎈', '⭐', '⭐', '?'], ans: '🎈', key: 'p2' },
+          { seq: ['🍎', '🍌', '🍎', '🍌', '?'], ans: '🍎', key: 'p3' },
+          { seq: ['🐶', '🐱', '🐶', '🐱', '?'], ans: '🐶', key: 'p4' },
+          { seq: ['🟢', '🟡', '🔴', '🟢', '🟡', '?'], ans: '🔴', key: 'p5' },
+          { seq: ['🍦', '🍩', '🍦', '🍩', '?'], ans: '🍦', key: 'p6' }
+        ];
+        const p = patterns[Math.floor(Math.random() * patterns.length)];
+
+        key = `pattern_${p.key}`;
+        prompt = { chinese: "看一看，下一個圖案是什麼？", english: "What comes next in the pattern?" };
+        speakText = prompt;
+        answer = p.ans;
+        html = `<div class="math-expr" style="font-size:2.2rem;">${p.seq.join(' ')}</div>`;
+        options = [p.ans, '🔵', '🟡', '💚'].filter((v, i, a) => a.indexOf(v) === i).slice(0, 4).sort(() => Math.random() - 0.5);
+      }
+      else if (type === 'compare_num') {
+        const a = Math.floor(Math.random() * 9) + 1;
+        let b = Math.floor(Math.random() * 9) + 1;
+        while(b === a) b = Math.floor(Math.random() * 9) + 1;
+        const isBigger = Math.random() > 0.5;
+
+        key = `comp_num_${a}_${b}_${isBigger}`;
+        prompt = {
+          chinese: isBigger ? `數字 ${a} 與 ${b}，哪一個較大？` : `數字 ${a} 與 ${b}，哪一個較小？`,
+          english: isBigger ? `Which number is BIGGER: ${a} or ${b}?` : `Which number is SMALLER: ${a} or ${b}?`
+        };
+        speakText = prompt;
+        answer = isBigger ? Math.max(a, b) : Math.min(a, b);
+        html = `<div class="math-expr">${a}  🤔  ${b}</div>`;
+        options = [a, b].sort(() => Math.random() - 0.5);
+      }
+      else if (type === 'make_ten') {
+        const num = Math.floor(Math.random() * 9) + 1;
+
+        key = `mten_${num}`;
+        prompt = { 
+          chinese: `${num} 加多少會等於 10 呢？`, 
+          english: `How much more to make 10 with ${num}?` 
+        };
+        speakText = prompt;
+        answer = 10 - num;
+        html = `<div class="math-expr">${num} + <span style="color:#ef4444">?</span> = 10</div>`;
+        options = generateOptions(answer, 1, 9);
+      }
+      else { 
+        const questions = [
+          { 
+            p: { chinese: "大象 🐘 與 小貓 🐱，哪一個較重？", english: "Which is heavier: Elephant 🐘 or Cat 🐱?" }, 
+            a: "🐘", opts: ["🐘", "🐱"], k: "w1" 
+          },
+          { 
+            p: { chinese: "石頭 🪨 與 羽毛 🪶，哪一個較重？", english: "Which is heavier: Rock 🪨 or Feather 🪶?" }, 
+            a: "🪨", opts: ["🪨", "🪶"], k: "w2" 
+          },
+          { 
+            p: { chinese: "汽車 🚗 與 腳踏車 🚲，哪一個較快？", english: "Which is faster: Car 🚗 or Bicycle 🚲?" }, 
+            a: "🚗", opts: ["🚗", "🚲"], k: "w3" 
+          },
+          { 
+            p: { chinese: "太陽 ☀️ 與 月亮 🌙，哪一個在白天出現？", english: "Which appears during the daytime?" }, 
+            a: "☀️", opts: ["☀️", "🌙"], k: "w4" 
+          }
+        ];
+        const q = questions[Math.floor(Math.random() * questions.length)];
+
+        key = `logic_${q.k}`;
+        prompt = q.p;
+        speakText = q.p;
+        answer = q.a;
+        html = `<div class="math-expr" style="font-size:2.5rem;">⚖️ 智力大挑戰</div>`;
+        options = q.opts.concat(["🎈", "⭐"]).slice(0, 4).sort(() => Math.random() - 0.5);
+      }
+
+      return { key, prompt, speakText, answer, html, items, options };
+    }
+
+    function generateOptions(correct, min, max) {
+      let opts = [correct];
+      while (opts.length < 4) {
+        let rand = Math.floor(Math.random() * (max - min + 1)) + min;
+        if (!opts.includes(rand)) {
+          opts.push(rand);
+        }
+      }
+      return opts.sort(() => Math.random() - 0.5);
+    }
+
+    function renderOptions(options) {
+      const grid = document.getElementById('optionsGrid');
+      grid.innerHTML = '';
+      options.forEach(opt => {
+        const card = document.createElement('div');
+        card.className = 'option-card';
+        card.innerText = opt;
+        card.onclick = () => checkAnswer(opt);
+        grid.appendChild(card);
+      });
+    }
+
+    function checkAnswer(selected) {
+      if (!isPlaying) return;
+
+      const t = uiI18n[currentLang];
+
+      if (String(selected) === String(currentAnswer)) {
+        score++;
+        document.getElementById('scoreText').innerText = score;
+        
+        confetti({ particleCount: 25, spread: 60, origin: { y: 0.7 } });
+        speak(t.correctFeedback);
+
+        if (score >= 5) {
+          endGame(true);
+        } else {
+          setTimeout(generateQuestion, 300);
+        }
+      } else {
+        speak(t.wrongFeedback);
+      }
+    }
+
+    function endGame(isWin) {
+      stopGame();
+      const modal = document.getElementById('resultModal');
+      const title = document.getElementById('modalTitle');
+      const desc = document.getElementById('modalDesc');
+      const t = uiI18n[currentLang];
+
+      if (isWin) {
+        title.innerText = t.winTitle;
+        desc.innerText = t.winDesc(score);
+        confetti({ particleCount: 120, spread: 100, origin: { y: 0.5 } });
+        speak(t.winFeedback);
+      } else {
+        title.innerText = t.timeUpTitle;
+        desc.innerText = t.timeUpDesc(score);
+        speak(t.timeUpFeedback);
+      }
+
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('resultModal').style.display = 'none';
+    }
+
+    function speak(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = currentLang === 'chinese' ? 'zh-HK' : 'en-US';
+        utterance.rate = 0.85;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    updateStageBanner();
+  </script>
+</body>
+</html>
