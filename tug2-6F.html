@@ -822,6 +822,7 @@
                 }
                 
                 alert(`✅ CSV 題庫已成功載入！\n共 ${customQuestions.length} 題匹配 ${selectedSubject} - ${selectedLevel}`);
+                startGame();
             };
             reader.readAsText(file);
         }
