@@ -276,7 +276,7 @@
     function render() {
       if (subjects.length === 0) return;
       const currentSubject = subjects[currentSubjIndex % subjects.length];
-      document.getElementById('main-title').textContent = `(測試中)🏆${currentSubject} 榮譽榜 Leaderboard 🏆(Testing)`;
+      document.getElementById('main-title').textContent = `(25-26年度)🏆${currentSubject} 榮譽榜 Leaderboard 🏆(Year25-26)`;
       
       const start = currentLevelPage * 3;
       const displayLevels = LEVELS.slice(start, start + 3);
