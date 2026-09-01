@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>排行榜 V2609011217🏆</title>
+  <title>排行榜 V2609011225🏆</title>
   <style>
     /* 基礎變數 (預設暗色) */
     :root {
@@ -40,32 +40,42 @@
       transition: background 0.3s, color 0.3s;
     }
   
-    /* 按鈕與天氣容器 */
+    /* 按鈕容器 */
     .controls { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; z-index: 100; }
     
-    /* 天氣盒 */
+    /* 天氣與警告盒 (移至左側面板) */
     .weather-box { 
-      position: absolute; top: 10px; left: 10px; z-index: 100; 
-      display: flex; align-items: center; gap: 10px; 
-      background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); 
-      padding: 8px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.3);
+      display: flex; 
+      flex-direction: column;
+      align-items: center; 
+      gap: 6px; 
+      background: rgba(255,255,255,0.08); 
+      backdrop-filter: blur(5px); 
+      padding: 8px 10px; 
+      border-radius: 12px; 
+      border: 1px solid var(--border-color);
+      margin-bottom: 18px; /* 與 QR.png 保持距離 */
+      width: 100%;
     }
 
-    /* 天氣圖示、溫度、警告一行展示 */
+    /* 天氣圖示與溫度一行展示 */
     .weather-info-row {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 1.4rem;
+      justify-content: center;
+      gap: 8px;
+      font-size: 1.3rem;
     }
 
     /* 警告信號樣式 */
     #warning-text {
-      font-size: 1.4rem;
+      font-size: 1.1rem;
       color: #ff4d4f;
       display: flex;
+      flex-wrap: wrap;
       gap: 6px;
       align-items: center;
+      justify-content: center;
     }
     
     .btn { padding: 8px 12px; font-size: 1.2rem; cursor: pointer; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); border-radius: 50px; backdrop-filter: blur(5px); transition: transform 0.2s, background 0.2s; }
@@ -118,14 +128,6 @@
 </head>
 <body>
 
-  <div class="weather-box" id="weather-box">
-    <div class="weather-info-row">
-      <span id="wx-icon">☁️</span>
-      <span id="temp-text">--°C</span>
-      <span id="warning-text"></span>
-    </div>
-  </div>
-
   <div class="controls">
     <button class="btn" onclick="setTheme('default')">🔄</button>
     <button class="btn" onclick="setTheme('pastel')">🎨</button>
@@ -138,7 +140,14 @@
 
   <div class="main-layout">
     <div class="qr-side">
-      <div class="qr-text"></div>
+      <div class="weather-box" id="weather-box">
+        <div class="weather-info-row">
+          <span id="wx-icon">☁️</span>
+          <span id="temp-text">--°C</span>
+        </div>
+        <div id="warning-text"></div>
+      </div>
+      
       <img src="QR.png" alt="QR Code">
       <div class="qr-text">掃瞄加入<br>Scan to join<br><br>或 or<br><br>前往 visit<br><FONT size=3>ckcpslkwai.github.io</FONT></div>
     </div>
